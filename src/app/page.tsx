@@ -35,10 +35,10 @@ export default function HomePage() {
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 space-y-8 bg-white">
       {/* Hero Banner (Clean White & Blue Tint) */}
-      <div className="rounded-3xl p-6 sm:p-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-cyan-50 to-white text-slate-900 shadow-lg relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+      <div className="rounded-3xl p-5 sm:p-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-cyan-50 to-white text-slate-900 shadow-lg relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 leading-tight whitespace-nowrap tracking-tight">
               水道事業ステップアップドリル
             </h1>
           </div>
