@@ -5,7 +5,7 @@ export const DOMAINS: Domain[] = [
   {
     id: 'water_supply',
     name: '水道事業 (Water Supply)',
-    description: '水道事業の企業会計・財政投資計画、アセットマネジメント、関連法規、実務知識をマスターする',
+    description: '水道事業の企業会計・投資財政計画、アセットマネジメント、関連法規、実務知識をマスターする',
     available: true,
     courses: [
       WATER_FINANCE_COURSE,

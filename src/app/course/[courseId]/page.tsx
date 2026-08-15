@@ -53,7 +53,7 @@ export default function CoursePage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
             <div>
               <span className="text-xs font-black text-white bg-blue-600 px-3 py-1 rounded-full mb-3 inline-block shadow-sm">
-                水道事業 財政投資計画
+                水道事業 投資財政計画
               </span>
               <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">
                 {course.title}
