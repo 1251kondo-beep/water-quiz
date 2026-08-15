@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, RotateCcw, Bookmark, CheckCircle2, Award } from 'lucide-react';
 import { getUserStats } from '@/lib/storage';
-import { WATER_FINANCE_UNITS } from '@/data/courses/water_finance';
+import { DOMAINS } from '@/data/domains';
 import { Question } from '@/types/quiz';
 import QuizPlayer from '@/components/QuizPlayer';
 
@@ -17,9 +17,13 @@ export default function ReviewPage() {
     const stats = getUserStats();
     const allQuestions: Question[] = [];
 
-    WATER_FINANCE_UNITS.forEach((unit) => {
-      unit.lessons.forEach((lesson) => {
-        allQuestions.push(...lesson.questions);
+    DOMAINS.forEach((domain) => {
+      domain.courses.forEach((course) => {
+        course.units.forEach((unit) => {
+          unit.lessons.forEach((lesson) => {
+            allQuestions.push(...lesson.questions);
+          });
+        });
       });
     });
 

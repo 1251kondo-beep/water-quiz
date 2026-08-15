@@ -26,11 +26,26 @@ export default function HomePage() {
 
   const selectedDomain = DOMAINS.find((d) => d.id === selectedDomainId) || DOMAINS[0];
 
-  // Calculate stats for water finance course
+  // Calculate stats across available courses
   const completedLessonsMap = stats?.completedLessons || {};
   const completedCount = Object.values(completedLessonsMap).filter((l) => l.passed).length;
   const totalStars = Object.values(completedLessonsMap).reduce((acc, curr) => acc + (curr.stars || 0), 0);
   const mistakeCount = stats?.mistakeHistory.length || 0;
+
+  // Total active lessons & questions in selected domain
+  const totalDomainLessons = selectedDomain.courses.reduce(
+    (acc, c) => acc + c.units.reduce((uAcc, u) => uAcc + u.lessons.length, 0),
+    0
+  );
+  const totalDomainQuestions = selectedDomain.courses.reduce(
+    (acc, c) =>
+      acc +
+      c.units.reduce((uAcc, u) => uAcc + u.lessons.reduce((lAcc, l) => lAcc + l.questions.length, 0), 0),
+    0
+  );
+  const totalPossibleStars = totalDomainLessons * 3;
+
+  const firstAvailableCourse = selectedDomain.courses.find((c) => c.units.length > 0) || selectedDomain.courses[0];
 
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 space-y-8 bg-white">
@@ -46,11 +61,11 @@ export default function HomePage() {
           {/* Quick Action Buttons */}
           <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-3">
             <Link
-              href="/course/water_finance"
+              href={`/course/${firstAvailableCourse.id}`}
               className="px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
             >
               <Play className="w-4 h-4 fill-current" />
-              全15レッスン一覧へ
+              『{firstAvailableCourse.title}』を始める
             </Link>
             <Link
               href="/glossary"
@@ -68,21 +83,21 @@ export default function HomePage() {
         <div className="rounded-2xl p-4 border-2 border-blue-200 bg-white shadow-md">
           <p className="text-xs font-black text-slate-600 mb-1">合格レッスン数</p>
           <p className="text-xl sm:text-2xl font-black text-blue-700">
-            {completedCount} <span className="text-xs text-slate-600 font-bold">/ 15 レッスン</span>
+            {completedCount} <span className="text-xs text-slate-600 font-bold">/ {totalDomainLessons} レッスン</span>
           </p>
         </div>
 
         <div className="rounded-2xl p-4 border-2 border-blue-200 bg-white shadow-md">
           <p className="text-xs font-black text-slate-600 mb-1">獲得した星</p>
           <p className="text-xl sm:text-2xl font-black text-amber-600 flex items-center gap-1">
-            {totalStars} <span className="text-xs text-slate-600 font-bold">/ 45 Stars</span>
+            {totalStars} <span className="text-xs text-slate-600 font-bold">/ {totalPossibleStars} Stars</span>
           </p>
         </div>
 
         <div className="rounded-2xl p-4 border-2 border-blue-200 bg-white shadow-md">
           <p className="text-xs font-black text-slate-600 mb-1">全問題数</p>
           <p className="text-xl sm:text-2xl font-black text-emerald-700">
-            150 <span className="text-xs text-slate-600 font-bold">問収載</span>
+            {totalDomainQuestions} <span className="text-xs text-slate-600 font-bold">問収載</span>
           </p>
         </div>
 

@@ -446,22 +446,24 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             </button>
           </div>
 
-          {/* Everyday Analogy Box (日常のたとえ) */}
-          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-500/30 rounded-xl p-4">
-            <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold text-sm mb-2">
-              <Lightbulb className="w-4 h-4 fill-amber-400/20" />
-              日常のたとえで覚える！
+          {/* Everyday Analogy Box (日常のたとえ - 難解・煩雑な場合のみ表示) */}
+          {Boolean(currentQ.analogy && currentQ.analogy.trim().length > 0) && (
+            <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-500/30 rounded-xl p-4">
+              <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold text-sm mb-2">
+                <Lightbulb className="w-4 h-4 fill-amber-400/20" />
+                日常のたとえで覚える！
+              </div>
+              <p className="text-sm md:text-base text-amber-950 dark:text-amber-100 font-medium leading-relaxed">
+                {currentQ.analogy}
+              </p>
             </div>
-            <p className="text-sm md:text-base text-amber-950 dark:text-amber-100 font-medium leading-relaxed">
-              {currentQ.analogy}
-            </p>
-          </div>
+          )}
 
-          {/* Detailed Financial Explanation (実務解説) */}
+          {/* Detailed Explanation (実務解説) */}
           <div className="space-y-1.5">
             <h4 className="text-sm font-bold text-cyan-800 dark:text-cyan-300 flex items-center gap-1.5">
               <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
-              実務・会計解説
+              実務・詳細解説
             </h4>
             <p className="text-sm md:text-base text-slate-800 dark:text-slate-100 leading-relaxed font-normal">
               {currentQ.explanation}

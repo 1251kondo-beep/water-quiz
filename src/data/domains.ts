@@ -1,13 +1,15 @@
 import { Domain } from '@/types/quiz';
+import { HANDA_VISION_COURSE } from '@/data/courses/handa_vision';
 import { WATER_FINANCE_COURSE } from '@/data/courses/water_finance';
 
 export const DOMAINS: Domain[] = [
   {
     id: 'water_supply',
     name: '水道事業 (Water Supply)',
-    description: '水道事業の企業会計・投資財政計画、アセットマネジメント、関連法規、実務知識をマスターする',
+    description: '半田市水道ビジョン、企業会計・投資財政計画、アセットマネジメント、関連法規、実務知識をマスターする',
     available: true,
     courses: [
+      HANDA_VISION_COURSE,
       WATER_FINANCE_COURSE,
       {
         id: 'water_asset',
