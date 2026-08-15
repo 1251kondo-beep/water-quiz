@@ -55,9 +55,6 @@ export default function CoursePage() {
         <div className="rounded-3xl p-6 md:p-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-cyan-50 to-white text-slate-900 shadow-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
             <div>
-              <span className="text-xs font-black text-white bg-blue-600 px-3 py-1 rounded-full mb-3 inline-block shadow-sm">
-                {course.title}
-              </span>
               <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">
                 {course.title}
               </h1>
