@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, RotateCcw, Bookmark, CheckCircle2, Award } from 'lucide-react';
-import { getUserStats, removeMistake } from '@/lib/storage';
-import { WATER_FINANCE_UNITS } from '@/data/water_finance';
+import { getUserStats } from '@/lib/storage';
+import { WATER_FINANCE_UNITS } from '@/data/courses/water_finance';
 import { Question } from '@/types/quiz';
 import QuizPlayer from '@/components/QuizPlayer';
 
@@ -43,26 +43,26 @@ export default function ReviewPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-6 px-4 space-y-6">
+    <div className="max-w-2xl mx-auto py-6 px-4 space-y-6 min-h-screen">
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-white px-3 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all hover:shadow"
       >
         <ArrowLeft className="w-4 h-4" />
         ホームへ戻る
       </Link>
 
-      <div className="glass-card rounded-3xl p-6 border border-amber-500/30 bg-gradient-to-br from-amber-950/30 via-slate-900 to-cyan-950/30">
+      <div className="rounded-3xl p-6 border-2 border-blue-200 bg-gradient-to-br from-amber-50/70 via-blue-50/50 to-white text-slate-900 shadow-lg">
         <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-2">
-            <div className="p-2.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-400/30">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-amber-500 text-white shadow-md shadow-amber-500/25">
               <RotateCcw className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-100">
+              <h1 className="text-xl font-black text-slate-900 tracking-tight">
                 復習・弱点攻略モード
               </h1>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-600 font-medium mt-0.5">
                 過去に間違えた問題やお気に入りに登録した問題を再挑戦
               </p>
             </div>
@@ -70,25 +70,27 @@ export default function ReviewPage() {
         </div>
 
         {/* Tab Filter */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
           <button
             onClick={() => setFilterMode('mistakes')}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               filterMode === 'mistakes'
-                ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'bg-amber-500 text-white shadow-md shadow-amber-500/30'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
+            <RotateCcw className="w-3.5 h-3.5" />
             間違えた問題 ({getUserStats().mistakeHistory.length})
           </button>
           <button
             onClick={() => setFilterMode('bookmarks')}
-            className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+            className={`flex-1 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               filterMode === 'bookmarks'
-                ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20'
-                : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
+            <Bookmark className="w-3.5 h-3.5" />
             ブックマーク ({getUserStats().bookmarks.length})
           </button>
         </div>
@@ -101,19 +103,19 @@ export default function ReviewPage() {
           courseId="water_finance"
         />
       ) : (
-        <div className="glass-card rounded-2xl p-8 text-center text-slate-400 space-y-3">
-          <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto opacity-80" />
-          <p className="text-base font-bold text-slate-200">
+        <div className="bg-white rounded-3xl p-8 text-center border-2 border-dashed border-blue-200 text-slate-500 space-y-3 shadow-sm">
+          <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
+          <p className="text-base font-black text-slate-800">
             {filterMode === 'mistakes' ? '間違えた問題はありません！' : 'ブックマークされた問題はありません。'}
           </p>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500 leading-relaxed">
             レッスンに挑戦して、苦手な問題や見返したい問題を登録してみましょう。
           </p>
           <Link
             href="/course/water_finance"
-            className="inline-block mt-2 px-6 py-2.5 rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs shadow-md shadow-cyan-500/20"
+            className="inline-flex items-center gap-2 mt-3 px-6 py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-lg shadow-blue-600/25 transition-all"
           >
-            全9レッスン一覧へ
+            全15レッスン一覧へ
           </Link>
         </div>
       )}
