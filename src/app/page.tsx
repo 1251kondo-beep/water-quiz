@@ -160,7 +160,12 @@ export default function HomePage() {
                   </div>
                   {/* High Contrast Blue Badge */}
                   <span className="text-xs font-black text-white bg-blue-600 px-3 py-1.5 rounded-full shadow-md shadow-blue-600/25">
-                    全15レッスン / 150問
+                    {course.units.length > 0
+                      ? `全${course.units.reduce((acc, u) => acc + u.lessons.length, 0)}レッスン / ${course.units.reduce(
+                          (acc, u) => acc + u.lessons.reduce((lAcc, l) => lAcc + l.questions.length, 0),
+                          0
+                        )}問`
+                      : '準備中'}
                   </span>
                 </div>
 
@@ -178,15 +183,26 @@ export default function HomePage() {
 
               <div className="border-t border-slate-200 pt-4 flex items-center justify-between">
                 <span className="text-xs text-slate-700 font-black">
-                  単元数: 3単元（150問）
+                  {course.units.length > 0
+                    ? `単元数: ${course.units.length}単元（${course.units.reduce(
+                        (acc, u) => acc + u.lessons.reduce((lAcc, l) => lAcc + l.questions.length, 0),
+                        0
+                      )}問）`
+                    : '順次公開予定'}
                 </span>
-                <Link
-                  href={`/course/${course.id}`}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/30 transition-all cursor-pointer"
-                >
-                  コースを見る
-                  <ChevronRight className="w-4 h-4" />
-                </Link>
+                {course.units.length > 0 ? (
+                  <Link
+                    href={`/course/${course.id}`}
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/30 transition-all cursor-pointer"
+                  >
+                    コースを見る
+                    <ChevronRight className="w-4 h-4" />
+                  </Link>
+                ) : (
+                  <span className="text-xs text-slate-500 font-bold px-3 py-1.5 bg-slate-100 rounded-xl">
+                    準備中
+                  </span>
+                )}
               </div>
             </div>
           ))}

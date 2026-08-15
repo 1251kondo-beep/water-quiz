@@ -32,9 +32,12 @@ export default function CoursePage() {
   }
 
   const completedMap = stats?.completedLessons || {};
-  const totalLessons = course.units.reduce((acc, u) => acc + u.lessons.length, 0);
-  const passedLessonsCount = Object.values(completedMap).filter((l) => l.passed).length;
-  const progressPct = Math.round((passedLessonsCount / totalLessons) * 100);
+  const courseLessonIds = new Set(course.units.flatMap((u) => u.lessons.map((l) => l.id)));
+  const totalLessons = courseLessonIds.size;
+  const passedLessonsCount = Object.entries(completedMap).filter(
+    ([lessonId, result]) => courseLessonIds.has(lessonId) && result.passed
+  ).length;
+  const progressPct = totalLessons > 0 ? Math.round((passedLessonsCount / totalLessons) * 100) : 0;
 
   return (
     <div className="max-w-5xl mx-auto py-6 px-4 space-y-8 bg-white">
@@ -53,7 +56,7 @@ export default function CoursePage() {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
             <div>
               <span className="text-xs font-black text-white bg-blue-600 px-3 py-1 rounded-full mb-3 inline-block shadow-sm">
-                水道事業 投資財政計画
+                {course.title}
               </span>
               <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">
                 {course.title}
