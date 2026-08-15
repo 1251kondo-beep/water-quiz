@@ -8,7 +8,6 @@ import {
   Award,
   BookOpen,
   RotateCcw,
-  Sparkles,
   Droplet,
   CheckCircle2,
   ChevronRight
@@ -39,16 +38,9 @@ export default function HomePage() {
       <div className="rounded-3xl p-6 sm:p-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-cyan-50 to-white text-slate-900 shadow-lg relative overflow-hidden">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black bg-blue-600 text-white shadow-sm">
-              <Sparkles className="w-3.5 h-3.5" />
-              異動直後の職員必見！スキマ時間でマスター
-            </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
               水道事業ステップアップドリル
             </h1>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-bold">
-              3条・4条の違い、企業債（据置なし30年・4.5%）、減価償却費・資産減耗費の非資金性、料金回収率や内部留保（21億円維持）を**全150問（全15レッスン）**でサクッと学習。
-            </p>
           </div>
 
           {/* Quick Action Buttons */}
