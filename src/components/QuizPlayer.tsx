@@ -53,6 +53,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   const explanationRef = useRef<HTMLDivElement>(null);
+  const quizContainerRef = useRef<HTMLDivElement>(null);
 
   const currentQ: Question = questions[currentIndex];
 
@@ -101,7 +102,15 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswerConfirmed(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Scroll to proper position at top of quiz container
+      setTimeout(() => {
+        if (quizContainerRef.current) {
+          quizContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 50);
     } else {
       finishQuiz();
     }
@@ -260,7 +269,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   // ACTIVE QUIZ RUNNER VIEW
   // ------------------------------------------------------------------
   return (
-    <div className="max-w-2xl mx-auto py-4 px-3 sm:px-4">
+    <div ref={quizContainerRef} className="max-w-2xl mx-auto py-4 px-3 sm:px-4 scroll-mt-16 md:scroll-mt-20">
       {/* Header Info Bar */}
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 truncate">
@@ -286,8 +295,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       </div>
 
       {/* Progress Dots Bar (1..10) */}
-      <div className="glass-card rounded-xl p-3 mb-4 flex items-center justify-between gap-1.5 border border-cyan-500/20">
-        <div className="flex items-center gap-1 sm:gap-1.5 flex-1 justify-between">
+      <div className="glass-card rounded-xl p-3 mb-4 flex items-center justify-between gap-1.5 border border-cyan-500/20 whitespace-nowrap overflow-x-auto">
+        <div className="flex items-center gap-1 sm:gap-1.5 flex-1 justify-between shrink-0">
           {questions.map((q, idx) => {
             const isCurrent = idx === currentIndex;
             const state = answersState[idx];
@@ -318,11 +327,11 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
       {/* Question Card */}
       <div className="glass-card rounded-2xl p-5 md:p-6 mb-4 border border-cyan-500/25 shadow-lg">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/30 px-2.5 py-0.5 rounded-full">
+        <div className="flex items-center gap-2 mb-3 min-w-0">
+          <span className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/30 px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0">
             第 {currentIndex + 1} 問
           </span>
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0">
             {lesson.title}
           </span>
         </div>
