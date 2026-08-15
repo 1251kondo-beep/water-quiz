@@ -40,10 +40,10 @@ export default function GlossaryPage() {
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-black text-slate-100">
-                水道財政 用語辞書・解説集
+                水道事業 用語辞書・解説集
               </h1>
               <p className="text-xs text-slate-400">
-                『投資財政計画_用語解説.md』の最重要単語を「一言イメージ」と「日常のたとえ」でサクッと確認
+                水道事業に関する最重要単語を「一言イメージ」と「日常のたとえ」でサクッと確認
               </p>
             </div>
           </div>

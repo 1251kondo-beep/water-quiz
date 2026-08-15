@@ -54,11 +54,8 @@ export default function Header() {
           </div>
           <div>
             <h1 className="font-black text-base md:text-lg tracking-tight text-blue-700">
-              水道財政クイズ
+              水道事業ステップアップドリル
             </h1>
-            <p className="text-[10px] text-slate-600 font-black leading-none">
-              財政投資計画 用語マスター
-            </p>
           </div>
         </Link>
 

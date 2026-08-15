@@ -448,7 +448,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           {/* Reference Citation */}
           <div className="text-[11px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/60 rounded-lg p-2 flex items-center gap-1 border border-slate-200 dark:border-slate-800">
             <span className="text-cyan-700 dark:text-cyan-400 font-semibold">📌 参照:</span>
-            <span>『投資財政計画_用語解説.md』 「{currentQ.referenceSection}」</span>
+            <span>「{currentQ.referenceSection}」</span>
           </div>
 
           {/* Next Button */}

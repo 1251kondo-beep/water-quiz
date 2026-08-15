@@ -44,13 +44,10 @@ export default function HomePage() {
               異動直後の職員必見！スキマ時間でマスター
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
-              水道事業 財政投資計画 <br className="hidden sm:inline" />
-              <span className="text-blue-600">
-                スマホで学べる4択クイズアプリ
-              </span>
+              水道事業ステップアップドリル
             </h1>
             <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-bold">
-              『投資財政計画_用語解説.md』全900行の内容を網羅！ 3条・4条の違い、企業債（据置なし30年・4.5%）、減価償却費・資産減耗費の非資金性、料金回収率や内部留保（21億円維持）を**全150問（全15レッスン）**でサクッと学習。
+              3条・4条の違い、企業債（据置なし30年・4.5%）、減価償却費・資産減耗費の非資金性、料金回収率や内部留保（21億円維持）を**全150問（全15レッスン）**でサクッと学習。
             </p>
           </div>
 
