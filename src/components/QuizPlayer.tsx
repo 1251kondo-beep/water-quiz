@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
 import {
@@ -52,6 +52,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  const explanationRef = useRef<HTMLDivElement>(null);
+
   const currentQ: Question = questions[currentIndex];
 
   useEffect(() => {
@@ -59,6 +61,14 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setBookmarks(stats.bookmarks);
     setSoundEnabled(stats.soundEnabled);
   }, []);
+
+  useEffect(() => {
+    if (isAnswerConfirmed && explanationRef.current) {
+      setTimeout(() => {
+        explanationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }, [isAnswerConfirmed]);
 
   // Highlight option without instant grading
   const handleSelectOption = (index: number) => {
@@ -91,6 +101,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswerConfirmed(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       finishQuiz();
     }
@@ -397,18 +408,21 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
       {/* Explanation & Analogy Card (Slides in when answer is confirmed) */}
       {isAnswerConfirmed && (
-        <div className="glass-card rounded-2xl p-5 border border-cyan-500/30 shadow-xl mb-6 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+        <div
+          ref={explanationRef}
+          className="glass-card rounded-2xl p-5 border border-cyan-500/30 shadow-xl mb-6 space-y-4.5 animate-in fade-in slide-in-from-bottom-4 duration-300 scroll-mt-6"
+        >
           {/* Result Header Banner */}
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
               {selectedOption === currentQ.answerIndex ? (
-                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-sm">
-                  <CheckCircle2 className="w-5 h-5" />
+                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-base md:text-lg">
+                  <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
                   正解です！
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-sm">
-                  <XCircle className="w-5 h-5" />
+                <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-base md:text-lg">
+                  <XCircle className="w-5 h-5 md:w-6 md:h-6" />
                   不正解です（正解: {['A', 'B', 'C', 'D'][currentQ.answerIndex]}）
                 </div>
               )}
@@ -424,29 +438,29 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </div>
 
           {/* Everyday Analogy Box (日常のたとえ) */}
-          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-500/30 rounded-xl p-3.5">
-            <div className="flex items-center gap-1.5 text-amber-700 dark:text-amber-400 font-bold text-xs mb-1.5">
+          <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-500/30 rounded-xl p-4">
+            <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold text-sm mb-2">
               <Lightbulb className="w-4 h-4 fill-amber-400/20" />
               日常のたとえで覚える！
             </div>
-            <p className="text-xs md:text-sm text-amber-900 dark:text-amber-100 font-medium leading-relaxed">
+            <p className="text-sm md:text-base text-amber-950 dark:text-amber-100 font-medium leading-relaxed">
               {currentQ.analogy}
             </p>
           </div>
 
           {/* Detailed Financial Explanation (実務解説) */}
-          <div>
-            <h4 className="text-xs font-bold text-cyan-700 dark:text-cyan-400 mb-1 flex items-center gap-1">
-              <BookOpen className="w-3.5 h-3.5" />
+          <div className="space-y-1.5">
+            <h4 className="text-sm font-bold text-cyan-800 dark:text-cyan-300 flex items-center gap-1.5">
+              <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
               実務・会計解説
             </h4>
-            <p className="text-xs md:text-sm text-slate-700 dark:text-slate-200 leading-relaxed">
+            <p className="text-sm md:text-base text-slate-800 dark:text-slate-100 leading-relaxed font-normal">
               {currentQ.explanation}
             </p>
           </div>
 
           {/* Reference Citation */}
-          <div className="text-[11px] text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/60 rounded-lg p-2 flex items-center gap-1 border border-slate-200 dark:border-slate-800">
+          <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/60 rounded-lg p-2.5 flex items-center gap-1.5 border border-slate-200 dark:border-slate-800">
             <span className="text-cyan-700 dark:text-cyan-400 font-semibold">📌 参照:</span>
             <span>「{currentQ.referenceSection}」</span>
           </div>
