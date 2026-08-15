@@ -1,5 +1,5 @@
 import { Domain } from '@/types/quiz';
-import { WATER_FINANCE_COURSE } from '@/data/water_finance';
+import { WATER_FINANCE_COURSE } from '@/data/courses/water_finance';
 
 export const DOMAINS: Domain[] = [
   {
