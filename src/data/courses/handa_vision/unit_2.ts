@@ -613,7 +613,7 @@ const lesson_2_5: Lesson = {
   unitId: 'hv_unit_2',
   lessonNumber: 5,
   title: 'Lesson 2-5: 【演習】水質・耐震化・防災施策の実務応用ケース',
-  subtitle: '単元2の総復習：水質51項目・3採水地、GX耐震管、緊急遮断弁、JWWA応援の実務応用',
+  subtitle: 'Section 2の総復習：水質51項目・3採水地、GX耐震管、緊急遮断弁、JWWA応援の実務応用',
   description: '《安全》と《強靭》に関する実務的なシチュエーション問題を解き、安全・防災施策の理解を深めます。',
   questions: [
     {
@@ -744,7 +744,7 @@ const lesson_2_5: Lesson = {
     },
     {
       id: 'hv_2_5_010',
-      question: '【単元2総括】《安全》と《強靭》の両立によって目指す半田市水道の到達目標として最もふさわしいものはどれですか？',
+      question: '【Section 2総括】《安全》と《強靭》の両立によって目指す半田市水道の到達目標として最もふさわしいものはどれですか？',
       options: [
         '平時はいつでもおいしく安全な水を届け、災害時にも早期復旧と命の水を守り抜く強靭な水道インフラの確立',
         '水質検査も耐震化も行わず、経費を全額貯金すること',
@@ -762,7 +762,7 @@ const lesson_2_5: Lesson = {
 export const HV_UNIT_2: Unit = {
   id: 'hv_unit_2',
   unitNumber: 2,
-  title: '単元2: 《安全》と《強靭》の施策マスター',
+  title: 'Section 2: 《安全》と《強靭》の施策マスター',
   description: '水質検査51項目と市内3採水地点、PFAS対策、鉛製給水管解消、基幹管路耐震化（GX管）、緊急遮断弁と応急給水・JWWA応援体制を学びます。',
   badgeText: '全5レッスン / 50問',
   lessons: [lesson_2_1, lesson_2_2, lesson_2_3, lesson_2_4, lesson_2_5],

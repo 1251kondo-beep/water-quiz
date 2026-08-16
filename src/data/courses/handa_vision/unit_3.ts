@@ -613,7 +613,7 @@ const lesson_3_5: Lesson = {
   unitId: 'hv_unit_3',
   lessonNumber: 5,
   title: 'Lesson 3-5: 【演習】半田市水道ビジョン総合力判定ケーススタディ',
-  subtitle: '全3単元の総まとめ：ビジョン全体（安全・強靭・持続）の実践応用総合判定',
+  subtitle: '全3Sectionの総まとめ：ビジョン全体（安全・強靭・持続）の実践応用総合判定',
   description: '『半田市新水道ビジョン』全編の知識を統合した実践ケーススタディ。全問正解でビジョンマスターを目指します。',
   questions: [
     {
@@ -762,7 +762,7 @@ const lesson_3_5: Lesson = {
 export const HV_UNIT_3: Unit = {
   id: 'hv_unit_3',
   unitNumber: 3,
-  title: '単元3: 《持続》経営基盤・水道DX・広域連携',
+  title: 'Section 3: 《持続》経営基盤・水道DX・広域連携',
   description: 'アセットマネジメントと計画的更新（年7億円）、スマートメーター7,000個導入とDX・見守り、知多5市5町広域化協議、官民連携、広報・PDCAを学びます。',
   badgeText: '全5レッスン / 50問',
   lessons: [lesson_3_1, lesson_3_2, lesson_3_3, lesson_3_4, lesson_3_5],

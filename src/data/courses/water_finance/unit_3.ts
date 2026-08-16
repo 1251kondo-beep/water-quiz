@@ -765,7 +765,7 @@ const lesson_3_5: Lesson = {
 export const UNIT_3: Unit = {
   id: 'unit_3',
   unitNumber: 3,
-  title: '単元3: 経営指標・県水受水費と財政計画総合',
+  title: 'Section 3: 経営指標・県水受水費と財政計画総合',
   description: '給水原価・料金回収率・企業債残高比率などの経営指標、県営水道の二部料金制（基本料金・水量料金）、内部留保（21億円維持）と料金改定の総合判断をマスターします。',
   badgeText: '全5レッスン / 50問',
   lessons: [lesson_3_1, lesson_3_2, lesson_3_3, lesson_3_4, lesson_3_5],

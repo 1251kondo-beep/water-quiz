@@ -21,7 +21,7 @@ export default function LessonCard({ lesson, result }: LessonCardProps) {
         <div className="flex items-center justify-between gap-2 mb-3">
           {/* Blue Badge */}
           <span className="text-xs font-black text-white bg-blue-600 px-3 py-1 rounded-full shadow-sm">
-            Lesson {lesson.lessonNumber}（10問）
+            Lesson {lesson.lessonNumber}
           </span>
 
           {isCompleted ? (
@@ -68,7 +68,7 @@ export default function LessonCard({ lesson, result }: LessonCardProps) {
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/30 transition-all active:scale-95 cursor-pointer"
         >
           <Play className="w-3.5 h-3.5 fill-current" />
-          {isCompleted ? '再挑戦 (10問)' : 'スタート (10問)'}
+          {isCompleted ? '再挑戦' : 'スタート'}
         </Link>
       </div>
     </div>

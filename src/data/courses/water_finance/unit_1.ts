@@ -765,7 +765,7 @@ const lesson_1_5: Lesson = {
 export const UNIT_1: Unit = {
   id: 'unit_1',
   unitNumber: 1,
-  title: '単元1: 3条・4条と企業会計の全体像',
+  title: 'Section 1: 3条・4条と企業会計の全体像',
   description: '地方公営企業法に基づく「3条（収益的収支）」と「4条（資本的収支）」の根本的な違い、科目判別、基準内・基準外繰入金、および独立採算制を学びます。',
   badgeText: '全5レッスン / 50問',
   lessons: [lesson_1_1, lesson_1_2, lesson_1_3, lesson_1_4, lesson_1_5],

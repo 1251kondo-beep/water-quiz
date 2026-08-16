@@ -765,7 +765,7 @@ const lesson_2_5: Lesson = {
 export const UNIT_2: Unit = {
   id: 'unit_2',
   unitNumber: 2,
-  title: '単元2: 企業債・減価償却と資金の仕組み',
+  title: 'Section 2: 企業債・減価償却と資金の仕組み',
   description: '起債と元利金返済（据置なし30年・利率4.5%）、非資金費用である「減価償却費」、古い管の「除却・資産減耗費（2%・2.8%）」のメカニズムを解説します。',
   badgeText: '全5レッスン / 50問',
   lessons: [lesson_2_1, lesson_2_2, lesson_2_3, lesson_2_4, lesson_2_5],

@@ -184,7 +184,7 @@ export default function HomePage() {
               <div className="border-t border-slate-200 pt-4 flex items-center justify-between">
                 <span className="text-xs text-slate-700 font-black">
                   {course.units.length > 0
-                    ? `単元数: ${course.units.length}単元（${course.units.reduce(
+                    ? `Section数: ${course.units.length}Section（${course.units.reduce(
                         (acc, u) => acc + u.lessons.reduce((lAcc, l) => lAcc + l.questions.length, 0),
                         0
                       )}問）`
