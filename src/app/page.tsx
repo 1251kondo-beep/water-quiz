@@ -120,9 +120,8 @@ export default function HomePage() {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
             <Droplet className="w-5 h-5 text-blue-600 fill-blue-500/20" />
-            学習分野を選択 (ドメイン)
+            学習分野を選択
           </h2>
-          <span className="text-xs text-slate-600 font-black">※今後他分野へ拡張可能</span>
         </div>
 
         <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
@@ -148,64 +147,59 @@ export default function HomePage() {
 
         {/* Courses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selectedDomain.courses.map((course) => (
-            <div
-              key={course.id}
-              className="rounded-2xl p-6 border-2 border-blue-200 bg-white flex flex-col justify-between gap-4 shadow-lg hover:border-blue-500 transition-colors"
-            >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="p-3 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/30">
-                    <Building2 className="w-6 h-6" />
+          {selectedDomain.courses.map((course) => {
+            const courseLessons = course.units.flatMap((u) => u.lessons);
+            const totalCourseLessons = courseLessons.length;
+            const completedCourseLessons = courseLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
+
+            return (
+              <div
+                key={course.id}
+                className="rounded-2xl p-6 border-2 border-blue-200 bg-white flex flex-col justify-between gap-4 shadow-lg hover:border-blue-500 transition-colors"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="p-3 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/30">
+                      <Building2 className="w-6 h-6" />
+                    </div>
+                    {/* High Contrast Blue Badge */}
+                    <span className="text-xs font-black text-white bg-blue-600 px-3 py-1.5 rounded-full shadow-md shadow-blue-600/25">
+                      {totalCourseLessons > 0
+                        ? `${completedCourseLessons}/${totalCourseLessons}レッスン`
+                        : '準備中'}
+                    </span>
                   </div>
-                  {/* High Contrast Blue Badge */}
-                  <span className="text-xs font-black text-white bg-blue-600 px-3 py-1.5 rounded-full shadow-md shadow-blue-600/25">
-                    {course.units.length > 0
-                      ? `全${course.units.reduce((acc, u) => acc + u.lessons.length, 0)}レッスン / ${course.units.reduce(
-                          (acc, u) => acc + u.lessons.reduce((lAcc, l) => lAcc + l.questions.length, 0),
-                          0
-                        )}問`
-                      : '準備中'}
-                  </span>
+
+                  {/* High Contrast Text */}
+                  <h3 className="text-lg font-black text-slate-900 leading-snug">
+                    {course.title}
+                  </h3>
+                  <p className="text-xs text-blue-700 font-black">
+                    {course.subtitle}
+                  </p>
+                  <p className="text-xs text-slate-700 font-bold leading-relaxed">
+                    {course.description}
+                  </p>
                 </div>
 
-                {/* High Contrast Text */}
-                <h3 className="text-lg font-black text-slate-900 leading-snug">
-                  {course.title}
-                </h3>
-                <p className="text-xs text-blue-700 font-black">
-                  {course.subtitle}
-                </p>
-                <p className="text-xs text-slate-700 font-bold leading-relaxed">
-                  {course.description}
-                </p>
+                <div className="border-t border-slate-200 pt-4 flex items-center justify-end">
+                  {course.units.length > 0 ? (
+                    <Link
+                      href={`/course/${course.id}`}
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/30 transition-all cursor-pointer"
+                    >
+                      コースを見る
+                      <ChevronRight className="w-4 h-4" />
+                    </Link>
+                  ) : (
+                    <span className="text-xs text-slate-500 font-bold px-3 py-1.5 bg-slate-100 rounded-xl">
+                      準備中
+                    </span>
+                  )}
+                </div>
               </div>
-
-              <div className="border-t border-slate-200 pt-4 flex items-center justify-between">
-                <span className="text-xs text-slate-700 font-black">
-                  {course.units.length > 0
-                    ? `Section数: ${course.units.length}Section（${course.units.reduce(
-                        (acc, u) => acc + u.lessons.reduce((lAcc, l) => lAcc + l.questions.length, 0),
-                        0
-                      )}問）`
-                    : '順次公開予定'}
-                </span>
-                {course.units.length > 0 ? (
-                  <Link
-                    href={`/course/${course.id}`}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/30 transition-all cursor-pointer"
-                  >
-                    コースを見る
-                    <ChevronRight className="w-4 h-4" />
-                  </Link>
-                ) : (
-                  <span className="text-xs text-slate-500 font-bold px-3 py-1.5 bg-slate-100 rounded-xl">
-                    準備中
-                  </span>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

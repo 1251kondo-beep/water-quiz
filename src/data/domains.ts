@@ -5,7 +5,7 @@ import { WATER_FINANCE_COURSE } from '@/data/courses/water_finance';
 export const DOMAINS: Domain[] = [
   {
     id: 'water_supply',
-    name: '水道事業 (Water Supply)',
+    name: '水道事業',
     description: '半田市水道ビジョン、企業会計・投資財政計画、アセットマネジメント、関連法規、実務知識をマスターする',
     available: true,
     courses: [
@@ -35,7 +35,7 @@ export const DOMAINS: Domain[] = [
   },
   {
     id: 'sewerage',
-    name: '下水道事業 (Sewerage)',
+    name: '下水道事業',
     description: '下水道事業の公営企業会計、処理場維持管理、雨水・汚水施設経営',
     available: false,
     courses: [
