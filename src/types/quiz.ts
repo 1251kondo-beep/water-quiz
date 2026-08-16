@@ -9,6 +9,7 @@ export interface Question {
   analogy: string; // 日常のたとえ
   referenceSection: string; // 投資財政計画_用語解説.md の対応セクション
   difficulty?: DifficultyLevel;
+  sdgsGoals?: number[]; // e.g. [3, 6, 7, 9, 11, 14]
 }
 
 export interface Lesson {

@@ -336,9 +336,48 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </span>
         </div>
 
-        <h2 className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed mb-6">
+        <h2 className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed mb-4">
           {currentQ.question}
         </h2>
+
+        {/* SDGs Goal Tiles (if present) */}
+        {currentQ.sdgsGoals && currentQ.sdgsGoals.length > 0 && (
+          <div className="mb-6 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            {currentQ.sdgsGoals.map((goalNum) => {
+              const info: Record<number, { id: string; title: string; color: string }> = {
+                3: { id: '目標 3', title: 'すべての人に健康と福祉を', color: '#4C9F38' },
+                6: { id: '目標 6', title: '安全な水とトイレを世界中に', color: '#26BDE2' },
+                7: { id: '目標 7', title: 'エネルギーをみんなにそしてクリーンに', color: '#FCC30B' },
+                9: { id: '目標 9', title: '産業と技術革新の基盤をつくろう', color: '#FD6925' },
+                11: { id: '目標 11', title: '住み続けられるまちづくりを', color: '#FD9D24' },
+                14: { id: '目標 14', title: '海の豊かさを守ろう', color: '#007DBC' },
+              };
+              const sdg = info[goalNum];
+              if (!sdg) return null;
+              const isGoal7 = goalNum === 7;
+
+              return (
+                <div
+                  key={goalNum}
+                  className="rounded-xl p-3 shadow-md flex flex-col justify-between transition-transform hover:scale-105 border border-white/20"
+                  style={{ backgroundColor: sdg.color, color: isGoal7 ? '#0f172a' : '#ffffff' }}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className={`text-[11px] font-black px-2 py-0.5 rounded ${isGoal7 ? 'bg-black/10' : 'bg-black/20'}`}>
+                      {sdg.id}
+                    </span>
+                    <span className="text-[9px] font-black tracking-wider uppercase opacity-80">
+                      SDGs
+                    </span>
+                  </div>
+                  <p className="text-xs font-black leading-tight">
+                    {sdg.title}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         {/* 4 Options Grid */}
         <div className="grid grid-cols-1 gap-2.5 mb-5">
