@@ -7,6 +7,8 @@ import { CheckCircle2, XCircle, RotateCcw, Link2 } from 'lucide-react';
 interface PairMatchingWidgetProps {
   pairs: MatchPair[];
   extraRightItems?: { rightId: string; rightText: string }[];
+  leftTitle?: string;
+  rightTitle?: string;
   isConfirmed: boolean;
   onSelectionChange: (isFullyMatched: boolean, isAllCorrect: boolean) => void;
 }
@@ -25,6 +27,8 @@ const COLORS = [
 export default function PairMatchingWidget({
   pairs,
   extraRightItems,
+  leftTitle = '【配水場】',
+  rightTitle = '【送水系統】',
   isConfirmed,
   onSelectionChange,
 }: PairMatchingWidgetProps) {
@@ -161,16 +165,16 @@ export default function PairMatchingWidget({
   }, [userConnections, leftItems, rightItems]);
 
   return (
-    <div className="space-y-3 my-4">
+    <div className="space-y-3 my-4 touch-manipulation">
       <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1">
         <span className="flex items-center gap-1.5 text-blue-700 dark:text-blue-300 font-bold">
-          <Link2 className="w-4 h-4 text-blue-600" />
-          左の配水場を選び、右の対応する送水系統をタップして線で結んでください
+          <Link2 className="w-4 h-4 text-blue-600 shrink-0" />
+          左の項目をタップし、右の対応する項目をタップして結んでください
         </span>
         {!isConfirmed && Object.keys(userConnections).length > 0 && (
           <button
             onClick={handleResetConnections}
-            className="flex items-center gap-1 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer text-[11px] font-bold"
+            className="flex items-center gap-1 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer text-[11px] font-bold shrink-0 ml-2"
           >
             <RotateCcw className="w-3 h-3" />
             やり直す
@@ -180,7 +184,7 @@ export default function PairMatchingWidget({
 
       <div
         ref={containerRef}
-        className="relative flex items-center justify-between p-4 sm:p-6 bg-slate-50/90 dark:bg-slate-900/80 rounded-2xl border-2 border-slate-200 dark:border-slate-800 min-h-[290px]"
+        className="relative flex items-center justify-between p-3 sm:p-5 bg-slate-50/90 dark:bg-slate-900/80 rounded-2xl border-2 border-slate-200 dark:border-slate-800 min-h-[300px]"
       >
         {/* SVG overlay for drawing connecting lines */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
@@ -219,9 +223,9 @@ export default function PairMatchingWidget({
         </svg>
 
         {/* Left Column */}
-        <div className="w-[42%] max-w-[155px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
-          <div className="text-[10px] sm:text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
-            【対象項目】
+        <div className="w-[43%] max-w-[165px] sm:max-w-[190px] space-y-3 z-20 flex flex-col justify-center">
+          <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider text-center">
+            {leftTitle}
           </div>
           {leftItems.map((item, idx) => {
             const isSelected = selectedLeftId === item.leftId;
@@ -259,25 +263,25 @@ export default function PairMatchingWidget({
                   itemRefs.current[`left_${item.leftId}`] = el;
                 }}
                 onClick={() => handleLeftClick(item.leftId)}
-                className={`p-2.5 sm:p-3 rounded-xl border-2 text-xs leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
+                className={`p-3 sm:p-3.5 rounded-xl border-2 leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
               >
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[9px] flex items-center justify-center shrink-0">
+                  <span className="w-4.5 h-4.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[10px] flex items-center justify-center shrink-0">
                     {idx + 1}
                   </span>
-                  <span className="font-bold text-[10px] sm:text-xs leading-tight break-words">{item.leftText}</span>
+                  <span className="font-bold text-xs sm:text-sm leading-tight break-words">{item.leftText}</span>
                 </div>
-                {isConfirmed && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 ml-1" />}
-                {isConfirmed && isWrong && <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 ml-1" />}
+                {isConfirmed && isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />}
+                {isConfirmed && isWrong && <XCircle className="w-4 h-4 text-rose-600 shrink-0 ml-1" />}
               </div>
             );
           })}
         </div>
 
         {/* Right Column */}
-        <div className="w-[42%] max-w-[155px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
-          <div className="text-[10px] sm:text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
-            【選択肢】
+        <div className="w-[43%] max-w-[165px] sm:max-w-[190px] space-y-3 z-20 flex flex-col justify-center">
+          <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider text-center">
+            {rightTitle}
           </div>
           {rightItems.map((item) => {
             const connectedLeftId = Object.keys(userConnections).find(
@@ -319,11 +323,11 @@ export default function PairMatchingWidget({
                   itemRefs.current[`right_${item.rightId}`] = el;
                 }}
                 onClick={() => handleRightClick(item.rightId)}
-                className={`p-2.5 sm:p-3 rounded-xl border-2 text-xs leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
+                className={`p-3 sm:p-3.5 rounded-xl border-2 leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
               >
-                <span className="font-bold text-[10px] sm:text-xs leading-tight break-words">{item.rightText}</span>
-                {isConfirmed && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 ml-1" />}
-                {isConfirmed && isWrong && <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 ml-1" />}
+                <span className="font-bold text-xs sm:text-sm leading-tight break-words">{item.rightText}</span>
+                {isConfirmed && isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />}
+                {isConfirmed && isWrong && <XCircle className="w-4 h-4 text-rose-600 shrink-0 ml-1" />}
               </div>
             );
           })}

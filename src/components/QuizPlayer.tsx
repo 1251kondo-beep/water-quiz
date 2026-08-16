@@ -451,6 +451,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           <PairMatchingWidget
             pairs={currentQ.matchPairs}
             extraRightItems={currentQ.extraRightItems}
+            leftTitle={currentQ.leftTitle}
+            rightTitle={currentQ.rightTitle}
             isConfirmed={isAnswerConfirmed}
             onSelectionChange={(full, correct) => {
               setIsMatchFullyConnected(full);
@@ -546,7 +548,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           {/* Result Header Banner */}
           <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
             <div className="flex items-center gap-2">
-              {selectedOption === currentQ.answerIndex ? (
+              {answersState[currentIndex] === 'correct' ? (
                 <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-base md:text-lg">
                   <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
                   正解です！
@@ -554,7 +556,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               ) : (
                 <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-base md:text-lg">
                   <XCircle className="w-5 h-5 md:w-6 md:h-6" />
-                  不正解です（正解: {['A', 'B', 'C', 'D'][currentQ.answerIndex]}）
+                  不正解です{currentQ.matchPairs && currentQ.matchPairs.length > 0 ? '' : `（正解: ${['A', 'B', 'C', 'D'][currentQ.answerIndex]}）`}
                 </div>
               )}
             </div>

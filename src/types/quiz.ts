@@ -19,6 +19,8 @@ export interface Question {
   sdgsGoals?: number[]; // e.g. [3, 6, 7, 9, 11, 14]
   matchPairs?: MatchPair[];
   extraRightItems?: { rightId: string; rightText: string }[];
+  leftTitle?: string;
+  rightTitle?: string;
 }
 
 export interface Lesson {

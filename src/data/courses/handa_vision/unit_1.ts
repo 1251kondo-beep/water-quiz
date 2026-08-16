@@ -317,7 +317,9 @@ const lesson_1_3: Lesson = {
   questions: [
     {
       id: 'hv_1_3_01',
-      question: '左側の「配水場」と、右側の対応する「愛知県営水道の送水系統」をタップして線で結び、正しいペアを作ってください。',
+      question: '各配水場に対応する愛知県営水道の送水系統をタップして線で結び、正しいペアを作ってください。',
+      leftTitle: '【配水場】',
+      rightTitle: '【送水系統】',
       matchPairs: [
         { leftId: 'sunagaya', leftText: '砂谷配水場', rightId: 'chita', rightText: '知多浄水場' },
         { leftId: 'fukatani', leftText: '深谷配水場', rightId: 'tokoname', rightText: '常滑広域調整池' },
@@ -363,7 +365,9 @@ const lesson_1_3: Lesson = {
     },
     {
       id: 'hv_1_3_04',
-      question: '左側の「県営水道送水系統（3箇所）」と、右側の対応する「送水方式（加圧ポンプ方式・自然流下方式）」をタップして線で結び、正しいペアを作ってください。',
+      question: '各県営水道送水系統に対応する送水方式（加圧ポンプ方式・自然流下方式）をタップして線で結び、正しいペアを作ってください。',
+      leftTitle: '【送水系統】',
+      rightTitle: '【送水方式】',
       matchPairs: [
         { leftId: 'chita', leftText: '知多浄水場', rightId: 'pump_1', rightText: '加圧ポンプ方式' },
         { leftId: 'tokoname', leftText: '常滑広域調整池', rightId: 'gravity_1', rightText: '自然流下方式' },
