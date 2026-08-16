@@ -389,15 +389,25 @@ const lesson_1_3: Lesson = {
     },
     {
       id: 'hv_1_3_05',
-      question: '北部配水場（計画受水量 15,600m³/日）へ水を送っている愛知県営水道の送水系統はどれですか？',
-      options: [
-        '知多浄水場（加圧ポンプ系統）',
-        '常滑広域調整池（自然流下系統）',
-        '阿久比広域調整池（自然流下系統）',
-        '豊橋市小鷹野浄水場'
+      question: '各配水場に対応する計画受水量（認可値）をタップして線で結び、正しいペアを作ってください。',
+      leftTitle: '【配水場】',
+      rightTitle: '【計画受水量】',
+      matchPairs: [
+        { leftId: 'sunagaya', leftText: '砂谷配水場', rightId: 'vol_sunagaya', rightText: '24,600 m³/日' },
+        { leftId: 'fukatani', leftText: '深谷配水場', rightId: 'vol_fukatani', rightText: '16,900 m³/日' },
+        { leftId: 'hokubu', leftText: '北部配水場', rightId: 'vol_hokubu', rightText: '15,600 m³/日' }
       ],
-      answerIndex: 2,
-      explanation: '北部配水場は「阿久比広域調整池（自然流下）」から受水しています。',
+      extraRightItems: [
+        { rightId: 'vol_dummy', rightText: '18,200 m³/日' }
+      ],
+      options: [
+        '砂谷:24,600m³/日 ／ 深谷:16,900m³/日 ／ 北部:15,600m³/日',
+        '砂谷:16,900m³/日 ／ 深谷:24,600m³/日 ／ 北部:15,600m³/日',
+        '砂谷:15,600m³/日 ／ 深谷:16,900m³/日 ／ 北部:24,600m³/日',
+        '砂谷:24,600m³/日 ／ 深谷:15,600m³/日 ／ 北部:16,900m³/日'
+      ],
+      answerIndex: 0,
+      explanation: '半田市の各配水場の計画受水量（認可値）は、①砂谷配水場＝24,600m³/日（最大）、②深谷配水場＝16,900m³/日、③北部配水場＝15,600m³/日 となっており、合計で57,100m³/日です。',
       analogy: '',
       referenceSection: '第2章 2-3 表2-2 県営水道からの受水点'
     },
