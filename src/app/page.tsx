@@ -73,31 +73,31 @@ export default function HomePage() {
       </div>
 
       {/* User Progress Stats Dashboard */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-        <div className="rounded-2xl p-4 border-2 border-blue-200 bg-white shadow-md">
-          <p className="text-xs font-black text-slate-600 mb-1">合格レッスン数</p>
-          <p className="text-xl sm:text-2xl font-black text-blue-700">
-            {completedCount} <span className="text-xs text-slate-600 font-bold">/ {totalDomainLessons} レッスン</span>
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
+        <div className="rounded-2xl p-3 sm:p-4 border-2 border-blue-200 bg-white shadow-md flex flex-col justify-between">
+          <p className="text-[11px] sm:text-xs font-black text-slate-600 mb-1 truncate">合格レッスン数</p>
+          <p className="text-lg sm:text-2xl font-black text-blue-700">
+            {completedCount} <span className="text-[10px] sm:text-xs text-slate-600 font-bold">/ {totalDomainLessons}</span>
           </p>
         </div>
 
-        <div className="rounded-2xl p-4 border-2 border-blue-200 bg-white shadow-md">
-          <p className="text-xs font-black text-slate-600 mb-1">獲得した星</p>
-          <p className="text-xl sm:text-2xl font-black text-amber-600 flex items-center gap-1">
-            {totalStars} <span className="text-xs text-slate-600 font-bold">/ {totalPossibleStars} Stars</span>
+        <div className="rounded-2xl p-3 sm:p-4 border-2 border-blue-200 bg-white shadow-md flex flex-col justify-between">
+          <p className="text-[11px] sm:text-xs font-black text-slate-600 mb-1 truncate">獲得した星</p>
+          <p className="text-lg sm:text-2xl font-black text-amber-600 flex items-center gap-0.5">
+            {totalStars} <span className="text-[10px] sm:text-xs text-slate-600 font-bold">/ {totalPossibleStars}★</span>
           </p>
         </div>
 
         <Link
           href="/review"
-          className="rounded-2xl p-4 border-2 border-amber-300 bg-amber-50 hover:bg-amber-100/80 cursor-pointer block shadow-md transition-colors"
+          className="rounded-2xl p-3 sm:p-4 border-2 border-amber-300 bg-amber-50 hover:bg-amber-100/80 cursor-pointer block shadow-md transition-colors flex flex-col justify-between"
         >
-          <p className="text-xs font-black text-amber-900 mb-1 flex items-center gap-1">
-            <RotateCcw className="w-3.5 h-3.5 text-amber-700" />
-            要復習の弱点問題
+          <p className="text-[11px] sm:text-xs font-black text-amber-900 mb-1 flex items-center gap-1 truncate">
+            <RotateCcw className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-700 shrink-0" />
+            <span className="truncate">要復習の弱点</span>
           </p>
-          <p className="text-xl sm:text-2xl font-black text-amber-700">
-            {mistakeCount} <span className="text-xs font-bold">問</span>
+          <p className="text-lg sm:text-2xl font-black text-amber-700">
+            {mistakeCount} <span className="text-[10px] sm:text-xs font-bold">問</span>
           </p>
         </Link>
       </div>
