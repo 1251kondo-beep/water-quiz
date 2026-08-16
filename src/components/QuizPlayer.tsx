@@ -331,8 +331,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           <span className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/30 px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0">
             第 {currentIndex + 1} 問
           </span>
-          <span className="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0">
-            {lesson.title}
+          <span className="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 font-bold">
+            {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
           </span>
         </div>
 
