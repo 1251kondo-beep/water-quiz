@@ -450,6 +450,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
           <PairMatchingWidget
             pairs={currentQ.matchPairs}
+            extraRightItems={currentQ.extraRightItems}
             isConfirmed={isAnswerConfirmed}
             onSelectionChange={(full, correct) => {
               setIsMatchFullyConnected(full);

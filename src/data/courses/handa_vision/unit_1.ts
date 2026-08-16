@@ -363,15 +363,23 @@ const lesson_1_3: Lesson = {
     },
     {
       id: 'hv_1_3_04',
-      question: '深谷配水場（計画受水量 16,900m³/日）へ水を送っている愛知県営水道の送水系統はどれですか？',
-      options: [
-        '知多浄水場（加圧ポンプ系統）',
-        '常滑広域調整池（自然流下系統）',
-        '阿久比広域調整池（自然流下系統）',
-        '名古屋市鍋屋上野浄水場'
+      question: '左側の「県営水道送水系統（3箇所）」と、右側の対応する「送水方式（加圧ポンプ方式・自然流下方式）」をタップして線で結び、正しいペアを作ってください。',
+      matchPairs: [
+        { leftId: 'chita', leftText: '知多浄水場', rightId: 'pump_1', rightText: '加圧ポンプ方式' },
+        { leftId: 'tokoname', leftText: '常滑広域調整池', rightId: 'gravity_1', rightText: '自然流下方式' },
+        { leftId: 'agui', leftText: '阿久比広域調整池', rightId: 'gravity_2', rightText: '自然流下方式' }
       ],
-      answerIndex: 1,
-      explanation: '深谷配水場は「常滑広域調整池（自然流下）」から受水しています。',
+      extraRightItems: [
+        { rightId: 'pump_2', rightText: '加圧ポンプ方式' }
+      ],
+      options: [
+        '知多ー加圧ポンプ／常滑ー自然流下／阿久比ー自然流下',
+        '知多ー自然流下／常滑ー加圧ポンプ／阿久比ー自然流下',
+        '知多ー自然流下／常滑ー自然流下／阿久比ー加圧ポンプ',
+        '知多ー加圧ポンプ／常滑ー加圧ポンプ／阿久比ー加圧ポンプ'
+      ],
+      answerIndex: 0,
+      explanation: '知多浄水場系統は「加圧ポンプ方式」で送水されており、常滑広域調整池系統と阿久比広域調整池系統の2系統は高低差（位置エネルギー）を利用した「自然流下方式」で送水されています。',
       analogy: '',
       referenceSection: '第2章 2-3 表2-2 県営水道からの受水点'
     },

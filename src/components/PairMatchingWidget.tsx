@@ -6,6 +6,7 @@ import { CheckCircle2, XCircle, RotateCcw, Link2 } from 'lucide-react';
 
 interface PairMatchingWidgetProps {
   pairs: MatchPair[];
+  extraRightItems?: { rightId: string; rightText: string }[];
   isConfirmed: boolean;
   onSelectionChange: (isFullyMatched: boolean, isAllCorrect: boolean) => void;
 }
@@ -23,6 +24,7 @@ const COLORS = [
 
 export default function PairMatchingWidget({
   pairs,
+  extraRightItems,
   isConfirmed,
   onSelectionChange,
 }: PairMatchingWidgetProps) {
@@ -41,6 +43,9 @@ export default function PairMatchingWidget({
   // Shuffle right items on mount / pairs change
   useEffect(() => {
     const rights = pairs.map((p) => ({ rightId: p.rightId, rightText: p.rightText }));
+    if (extraRightItems && extraRightItems.length > 0) {
+      rights.push(...extraRightItems);
+    }
     const shuffled = [...rights];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -49,17 +54,22 @@ export default function PairMatchingWidget({
     setRightItems(shuffled);
     setUserConnections({});
     setSelectedLeftId(null);
-  }, [pairs]);
+  }, [pairs, extraRightItems]);
 
   // Check if fully matched & notify parent
   useEffect(() => {
     const isFullyMatched = Object.keys(userConnections).length === pairs.length;
     let isAllCorrect = false;
     if (isFullyMatched) {
-      isAllCorrect = pairs.every((p) => userConnections[p.leftId] === p.rightId);
+      isAllCorrect = pairs.every((p) => {
+        const userConnectedRightId = userConnections[p.leftId];
+        if (!userConnectedRightId) return false;
+        const connectedRight = rightItems.find((r) => r.rightId === userConnectedRightId);
+        return connectedRight?.rightText === p.rightText;
+      });
     }
     onSelectionChange(isFullyMatched, isAllCorrect);
-  }, [userConnections, pairs, onSelectionChange]);
+  }, [userConnections, pairs, rightItems, onSelectionChange]);
 
   const handleLeftClick = (leftId: string) => {
     if (isConfirmed) return;
@@ -176,7 +186,8 @@ export default function PairMatchingWidget({
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
           {lines.map((line) => {
             const pair = pairs.find((p) => p.leftId === line.leftId);
-            const isCorrectPair = pair?.rightId === line.rightId;
+            const connectedRight = rightItems.find((r) => r.rightId === line.rightId);
+            const isCorrectPair = pair?.rightText === connectedRight?.rightText;
 
             let strokeColor = COLORS[line.colorIdx].stroke;
             if (isConfirmed) {
