@@ -170,7 +170,7 @@ export default function PairMatchingWidget({
 
       <div
         ref={containerRef}
-        className="relative grid grid-cols-2 gap-6 p-4 bg-slate-50/90 dark:bg-slate-900/80 rounded-2xl border-2 border-slate-200 dark:border-slate-800 min-h-[280px]"
+        className="relative flex items-center justify-between p-4 sm:p-6 bg-slate-50/90 dark:bg-slate-900/80 rounded-2xl border-2 border-slate-200 dark:border-slate-800 min-h-[290px]"
       >
         {/* SVG overlay for drawing connecting lines */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none z-10">
@@ -208,9 +208,9 @@ export default function PairMatchingWidget({
         </svg>
 
         {/* Left Column (配水場) */}
-        <div className="space-y-3 z-20 flex flex-col justify-center">
+        <div className="w-[38%] max-w-[160px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
           <div className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
-            【配水場（受水点）】
+            【配水場】
           </div>
           {leftItems.map((item, idx) => {
             const isSelected = selectedLeftId === item.leftId;
@@ -246,23 +246,23 @@ export default function PairMatchingWidget({
                   itemRefs.current[`left_${item.leftId}`] = el;
                 }}
                 onClick={() => handleLeftClick(item.leftId)}
-                className={`p-3.5 rounded-xl border-2 text-xs leading-snug cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
+                className={`p-2.5 sm:p-3 rounded-xl border-2 text-xs leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
               >
-                <div className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[10px] flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[9px] flex items-center justify-center shrink-0">
                     {idx + 1}
                   </span>
-                  <span className="font-bold">{item.leftText}</span>
+                  <span className="font-bold truncate text-[11px] sm:text-xs">{item.leftText}</span>
                 </div>
-                {isConfirmed && isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />}
-                {isConfirmed && isWrong && <XCircle className="w-4 h-4 text-rose-600 shrink-0" />}
+                {isConfirmed && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 ml-1" />}
+                {isConfirmed && isWrong && <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 ml-1" />}
               </div>
             );
           })}
         </div>
 
         {/* Right Column (送水系統) */}
-        <div className="space-y-3 z-20 flex flex-col justify-center">
+        <div className="w-[38%] max-w-[160px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
           <div className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
             【送水系統】
           </div>
@@ -305,11 +305,11 @@ export default function PairMatchingWidget({
                   itemRefs.current[`right_${item.rightId}`] = el;
                 }}
                 onClick={() => handleRightClick(item.rightId)}
-                className={`p-3.5 rounded-xl border-2 text-xs leading-snug cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
+                className={`p-2.5 sm:p-3 rounded-xl border-2 text-xs leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
               >
-                <span className="font-bold">{item.rightText}</span>
-                {isConfirmed && isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />}
-                {isConfirmed && isWrong && <XCircle className="w-4 h-4 text-rose-600 shrink-0" />}
+                <span className="font-bold truncate text-[11px] sm:text-xs">{item.rightText}</span>
+                {isConfirmed && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 ml-1" />}
+                {isConfirmed && isWrong && <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 ml-1" />}
               </div>
             );
           })}
