@@ -763,7 +763,7 @@ export const HV_UNIT_1: Unit = {
   id: 'hv_unit_1',
   unitNumber: 1,
   title: 'Section 1: 半田市水道の概要と基本理念',
-  description: '半田市水道の創設の歴史（S13認可・県下5番目）、受水率100%の変遷、3受水点（砂谷・深谷・北部）と多重系統、水需要実績と基本理念をマスターします。',
+  description: '公共水道創設の歴史、３受水点と多重系統、基本理念をマスターします。',
   badgeText: '全5レッスン / 50問',
   lessons: [lesson_1_1, lesson_1_2, lesson_1_3, lesson_1_4, lesson_1_5],
 };

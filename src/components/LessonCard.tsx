@@ -39,7 +39,7 @@ export default function LessonCard({ lesson, result }: LessonCardProps) {
 
         {/* Title */}
         <h3 className="text-base font-black text-slate-900 mb-1.5 leading-snug">
-          {lesson.title}
+          {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
         </h3>
         <p className="text-xs text-slate-700 font-bold leading-relaxed line-clamp-2">
           {lesson.subtitle}

@@ -193,8 +193,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">
             {passed ? 'レッスンクリア！ 🎉' : 'もう少しで合格！'}
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-            {lesson.title}
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-bold">
+            {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
           </p>
 
           {/* Stars Display */}
