@@ -37,12 +37,6 @@ export default function HomePage() {
     (acc, c) => acc + c.units.reduce((uAcc, u) => uAcc + u.lessons.length, 0),
     0
   );
-  const totalDomainQuestions = selectedDomain.courses.reduce(
-    (acc, c) =>
-      acc +
-      c.units.reduce((uAcc, u) => uAcc + u.lessons.reduce((lAcc, l) => lAcc + l.questions.length, 0), 0),
-    0
-  );
   const totalPossibleStars = totalDomainLessons * 3;
 
   const firstAvailableCourse = selectedDomain.courses.find((c) => c.units.length > 0) || selectedDomain.courses[0];
@@ -79,7 +73,7 @@ export default function HomePage() {
       </div>
 
       {/* User Progress Stats Dashboard */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
         <div className="rounded-2xl p-4 border-2 border-blue-200 bg-white shadow-md">
           <p className="text-xs font-black text-slate-600 mb-1">合格レッスン数</p>
           <p className="text-xl sm:text-2xl font-black text-blue-700">
@@ -91,13 +85,6 @@ export default function HomePage() {
           <p className="text-xs font-black text-slate-600 mb-1">獲得した星</p>
           <p className="text-xl sm:text-2xl font-black text-amber-600 flex items-center gap-1">
             {totalStars} <span className="text-xs text-slate-600 font-bold">/ {totalPossibleStars} Stars</span>
-          </p>
-        </div>
-
-        <div className="rounded-2xl p-4 border-2 border-blue-200 bg-white shadow-md">
-          <p className="text-xs font-black text-slate-600 mb-1">全問題数</p>
-          <p className="text-xl sm:text-2xl font-black text-emerald-700">
-            {totalDomainQuestions} <span className="text-xs text-slate-600 font-bold">問収載</span>
           </p>
         </div>
 
