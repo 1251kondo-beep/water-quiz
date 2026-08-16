@@ -38,8 +38,36 @@ interface QuizPlayerProps {
   courseId: string;
 }
 
+function shuffleOptionsForQuestions(qs: Question[]): Question[] {
+  return qs.map((q) => {
+    const pairs = q.options.map((optText, idx) => ({
+      text: optText,
+      isCorrect: idx === q.answerIndex,
+    }));
+
+    // Fisher-Yates shuffle algorithm
+    for (let i = pairs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+    }
+
+    const newOptions = pairs.map((p) => p.text) as [string, string, string, string];
+    const newAnswerIndex = pairs.findIndex((p) => p.isCorrect);
+
+    return {
+      ...q,
+      options: newOptions,
+      answerIndex: newAnswerIndex,
+    };
+  });
+}
+
 export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerProps) {
-  const questions = lesson.questions;
+  const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>(() =>
+    shuffleOptionsForQuestions(lesson.questions)
+  );
+
+  const questions = shuffledQuestions.length > 0 ? shuffledQuestions : lesson.questions;
   const total = questions.length;
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,6 +84,28 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   const quizContainerRef = useRef<HTMLDivElement>(null);
 
   const currentQ: Question = questions[currentIndex];
+
+  const handleRestartQuiz = () => {
+    setShuffledQuestions(shuffleOptionsForQuestions(lesson.questions));
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setIsAnswerConfirmed(false);
+    setAnswersState([]);
+    setUserScore(0);
+    setWrongQuestionIds([]);
+    setIsQuizCompleted(false);
+  };
+
+  useEffect(() => {
+    setShuffledQuestions(shuffleOptionsForQuestions(lesson.questions));
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setIsAnswerConfirmed(false);
+    setAnswersState([]);
+    setUserScore(0);
+    setWrongQuestionIds([]);
+    setIsQuizCompleted(false);
+  }, [lesson.id, lesson.questions]);
 
   useEffect(() => {
     const stats = getUserStats();
@@ -237,15 +287,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
-              onClick={() => {
-                setCurrentIndex(0);
-                setSelectedOption(null);
-                setIsAnswerConfirmed(false);
-                setAnswersState([]);
-                setUserScore(0);
-                setWrongQuestionIds([]);
-                setIsQuizCompleted(false);
-              }}
+              onClick={handleRestartQuiz}
               className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
