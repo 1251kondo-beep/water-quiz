@@ -10,7 +10,7 @@ export interface MatchPair {
 export interface Question {
   id: string;
   question: string;
-  options: [string, string, string, string];
+  options: string[];
   answerIndex: number;
   explanation: string;
   analogy: string; // 日常のたとえ
