@@ -317,7 +317,12 @@ const lesson_1_3: Lesson = {
   questions: [
     {
       id: 'hv_1_3_01',
-      question: '半田市の3つの配水場（受水点）と、愛知県営水道の送水系統の正しい組み合わせはどれですか？',
+      question: '左側の「配水場（受水点）」と、右側の対応する「愛知県営水道の送水系統」をタップして線で結び、正しいペアを作ってください。',
+      matchPairs: [
+        { leftId: 'sunagaya', leftText: '砂谷配水場（第1受水点）', rightId: 'chita', rightText: '知多浄水場（加圧ポンプ系統）' },
+        { leftId: 'fukatani', leftText: '深谷配水場（第2受水点）', rightId: 'tokoname', rightText: '常滑広域調整池（自然流下系統）' },
+        { leftId: 'hokubu', leftText: '北部配水場（第3受水点）', rightId: 'agui', rightText: '阿久比広域調整池（自然流下系統）' }
+      ],
       options: [
         '砂谷ー知多浄水場（加圧）／ 深谷ー常滑調整池（自然流下）／ 北部ー阿久比調整池（自然流下）',
         '砂谷ー阿久比調整池（自然流下）／ 深谷ー知多浄水場（加圧）／ 北部ー常滑調整池（自然流下）',

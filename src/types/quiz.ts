@@ -1,5 +1,12 @@
 export type DifficultyLevel = 1 | 2 | 3;
 
+export interface MatchPair {
+  leftId: string;
+  leftText: string;
+  rightId: string;
+  rightText: string;
+}
+
 export interface Question {
   id: string;
   question: string;
@@ -10,6 +17,7 @@ export interface Question {
   referenceSection: string; // 投資財政計画_用語解説.md の対応セクション
   difficulty?: DifficultyLevel;
   sdgsGoals?: number[]; // e.g. [3, 6, 7, 9, 11, 14]
+  matchPairs?: MatchPair[];
 }
 
 export interface Lesson {

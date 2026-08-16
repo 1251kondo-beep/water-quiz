@@ -31,6 +31,7 @@ import {
   syncBookmarksToSupabase
 } from '@/lib/repository';
 import { soundFx } from '@/lib/audio';
+import PairMatchingWidget from '@/components/PairMatchingWidget';
 
 interface QuizPlayerProps {
   lesson: Lesson;
@@ -80,6 +81,10 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  // Match question state
+  const [isMatchFullyConnected, setIsMatchFullyConnected] = useState(false);
+  const [isMatchAllCorrect, setIsMatchAllCorrect] = useState(false);
+
   const explanationRef = useRef<HTMLDivElement>(null);
   const quizContainerRef = useRef<HTMLDivElement>(null);
 
@@ -94,6 +99,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setUserScore(0);
     setWrongQuestionIds([]);
     setIsQuizCompleted(false);
+    setIsMatchFullyConnected(false);
+    setIsMatchAllCorrect(false);
   };
 
   useEffect(() => {
@@ -105,7 +112,17 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setUserScore(0);
     setWrongQuestionIds([]);
     setIsQuizCompleted(false);
+    setIsMatchFullyConnected(false);
+    setIsMatchAllCorrect(false);
   }, [lesson.id, lesson.questions]);
+
+  // Reset match state when switching questions
+  useEffect(() => {
+    setSelectedOption(null);
+    setIsAnswerConfirmed(false);
+    setIsMatchFullyConnected(false);
+    setIsMatchAllCorrect(false);
+  }, [currentIndex]);
 
   useEffect(() => {
     const stats = getUserStats();
@@ -130,10 +147,18 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
   // Confirm answer button click -> Grade answer now
   const handleConfirmAnswer = () => {
-    if (selectedOption === null || isAnswerConfirmed) return;
+    if (isAnswerConfirmed) return;
+
+    let isCorrect = false;
+    if (currentQ.matchPairs && currentQ.matchPairs.length > 0) {
+      if (!isMatchFullyConnected) return;
+      isCorrect = isMatchAllCorrect;
+    } else {
+      if (selectedOption === null) return;
+      isCorrect = selectedOption === currentQ.answerIndex;
+    }
 
     setIsAnswerConfirmed(true);
-    const isCorrect = selectedOption === currentQ.answerIndex;
     const newAnswers: ('correct' | 'wrong')[] = [...answersState, isCorrect ? 'correct' : 'wrong'];
     setAnswersState(newAnswers);
 
@@ -421,71 +446,86 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </div>
         )}
 
-        {/* 4 Options Grid */}
-        <div className="grid grid-cols-1 gap-2.5 mb-5">
-          {currentQ.options.map((optionText, optIdx) => {
-            const isSelected = selectedOption === optIdx;
-            const isCorrectOption = optIdx === currentQ.answerIndex;
+        {/* Match Pairs Widget OR 4 Options Grid */}
+        {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
+          <PairMatchingWidget
+            pairs={currentQ.matchPairs}
+            isConfirmed={isAnswerConfirmed}
+            onSelectionChange={(full, correct) => {
+              setIsMatchFullyConnected(full);
+              setIsMatchAllCorrect(correct);
+            }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-2.5 mb-5">
+            {currentQ.options.map((optionText, optIdx) => {
+              const isSelected = selectedOption === optIdx;
+              const isCorrectOption = optIdx === currentQ.answerIndex;
 
-            let btnStyle = 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 hover:border-cyan-500/60 hover:bg-cyan-50/50 dark:hover:bg-slate-700/80';
-            let labelBadgeStyle = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300';
+              let btnStyle = 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 hover:border-cyan-500/60 hover:bg-cyan-50/50 dark:hover:bg-slate-700/80';
+              let labelBadgeStyle = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300';
 
-            if (!isAnswerConfirmed) {
-              if (isSelected) {
-                btnStyle = 'bg-cyan-50 dark:bg-cyan-950/60 border-cyan-500 text-cyan-900 dark:text-cyan-100 ring-2 ring-cyan-500/40 font-bold';
-                labelBadgeStyle = 'bg-cyan-600 text-white';
-              }
-            } else {
-              // Graded state
-              if (isCorrectOption) {
-                btnStyle = 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-500 text-emerald-900 dark:text-emerald-100 ring-2 ring-emerald-500/50';
-                labelBadgeStyle = 'bg-emerald-600 text-white';
-              } else if (isSelected && !isCorrectOption) {
-                btnStyle = 'bg-rose-50 dark:bg-rose-950/80 border-rose-500 text-rose-900 dark:text-rose-100 ring-2 ring-rose-500/50';
-                labelBadgeStyle = 'bg-rose-600 text-white';
+              if (!isAnswerConfirmed) {
+                if (isSelected) {
+                  btnStyle = 'bg-cyan-50 dark:bg-cyan-950/60 border-cyan-500 text-cyan-900 dark:text-cyan-100 ring-2 ring-cyan-500/40 font-bold';
+                  labelBadgeStyle = 'bg-cyan-600 text-white';
+                }
               } else {
-                btnStyle = 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 opacity-60';
+                // Graded state
+                if (isCorrectOption) {
+                  btnStyle = 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-500 text-emerald-900 dark:text-emerald-100 ring-2 ring-emerald-500/50';
+                  labelBadgeStyle = 'bg-emerald-600 text-white';
+                } else if (isSelected && !isCorrectOption) {
+                  btnStyle = 'bg-rose-50 dark:bg-rose-950/80 border-rose-500 text-rose-900 dark:text-rose-100 ring-2 ring-rose-500/50';
+                  labelBadgeStyle = 'bg-rose-600 text-white';
+                } else {
+                  btnStyle = 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 opacity-60';
+                }
               }
-            }
 
-            const labels = ['A', 'B', 'C', 'D'];
+              const labels = ['A', 'B', 'C', 'D'];
 
-            return (
-              <button
-                key={optIdx}
-                onClick={() => handleSelectOption(optIdx)}
-                disabled={isAnswerConfirmed}
-                className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 text-sm font-medium ${btnStyle} ${
-                  !isAnswerConfirmed ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'
-                }`}
-              >
-                <span className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 ${labelBadgeStyle}`}>
-                  {labels[optIdx]}
-                </span>
-                <span className="flex-1 leading-relaxed">{optionText}</span>
+              return (
+                <button
+                  key={optIdx}
+                  onClick={() => handleSelectOption(optIdx)}
+                  disabled={isAnswerConfirmed}
+                  className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 text-sm font-medium ${btnStyle} ${
+                    !isAnswerConfirmed ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'
+                  }`}
+                >
+                  <span className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 ${labelBadgeStyle}`}>
+                    {labels[optIdx]}
+                  </span>
+                  <span className="flex-1 leading-relaxed">{optionText}</span>
 
-                {!isAnswerConfirmed && isSelected && (
-                  <Check className="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0 mt-0.5" />
-                )}
+                  {!isAnswerConfirmed && isSelected && (
+                    <Check className="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0 mt-0.5" />
+                  )}
 
-                {isAnswerConfirmed && isCorrectOption && (
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-                )}
-                {isAnswerConfirmed && isSelected && !isCorrectOption && (
-                  <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+                  {isAnswerConfirmed && isCorrectOption && (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                  )}
+                  {isAnswerConfirmed && isSelected && !isCorrectOption && (
+                    <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
 
         {/* Confirm Answer Button (Before Grading) */}
         {!isAnswerConfirmed && (
           <button
             onClick={handleConfirmAnswer}
-            disabled={selectedOption === null}
+            disabled={
+              currentQ.matchPairs && currentQ.matchPairs.length > 0
+                ? !isMatchFullyConnected
+                : selectedOption === null
+            }
             className={`w-full py-3.5 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer ${
-              selectedOption !== null
+              (currentQ.matchPairs && currentQ.matchPairs.length > 0 ? isMatchFullyConnected : selectedOption !== null)
                 ? 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-500/25 active:scale-[0.99]'
                 : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
             }`}
