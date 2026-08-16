@@ -92,23 +92,18 @@ export default function CoursePage() {
         {course.units.map((unit) => (
           <div key={unit.id} className="space-y-4">
             {/* Unit Section Title */}
-            <div className="flex items-center justify-between border-b-2 border-blue-200 pb-3">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-blue-600 text-white font-black text-base flex items-center justify-center shadow-md shadow-blue-600/30">
-                  {unit.unitNumber}
-                </div>
-                <div>
-                  <h2 className="text-lg font-black text-slate-900">
-                    {unit.title}
-                  </h2>
-                  <p className="text-xs text-slate-700 font-bold">
-                    {unit.description}
-                  </p>
-                </div>
+            <div className="border-b-2 border-blue-200 pb-4 space-y-2">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-xs sm:text-sm shadow-md shadow-blue-600/30">
+                Section {unit.unitNumber}
               </div>
-              <span className="text-xs font-black text-white bg-blue-600 px-3 py-1.5 rounded-full shadow-sm hidden sm:inline">
-                {unit.badgeText}
-              </span>
+              <div className="space-y-1">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-snug">
+                  {unit.title.includes(':') ? unit.title.split(':')[1].trim() : unit.title}
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-700 font-bold leading-relaxed">
+                  {unit.description}
+                </p>
+              </div>
             </div>
 
             {/* Lessons Grid (each 10 questions) */}
