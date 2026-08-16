@@ -218,17 +218,19 @@ export default function PairMatchingWidget({
           })}
         </svg>
 
-        {/* Left Column (配水場) */}
-        <div className="w-[38%] max-w-[160px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
-          <div className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
-            【配水場】
+        {/* Left Column */}
+        <div className="w-[42%] max-w-[155px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
+          <div className="text-[10px] sm:text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
+            【対象項目】
           </div>
           {leftItems.map((item, idx) => {
             const isSelected = selectedLeftId === item.leftId;
             const connectedRightId = userConnections[item.leftId];
+            const connectedRightItem = rightItems.find((r) => r.rightId === connectedRightId);
             const pair = pairs.find((p) => p.leftId === item.leftId);
-            const isCorrect = isConfirmed && connectedRightId === pair?.rightId;
-            const isWrong = isConfirmed && connectedRightId && connectedRightId !== pair?.rightId;
+
+            const isCorrect = isConfirmed && connectedRightItem && connectedRightItem.rightText === pair?.rightText;
+            const isWrong = isConfirmed && connectedRightItem && connectedRightItem.rightText !== pair?.rightText;
 
             let cardStyle =
               'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-blue-500 hover:shadow-md';
@@ -263,7 +265,7 @@ export default function PairMatchingWidget({
                   <span className="w-4 h-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[9px] flex items-center justify-center shrink-0">
                     {idx + 1}
                   </span>
-                  <span className="font-bold truncate text-[11px] sm:text-xs">{item.leftText}</span>
+                  <span className="font-bold text-[10px] sm:text-xs leading-tight break-words">{item.leftText}</span>
                 </div>
                 {isConfirmed && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 ml-1" />}
                 {isConfirmed && isWrong && <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 ml-1" />}
@@ -272,18 +274,19 @@ export default function PairMatchingWidget({
           })}
         </div>
 
-        {/* Right Column (送水系統) */}
-        <div className="w-[38%] max-w-[160px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
-          <div className="text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
-            【送水系統】
+        {/* Right Column */}
+        <div className="w-[42%] max-w-[155px] sm:max-w-[180px] space-y-3 z-20 flex flex-col justify-center">
+          <div className="text-[10px] sm:text-[11px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider text-center">
+            【選択肢】
           </div>
           {rightItems.map((item) => {
             const connectedLeftId = Object.keys(userConnections).find(
               (k) => userConnections[k] === item.rightId
             );
-            const pair = pairs.find((p) => p.rightId === item.rightId);
-            const isCorrect = isConfirmed && connectedLeftId && connectedLeftId === pair?.leftId;
-            const isWrong = isConfirmed && connectedLeftId && connectedLeftId !== pair?.leftId;
+            const connectedLeftPair = pairs.find((p) => p.leftId === connectedLeftId);
+
+            const isCorrect = isConfirmed && connectedLeftId && connectedLeftPair?.rightText === item.rightText;
+            const isWrong = isConfirmed && connectedLeftId && connectedLeftPair?.rightText !== item.rightText;
 
             let cardStyle =
               'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200';
@@ -318,7 +321,7 @@ export default function PairMatchingWidget({
                 onClick={() => handleRightClick(item.rightId)}
                 className={`p-2.5 sm:p-3 rounded-xl border-2 text-xs leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
               >
-                <span className="font-bold truncate text-[11px] sm:text-xs">{item.rightText}</span>
+                <span className="font-bold text-[10px] sm:text-xs leading-tight break-words">{item.rightText}</span>
                 {isConfirmed && isCorrect && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0 ml-1" />}
                 {isConfirmed && isWrong && <XCircle className="w-3.5 h-3.5 text-rose-600 shrink-0 ml-1" />}
               </div>
