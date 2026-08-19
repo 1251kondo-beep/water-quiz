@@ -37,13 +37,17 @@ export default function WaterStreamMap({
     });
   }, [lessons, completedMap]);
 
-  // Find first active index
-  const currentActiveIdx = lessonStates.findIndex(
+  // Find the exact active position:
+  // - First unlocked and incomplete lesson (next to take)
+  // - If all lessons in this section are completed, point to the last lesson (goal reached)
+  const nextIncompleteIdx = lessonStates.findIndex(
     (s) => s.isUnlocked && !s.isCompleted
   );
+  const currentActiveIdx =
+    nextIncompleteIdx !== -1 ? nextIncompleteIdx : Math.max(0, lessonStates.length - 1);
 
   return (
-    <div className="relative w-full max-w-xl mx-auto py-8 px-2 sm:px-4 overflow-hidden select-none">
+    <div className="relative w-full max-w-xl mx-auto pt-6 pb-12 px-2 sm:px-4 select-none">
       {/* Background Water Decor */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35">
         <div className="absolute top-1/4 left-4 w-48 h-48 rounded-full bg-cyan-200/50 blur-3xl" />
@@ -60,7 +64,7 @@ export default function WaterStreamMap({
       <svg
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         preserveAspectRatio="none"
-        viewBox={`0 0 440 ${Math.max(lessons.length * 145 + 60, 440)}`}
+        viewBox={`0 0 440 ${Math.max(lessons.length * 145 + 80, 440)}`}
       >
         <defs>
           <linearGradient id="streamGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -125,7 +129,7 @@ export default function WaterStreamMap({
         {lessonStates.map((state, idx) => {
           const { lesson, isCompleted, isUnlocked, result, stars } = state;
           const isLeft = idx % 2 === 0;
-          const isCurrent = idx === (currentActiveIdx === -1 ? 0 : currentActiveIdx);
+          const isCurrent = idx === currentActiveIdx;
 
           // Clean title
           const displayTitle = lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '');
@@ -142,19 +146,14 @@ export default function WaterStreamMap({
                   href={`/quiz/${lesson.id}`}
                   className="group relative inline-flex items-center focus:outline-none max-w-[88%] sm:max-w-[82%]"
                 >
-                  {/* Mascot on the active node */}
+                  {/* Mascot on the active current node (Clean, without top bubble) */}
                   {isCurrent && (
                     <div
-                      className={`absolute -top-7 z-30 transition-transform group-hover:scale-110 ${
-                        isLeft ? 'left-3 sm:left-4' : 'right-3 sm:right-4'
+                      className={`absolute -top-6 z-30 transition-transform group-hover:scale-110 pointer-events-none ${
+                        isLeft ? 'left-1 sm:left-2' : 'right-1 sm:right-2'
                       }`}
                     >
-                      <div className="relative">
-                        <WaterMascot size={46} mood="cheering" />
-                        <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md whitespace-nowrap animate-bounce-subtle">
-                          ここから！
-                        </div>
-                      </div>
+                      <WaterMascot size={42} mood={isCompleted ? 'cheering' : 'happy'} />
                     </div>
                   )}
 
@@ -243,7 +242,7 @@ export default function WaterStreamMap({
                           合格 ({result.percentage}点)
                         </p>
                       )}
-                      {isCurrent && (
+                      {!isCompleted && isCurrent && (
                         <p className={`text-[10px] font-bold text-blue-600 flex items-center gap-1 mt-0.5 ${
                           isLeft ? 'justify-start' : 'justify-end'
                         }`}>
@@ -255,7 +254,7 @@ export default function WaterStreamMap({
                   </div>
                 </Link>
               ) : (
-                /* Locked Lesson Node - Blue theme (深みのある水・ブルー系) */
+                /* Locked Lesson Node - Blue theme */
                 <div
                   onClick={() => onLockClick && onLockClick(displayTitle)}
                   className="group relative inline-flex items-center cursor-pointer transition-all active:scale-95 max-w-[88%] sm:max-w-[82%]"

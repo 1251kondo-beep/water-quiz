@@ -171,30 +171,6 @@ export default function CoursePage() {
           />
         )}
       </div>
-
-      {/* Bottom Floating Navigation (Mobile friendly) */}
-      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/90 backdrop-blur-md border-2 border-sky-300 rounded-full px-6 py-2 shadow-xl flex items-center gap-6">
-        <Link
-          href="/"
-          className="text-xs font-black text-slate-700 hover:text-blue-600 transition-colors flex items-center gap-1"
-        >
-          ホーム
-        </Link>
-        <div className="w-1 h-1 rounded-full bg-sky-300" />
-        <Link
-          href="/glossary"
-          className="text-xs font-black text-slate-700 hover:text-blue-600 transition-colors flex items-center gap-1"
-        >
-          用語辞書
-        </Link>
-        <div className="w-1 h-1 rounded-full bg-sky-300" />
-        <Link
-          href="/review"
-          className="text-xs font-black text-slate-700 hover:text-blue-600 transition-colors flex items-center gap-1"
-        >
-          弱点復習
-        </Link>
-      </div>
     </div>
   );
 }
