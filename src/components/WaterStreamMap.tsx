@@ -38,13 +38,23 @@ export default function WaterStreamMap({
   }, [lessons, completedMap]);
 
   // Find the exact active position:
-  // - First unlocked and incomplete lesson (next to take)
-  // - If all lessons in this section are completed, point to the last lesson (goal reached)
-  const nextIncompleteIdx = lessonStates.findIndex(
-    (s) => s.isUnlocked && !s.isCompleted
-  );
-  const currentActiveIdx =
-    nextIncompleteIdx !== -1 ? nextIncompleteIdx : Math.max(0, lessonStates.length - 1);
+  // Mascot should be placed on the lesson that the user last tackled/completed.
+  // If no lessons tackled yet, place on Lesson 1 (index 0).
+  const currentActiveIdx = useMemo(() => {
+    const tackledStates = lessonStates.filter((s) => s.result);
+    if (tackledStates.length === 0) {
+      return 0;
+    }
+    // Find the lesson with latest completedAt or the highest index tackled
+    const latestTackled = tackledStates.reduce((latest, curr) => {
+      if (!latest.result?.completedAt) return curr;
+      if (!curr.result?.completedAt) return latest;
+      return new Date(curr.result.completedAt) > new Date(latest.result.completedAt)
+        ? curr
+        : latest;
+    });
+    return latestTackled.index;
+  }, [lessonStates]);
 
   return (
     <div className="relative w-full max-w-xl mx-auto pt-6 pb-12 px-2 sm:px-4 select-none">
