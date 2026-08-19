@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft, BookOpen, Layers, CheckCircle2, Award, Droplet } from 'lucide-react';
+import { ChevronLeft, Award, Sparkles, BookOpen, Layers, Info } from 'lucide-react';
 import { getCourseById } from '@/data/domains';
-import LessonCard from '@/components/LessonCard';
+import WaterStreamMap from '@/components/WaterStreamMap';
 import { getUserStats } from '@/lib/storage';
 import { UserStats } from '@/types/quiz';
 
@@ -15,6 +15,8 @@ export default function CoursePage() {
   const course = getCourseById(courseId || 'water_finance');
 
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [selectedUnitIdx, setSelectedUnitIdx] = useState<number>(0);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
     setStats(getUserStats());
@@ -22,7 +24,7 @@ export default function CoursePage() {
 
   if (!course) {
     return (
-      <div className="max-w-xl mx-auto py-12 px-4 text-center bg-white">
+      <div className="max-w-xl mx-auto py-12 px-4 text-center">
         <p className="text-slate-700 mb-4 font-bold">指定されたコースが見つかりませんでした。</p>
         <Link href="/" className="text-blue-600 underline text-sm font-black">
           ホームへ戻る
@@ -32,92 +34,166 @@ export default function CoursePage() {
   }
 
   const completedMap = stats?.completedLessons || {};
-  const courseLessonIds = new Set(course.units.flatMap((u) => u.lessons.map((l) => l.id)));
-  const totalLessons = courseLessonIds.size;
-  const passedLessonsCount = Object.entries(completedMap).filter(
-    ([lessonId, result]) => courseLessonIds.has(lessonId) && result.passed
-  ).length;
+  const allCourseLessons = course.units.flatMap((u) => u.lessons);
+  const totalLessons = allCourseLessons.length;
+  const passedLessonsCount = allCourseLessons.filter((l) => completedMap[l.id]?.passed).length;
   const progressPct = totalLessons > 0 ? Math.round((passedLessonsCount / totalLessons) * 100) : 0;
+  const totalStars = allCourseLessons.reduce((acc, l) => acc + (completedMap[l.id]?.stars || 0), 0);
+
+  // Active unit
+  const activeUnit = course.units[selectedUnitIdx] || course.units[0];
+
+  const handleLockClick = (lessonTitle: string) => {
+    setToastMessage(`「${lessonTitle}」は前のレッスンを合格すると解放されます！💧`);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3000);
+  };
 
   return (
-    <div className="max-w-5xl mx-auto py-6 px-4 space-y-8 bg-white">
-      {/* Back link & Course Header */}
-      <div className="space-y-4">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-black text-blue-700 hover:underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          コース選択へ戻る
-        </Link>
+    <div className="min-h-screen bg-gradient-to-b from-sky-100/70 via-blue-50/50 to-sky-100/60 pb-20 relative overflow-x-hidden">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-full shadow-2xl backdrop-blur-md border border-cyan-400/40 animate-in fade-in slide-in-from-top duration-300 max-w-[90%] text-center">
+          {toastMessage}
+        </div>
+      )}
 
-        {/* White / Light Blue Header */}
-        <div className="rounded-3xl p-6 md:p-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-cyan-50 to-white text-slate-900 shadow-xl">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-2">
-                {course.title}
-              </h1>
-              <p className="text-xs md:text-sm text-blue-700 font-black">
-                {course.subtitle}
-              </p>
-            </div>
+      {/* Header Bar matching Image 2 */}
+      <div className="sticky top-0 z-40 bg-sky-200/90 backdrop-blur-md border-b border-sky-300/80 px-4 py-3 shadow-sm">
+        <div className="max-w-2xl mx-auto flex items-center justify-between relative">
+          {/* Back Circle Button */}
+          <Link
+            href="/"
+            className="w-10 h-10 rounded-full bg-white/90 hover:bg-white text-slate-700 hover:text-blue-600 shadow-md flex items-center justify-center transition-transform active:scale-95 border border-sky-200 cursor-pointer"
+            title="コース一覧へ戻る"
+          >
+            <ChevronLeft className="w-6 h-6 stroke-[2.5]" />
+          </Link>
 
-            {/* Overall Progress Widget */}
-            <div className="bg-white rounded-2xl p-4 border-2 border-blue-200 shrink-0 min-w-[200px] text-slate-900 shadow-md">
-              <div className="flex items-center justify-between text-xs text-slate-700 mb-2 font-black">
-                <span>全体進捗</span>
-                <span className="font-extrabold text-blue-700">{passedLessonsCount} / {totalLessons} 合格</span>
-              </div>
-              <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden mb-2 border border-slate-200">
-                <div
-                  className="h-full bg-blue-600 rounded-full transition-all duration-500"
-                  style={{ width: `${progressPct}%` }}
-                />
-              </div>
-              <p className="text-[11px] text-blue-700 text-right font-black">
-                進捗率 {progressPct}%
-              </p>
+          {/* Center Course Info */}
+          <div className="text-center px-2 flex-1">
+            <div className="inline-block px-3 py-0.5 rounded-full bg-cyan-600 text-white text-[11px] font-black tracking-wider uppercase shadow-sm mb-0.5">
+              {course.id === 'handa_vision' ? 'コース 1' : 'コース 2'}
             </div>
+            <h1 className="text-base sm:text-lg font-black text-slate-900 truncate tracking-tight">
+              {course.title}
+            </h1>
           </div>
 
-          <p className="text-xs md:text-sm text-slate-700 leading-relaxed border-t border-blue-200 pt-4 font-bold">
-            {course.description}
-          </p>
+          {/* Quick Glossary Link */}
+          <Link
+            href="/glossary"
+            className="w-10 h-10 rounded-full bg-white/90 hover:bg-white text-blue-600 shadow-md flex items-center justify-center transition-transform active:scale-95 border border-sky-200 cursor-pointer"
+            title="用語辞書"
+          >
+            <BookOpen className="w-4 h-4" />
+          </Link>
         </div>
       </div>
 
-      {/* 3 Units and 15 Lessons List */}
-      <div className="space-y-8">
-        {course.units.map((unit) => (
-          <div key={unit.id} className="space-y-4">
-            {/* Unit Section Title */}
-            <div className="border-b-2 border-blue-200 pb-4 space-y-2">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-600 text-white font-black text-xs sm:text-sm shadow-md shadow-blue-600/30">
-                Section {unit.unitNumber}
-              </div>
-              <div className="space-y-1">
-                <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-snug">
-                  {unit.title.includes(':') ? unit.title.split(':')[1].trim() : unit.title}
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-700 font-bold leading-relaxed">
-                  {unit.description}
-                </p>
-              </div>
-            </div>
-
-            {/* Lessons Grid (each 10 questions) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {unit.lessons.map((lesson) => (
-                <LessonCard
-                  key={lesson.id}
-                  lesson={lesson}
-                  result={completedMap[lesson.id]}
-                />
-              ))}
+      {/* Course Sub-Header & Progress Bar */}
+      <div className="max-w-xl mx-auto pt-4 px-4">
+        <div className="bg-white/80 backdrop-blur-md rounded-3xl p-4 sm:p-5 border-2 border-sky-200 shadow-lg space-y-3">
+          <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
+            <span className="font-black text-slate-700 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-cyan-600" />
+              コース全体の進捗
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="font-extrabold text-blue-700">
+                {passedLessonsCount} / {totalLessons} 合格
+              </span>
+              <span className="font-bold text-amber-500 flex items-center gap-0.5 text-xs">
+                ★ {totalStars}
+              </span>
             </div>
           </div>
-        ))}
+
+          {/* Progress Bar with Water Flow look */}
+          <div className="w-full h-3 bg-sky-100 rounded-full overflow-hidden p-0.5 border border-sky-200 shadow-inner">
+            <div
+              className="h-full bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 rounded-full transition-all duration-700 shadow-sm"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+
+          {/* Unit Tabs for easy navigation */}
+          {course.units.length > 1 && (
+            <div className="pt-2 border-t border-sky-100 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {course.units.map((unit, uIdx) => {
+                const isSelected = selectedUnitIdx === uIdx;
+                const unitPassed = unit.lessons.filter((l) => completedMap[l.id]?.passed).length;
+                return (
+                  <button
+                    key={unit.id}
+                    onClick={() => setSelectedUnitIdx(uIdx)}
+                    className={`px-3 py-1.5 rounded-2xl text-xs font-black transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/30'
+                        : 'bg-sky-50 text-slate-700 hover:bg-sky-100 border border-sky-200'
+                    }`}
+                  >
+                    <span>Section {unit.unitNumber}</span>
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      isSelected ? 'bg-white/30 text-white' : 'bg-sky-200 text-sky-800'
+                    }`}>
+                      {unitPassed}/{unit.lessons.length}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Active Unit Banner */}
+      {activeUnit && (
+        <div className="max-w-xl mx-auto mt-4 px-4 text-center">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/80 border border-blue-300/80 text-blue-900 text-xs font-black mb-1">
+            <Layers className="w-3 h-3 text-blue-600" />
+            {activeUnit.title}
+          </div>
+          <p className="text-[11px] sm:text-xs text-slate-600 font-bold px-2">
+            {activeUnit.description}
+          </p>
+        </div>
+      )}
+
+      {/* Main Stream Roadmap (Image 2 style) */}
+      <div className="mt-2">
+        {activeUnit && (
+          <WaterStreamMap
+            lessons={activeUnit.lessons}
+            completedMap={completedMap}
+            onLockClick={handleLockClick}
+          />
+        )}
+      </div>
+
+      {/* Bottom Floating Navigation (Mobile friendly) */}
+      <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-40 bg-white/90 backdrop-blur-md border-2 border-sky-300 rounded-full px-6 py-2 shadow-xl flex items-center gap-6">
+        <Link
+          href="/"
+          className="text-xs font-black text-slate-700 hover:text-blue-600 transition-colors flex items-center gap-1"
+        >
+          ホーム
+        </Link>
+        <div className="w-1 h-1 rounded-full bg-sky-300" />
+        <Link
+          href="/glossary"
+          className="text-xs font-black text-slate-700 hover:text-blue-600 transition-colors flex items-center gap-1"
+        >
+          用語辞書
+        </Link>
+        <div className="w-1 h-1 rounded-full bg-sky-300" />
+        <Link
+          href="/review"
+          className="text-xs font-black text-slate-700 hover:text-blue-600 transition-colors flex items-center gap-1"
+        >
+          弱点復習
+        </Link>
       </div>
     </div>
   );

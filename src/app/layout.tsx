@@ -17,7 +17,7 @@ export default function RootLayout({
       <body className="antialiased min-h-screen flex flex-col selection:bg-cyan-500 selection:text-white">
         <Header />
         <main className="flex-1 pb-12">{children}</main>
-        <footer className="w-full py-6 border-t border-slate-800 text-center text-xs text-slate-500">
+        <footer className="w-full py-6 border-t border-sky-200 text-center text-xs text-sky-700/80 bg-sky-50/50">
           水道事業ステップアップドリル &copy; 2026
         </footer>
       </body>

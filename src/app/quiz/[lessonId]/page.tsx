@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { getLessonById } from '@/data/domains';
 import QuizPlayer from '@/components/QuizPlayer';
 
@@ -15,9 +15,9 @@ export default function LessonQuizPage() {
   if (!found) {
     return (
       <div className="max-w-xl mx-auto py-12 px-4 text-center">
-        <p className="text-slate-400 mb-4">指定されたレッスンが見つかりませんでした。</p>
-        <Link href="/course/water_finance" className="text-cyan-400 underline text-sm">
-          コース一覧へ戻る
+        <p className="text-slate-600 mb-4 font-bold">指定されたレッスンが見つかりませんでした。</p>
+        <Link href="/" className="text-blue-600 underline text-sm font-black">
+          ホームへ戻る
         </Link>
       </div>
     );
@@ -26,15 +26,19 @@ export default function LessonQuizPage() {
   const { lesson, unit, course } = found;
 
   return (
-    <div className="py-4">
-      <div className="max-w-2xl mx-auto px-4 mb-2">
+    <div className="min-h-screen bg-gradient-to-b from-sky-50 via-cyan-50/40 to-sky-50 py-4">
+      <div className="max-w-2xl mx-auto px-4 mb-3 flex items-center justify-between">
         <Link
           href={`/course/${course.id}`}
-          className="inline-flex items-center gap-1 text-xs text-slate-400 hover:text-cyan-300 transition-colors"
+          className="inline-flex items-center gap-1 text-xs font-black text-blue-700 hover:text-blue-800 bg-white/80 border border-sky-200 px-3 py-1.5 rounded-full shadow-sm transition-all"
         >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          {course.title} 一覧へ戻る
+          <ChevronLeft className="w-4 h-4" />
+          {course.title} マップへ戻る
         </Link>
+
+        <span className="text-[11px] font-black text-cyan-800 bg-cyan-100/90 border border-cyan-200 px-3 py-1 rounded-full">
+          Lesson {lesson.lessonNumber}
+        </span>
       </div>
 
       <QuizPlayer

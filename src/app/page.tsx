@@ -3,18 +3,71 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  Building2,
-  Play,
-  Award,
+  Droplet,
   BookOpen,
   RotateCcw,
-  Droplet,
-  CheckCircle2,
-  ChevronRight
+  Sparkles,
+  ChevronRight,
+  Lock,
+  Waves,
+  CheckCircle2
 } from 'lucide-react';
 import { DOMAINS } from '@/data/domains';
 import { getUserStats } from '@/lib/storage';
 import { UserStats } from '@/types/quiz';
+
+// Course color themes inspired by different clear water streams and springs
+const COURSE_THEMES: Record<
+  string,
+  {
+    gradient: string;
+    border: string;
+    shadow: string;
+    tagBg: string;
+    waveType: number;
+  }
+> = {
+  handa_vision: {
+    // 清流スカイアクア (澄んだ川・清流)
+    gradient: 'bg-gradient-to-br from-sky-400 via-cyan-500 to-blue-600',
+    border: 'border-sky-300',
+    shadow: 'shadow-sky-500/20',
+    tagBg: 'bg-white/25',
+    waveType: 1,
+  },
+  water_finance: {
+    // 深層水クリスタルオーシャン (深層水・透明感のあるティールブルー)
+    gradient: 'bg-gradient-to-br from-teal-400 via-cyan-600 to-blue-700',
+    border: 'border-teal-300',
+    shadow: 'shadow-teal-500/20',
+    tagBg: 'bg-white/25',
+    waveType: 2,
+  },
+  water_asset: {
+    // 水流インディゴマリン (管路をめぐる清らかな水流)
+    gradient: 'bg-gradient-to-br from-blue-400 via-indigo-500 to-sky-600',
+    border: 'border-indigo-300',
+    shadow: 'shadow-indigo-500/20',
+    tagBg: 'bg-white/25',
+    waveType: 3,
+  },
+  water_law: {
+    // 湧水エメラルドスプリング (山から湧き出るクリスタル湧水)
+    gradient: 'bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-700',
+    border: 'border-emerald-300',
+    shadow: 'shadow-emerald-500/20',
+    tagBg: 'bg-white/25',
+    waveType: 4,
+  },
+  sewerage_finance: {
+    // 水の循環アクアレイン (恵みの雨と水の再生)
+    gradient: 'bg-gradient-to-br from-cyan-600 via-sky-600 to-indigo-700',
+    border: 'border-cyan-300',
+    shadow: 'shadow-cyan-500/20',
+    tagBg: 'bg-white/25',
+    waveType: 1,
+  },
+};
 
 export default function HomePage() {
   const [stats, setStats] = useState<UserStats | null>(null);
@@ -26,168 +79,311 @@ export default function HomePage() {
 
   const selectedDomain = DOMAINS.find((d) => d.id === selectedDomainId) || DOMAINS[0];
 
-  // Calculate stats across available courses
+  // Stats calculation
   const completedLessonsMap = stats?.completedLessons || {};
   const completedCount = Object.values(completedLessonsMap).filter((l) => l.passed).length;
   const totalStars = Object.values(completedLessonsMap).reduce((acc, curr) => acc + (curr.stars || 0), 0);
   const mistakeCount = stats?.mistakeHistory.length || 0;
 
-  // Total active lessons & questions in selected domain
-  const totalDomainLessons = selectedDomain.courses.reduce(
-    (acc, c) => acc + c.units.reduce((uAcc, u) => uAcc + u.lessons.length, 0),
-    0
-  );
-  const totalPossibleStars = totalDomainLessons * 3;
+  // Active courses and lessons in available domain
+  const availableCourses = selectedDomain.courses.filter((c) => c.units.length > 0);
+  const completedCoursesCount = availableCourses.filter((course) => {
+    const courseLessonIds = course.units.flatMap((u) => u.lessons.map((l) => l.id));
+    return courseLessonIds.length > 0 && courseLessonIds.every((id) => completedLessonsMap[id]?.passed);
+  }).length;
 
-  const firstAvailableCourse = selectedDomain.courses.find((c) => c.units.length > 0) || selectedDomain.courses[0];
+  // Find last active course to continue
+  const continueCourse = availableCourses[0] || selectedDomain.courses[0];
+  const continueLessons = continueCourse.units.flatMap((u) => u.lessons);
+  const continueCompletedLessons = continueLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
+  const continueProgressPct = continueLessons.length > 0
+    ? Math.round((continueCompletedLessons / continueLessons.length) * 100)
+    : 0;
+
+  // Calculate simulated streak or continuous days
+  const streakDays = completedCount > 0 ? Math.max(1, Math.min(completedCount + 2, 15)) : 1;
 
   return (
-    <div className="max-w-5xl mx-auto py-6 px-4 space-y-8 bg-white">
-      {/* Hero Banner (Clean White & Blue Tint) */}
-      <div className="rounded-3xl p-5 sm:p-8 border-2 border-blue-200 bg-gradient-to-br from-blue-50 via-cyan-50 to-white text-slate-900 shadow-lg relative overflow-hidden">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 leading-tight whitespace-nowrap tracking-tight">
-              水道事業ステップアップドリル
-            </h1>
+    <div className="min-h-screen bg-gradient-to-b from-sky-100/70 via-blue-50/50 to-sky-100/60 pb-20">
+      <div className="max-w-2xl mx-auto px-4 py-5 space-y-7">
+        
+        {/* Top Status Bar (Pills matching Image 1) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
+          {/* Continuous Days Badge */}
+          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 shrink-0">
+            <Droplet className="w-4 h-4 fill-white text-white" />
+            <span className="text-sm font-black tracking-tight">{streakDays}</span>
+            <span className="text-xs font-bold opacity-90">連続日数</span>
           </div>
 
-          {/* Quick Action Buttons */}
-          <div className="shrink-0 flex flex-col sm:flex-row md:flex-col gap-3">
+          {/* Completed Courses Badge */}
+          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-slate-800 border-2 border-sky-200 shadow-sm shrink-0">
+            <span className="text-sm font-black text-blue-700">{completedCoursesCount}</span>
+            <span className="text-xs font-bold text-slate-600">完了コース</span>
+          </div>
+
+          {/* Completed Lessons Badge */}
+          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-slate-800 border-2 border-sky-200 shadow-sm shrink-0">
+            <span className="text-sm font-black text-cyan-600">{completedCount}</span>
+            <span className="text-xs font-bold text-slate-600">完了レッスン</span>
+          </div>
+
+          {/* Review Mistake Badge */}
+          {mistakeCount > 0 && (
             <Link
-              href={`/course/${firstAvailableCourse.id}`}
-              className="px-6 py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+              href="/review"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-50 text-amber-900 border-2 border-amber-300 shadow-sm shrink-0 hover:bg-amber-100 transition-colors"
             >
-              <Play className="w-4 h-4 fill-current" />
-              『{firstAvailableCourse.title}』を始める
+              <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
+              <span className="text-sm font-black text-amber-700">{mistakeCount}</span>
+              <span className="text-xs font-bold">要復習</span>
             </Link>
+          )}
+        </div>
+
+        {/* Section: "続きから学ぶ" */}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <span>続きから学ぶ</span>
+            </h2>
             <Link
               href="/glossary"
-              className="px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-50 text-blue-700 font-black text-sm border-2 border-blue-200 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
+              className="text-xs font-black text-blue-700 hover:text-blue-800 flex items-center gap-1 bg-white/80 border border-sky-200 px-3 py-1 rounded-full shadow-sm"
             >
-              <BookOpen className="w-4 h-4 text-blue-600" />
-              用語辞書を見る
+              <BookOpen className="w-3.5 h-3.5" />
+              用語辞書
             </Link>
           </div>
-        </div>
-      </div>
 
-      {/* User Progress Stats Dashboard */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-4">
-        <div className="rounded-2xl p-3 sm:p-4 border-2 border-blue-200 bg-white shadow-md flex flex-col justify-between">
-          <p className="text-[11px] sm:text-xs font-black text-slate-600 mb-1 truncate">合格レッスン数</p>
-          <p className="text-lg sm:text-2xl font-black text-blue-700">
-            {completedCount} <span className="text-[10px] sm:text-xs text-slate-600 font-bold">/ {totalDomainLessons}</span>
-          </p>
-        </div>
+          <Link
+            href={`/course/${continueCourse.id}`}
+            className="group block relative rounded-3xl overflow-hidden shadow-lg border-2 border-sky-300 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] cursor-pointer bg-gradient-to-br from-sky-400 via-cyan-500 to-blue-600 text-white p-6 sm:p-7"
+          >
+            {/* Background water ripples */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+              <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="#ffffff" />
+                <path d="M0,65 Q35,45 70,65 T100,65 L100,100 L0,100 Z" fill="#ffffff" opacity="0.5" />
+              </svg>
+            </div>
 
-        <div className="rounded-2xl p-3 sm:p-4 border-2 border-blue-200 bg-white shadow-md flex flex-col justify-between">
-          <p className="text-[11px] sm:text-xs font-black text-slate-600 mb-1 truncate">獲得した星</p>
-          <p className="text-lg sm:text-2xl font-black text-amber-600 flex items-center gap-0.5">
-            {totalStars} <span className="text-[10px] sm:text-xs text-slate-600 font-bold">/ {totalPossibleStars}★</span>
-          </p>
-        </div>
+            {/* Bubble decor */}
+            <div className="absolute top-4 right-6 w-8 h-8 rounded-full border border-white/40 bg-white/20 animate-float-slow pointer-events-none" />
+            <div className="absolute bottom-6 left-6 w-5 h-5 rounded-full border border-white/30 bg-white/10 animate-bounce-subtle pointer-events-none" />
 
-        <Link
-          href="/review"
-          className="rounded-2xl p-3 sm:p-4 border-2 border-amber-300 bg-amber-50 hover:bg-amber-100/80 cursor-pointer block shadow-md transition-colors flex flex-col justify-between"
-        >
-          <p className="text-[11px] sm:text-xs font-black text-amber-900 mb-1 flex items-center gap-1 truncate">
-            <RotateCcw className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-700 shrink-0" />
-            <span className="truncate">要復習の弱点</span>
-          </p>
-          <p className="text-lg sm:text-2xl font-black text-amber-700">
-            {mistakeCount} <span className="text-[10px] sm:text-xs font-bold">問</span>
-          </p>
-        </Link>
-      </div>
-
-      {/* Domain Extensibility Selector */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-black text-slate-900 flex items-center gap-2">
-            <Droplet className="w-5 h-5 text-blue-600 fill-blue-500/20" />
-            学習分野を選択
-          </h2>
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {DOMAINS.map((domain) => (
-            <button
-              key={domain.id}
-              onClick={() => setSelectedDomainId(domain.id)}
-              className={`px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 border-2 cursor-pointer ${
-                selectedDomainId === domain.id
-                  ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-600/30'
-                  : 'bg-white text-slate-800 border-slate-300 hover:border-blue-400'
-              }`}
-            >
-              <span>{domain.name}</span>
-              {!domain.available && (
-                <span className="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-bold">
-                  準備中
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-
-        {/* Courses Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {selectedDomain.courses.map((course) => {
-            const courseLessons = course.units.flatMap((u) => u.lessons);
-            const totalCourseLessons = courseLessons.length;
-            const completedCourseLessons = courseLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
-
-            return (
-              <div
-                key={course.id}
-                className="rounded-2xl p-6 border-2 border-blue-200 bg-white flex flex-col justify-between gap-4 shadow-lg hover:border-blue-500 transition-colors"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="p-3 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/30">
-                      <Building2 className="w-6 h-6" />
-                    </div>
-                    {/* High Contrast Blue Badge */}
-                    <span className="text-xs font-black text-white bg-blue-600 px-3 py-1.5 rounded-full shadow-md shadow-blue-600/25">
-                      {totalCourseLessons > 0
-                        ? `${completedCourseLessons}/${totalCourseLessons}レッスン`
-                        : '準備中'}
-                    </span>
-                  </div>
-
-                  {/* High Contrast Text */}
-                  <h3 className="text-lg font-black text-slate-900 leading-snug">
-                    {course.title}
-                  </h3>
-                  <p className="text-xs text-blue-700 font-black">
-                    {course.subtitle}
-                  </p>
-                  <p className="text-xs text-slate-700 font-bold leading-relaxed">
-                    {course.description}
-                  </p>
+            {/* Content inside the clean single tile */}
+            <div className="relative z-10 space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-black uppercase tracking-wider border border-white/30 text-white shadow-sm">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  おすすめコース
                 </div>
 
-                <div className="border-t border-slate-200 pt-4 flex items-center justify-end">
-                  {course.units.length > 0 ? (
-                    <Link
-                      href={`/course/${course.id}`}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs shadow-md shadow-blue-600/30 transition-all cursor-pointer"
-                    >
-                      コースを見る
-                      <ChevronRight className="w-4 h-4" />
-                    </Link>
-                  ) : (
-                    <span className="text-xs text-slate-500 font-bold px-3 py-1.5 bg-slate-100 rounded-xl">
-                      準備中
-                    </span>
-                  )}
+                <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white">
+                  {continueCompletedLessons}/{continueLessons.length}
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-black text-white drop-shadow-md leading-tight tracking-tight">
+                  {continueCourse.title}
+                </h3>
+                <p className="text-xs sm:text-sm font-bold text-sky-100 drop-shadow line-clamp-2 mt-1 leading-relaxed">
+                  {continueCourse.subtitle || continueCourse.description}
+                </p>
+              </div>
+
+              {/* Progress Bar inside Tile */}
+              <div className="space-y-2 pt-1">
+                <div className="flex items-center justify-between text-xs font-bold text-sky-100">
+                  <span>進捗状況</span>
+                  <span className="font-black text-white">{continueProgressPct}% 完了</span>
+                </div>
+                <div className="w-full h-3 bg-black/20 rounded-full overflow-hidden p-0.5 border border-white/30 backdrop-blur-sm">
+                  <div
+                    className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
+                    style={{ width: `${continueProgressPct}%` }}
+                  />
                 </div>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          </Link>
+        </section>
+
+        {/* Section: Category/Domain Course List (Styled to match the rich water tiles) */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-black text-slate-900 tracking-tight">
+              {selectedDomain.name}
+            </h2>
+            <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-black flex items-center justify-center">
+              {selectedDomain.courses.length}
+            </span>
+          </div>
+
+          {/* Domain tabs */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {DOMAINS.map((domain) => (
+              <button
+                key={domain.id}
+                onClick={() => setSelectedDomainId(domain.id)}
+                className={`px-4 py-2 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                  selectedDomainId === domain.id
+                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/25'
+                    : 'bg-white text-slate-700 border-2 border-sky-200 hover:border-sky-300'
+                }`}
+              >
+                <span>{domain.name}</span>
+                {!domain.available && (
+                  <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full font-bold">
+                    準備中
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Rich Water Course Cards Grid */}
+          <div className="grid grid-cols-1 gap-4">
+            {selectedDomain.courses.map((course, cIdx) => {
+              const courseLessons = course.units.flatMap((u) => u.lessons);
+              const totalCourseLessons = courseLessons.length;
+              const completedCourseLessons = courseLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
+              const isReady = totalCourseLessons > 0;
+              const pct = isReady ? Math.round((completedCourseLessons / totalCourseLessons) * 100) : 0;
+              const isAllPassed = isReady && completedCourseLessons === totalCourseLessons;
+
+              const theme = COURSE_THEMES[course.id] || COURSE_THEMES.handa_vision;
+
+              if (isReady) {
+                return (
+                  <Link
+                    key={course.id}
+                    href={`/course/${course.id}`}
+                    className={`group block relative rounded-3xl overflow-hidden shadow-lg border-2 ${theme.border} ${theme.gradient} text-white p-6 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] cursor-pointer`}
+                  >
+                    {/* Background ripples & light reflections */}
+                    <div className="absolute inset-0 opacity-20 pointer-events-none">
+                      <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        {theme.waveType === 1 && (
+                          <>
+                            <path d="M0,45 Q25,25 50,45 T100,45 L100,100 L0,100 Z" fill="#ffffff" />
+                            <path d="M0,65 Q35,45 70,65 T100,65 L100,100 L0,100 Z" fill="#ffffff" opacity="0.4" />
+                          </>
+                        )}
+                        {theme.waveType === 2 && (
+                          <>
+                            <circle cx="20" cy="30" r="18" fill="#ffffff" opacity="0.25" />
+                            <circle cx="85" cy="70" r="25" fill="#ffffff" opacity="0.2" />
+                            <path d="M0,60 Q50,30 100,60 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                          </>
+                        )}
+                        {theme.waveType === 3 && (
+                          <>
+                            <path d="M0,30 Q30,60 60,30 T100,40 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                            <path d="M0,70 Q40,50 80,70 L100,70 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                          </>
+                        )}
+                        {theme.waveType === 4 && (
+                          <>
+                            <ellipse cx="50" cy="50" rx="40" ry="20" fill="#ffffff" opacity="0.2" />
+                            <path d="M0,55 Q50,75 100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                          </>
+                        )}
+                      </svg>
+                    </div>
+
+                    {/* Floating Bubbles */}
+                    <div className="absolute top-3 right-6 w-6 h-6 rounded-full border border-white/40 bg-white/20 animate-float-slow pointer-events-none" />
+                    <div className="absolute bottom-4 right-16 w-4 h-4 rounded-full border border-white/30 bg-white/10 animate-bounce-subtle pointer-events-none" />
+
+                    {/* Tile Content */}
+                    <div className="relative z-10 space-y-3.5">
+                      {/* Top Badges */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-black uppercase tracking-wide border border-white/30 text-white shadow-sm">
+                          <Droplet className="w-3.5 h-3.5 fill-current" />
+                          コース {cIdx + 1}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {isAllPassed && (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-black bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full shadow-sm">
+                              <CheckCircle2 className="w-3 h-3" />
+                              完全習得
+                            </span>
+                          )}
+                          <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white">
+                            {completedCourseLessons}/{totalCourseLessons}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Course Title & Description */}
+                      <div>
+                        <h3 className="text-xl sm:text-2xl font-black text-white drop-shadow-md leading-tight tracking-tight">
+                          {course.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm font-bold text-white/90 drop-shadow line-clamp-2 mt-1 leading-relaxed">
+                          {course.subtitle || course.description}
+                        </p>
+                      </div>
+
+                      {/* Progress Bar inside Tile */}
+                      <div className="space-y-2 pt-1">
+                        <div className="flex items-center justify-between text-xs font-bold text-white/90">
+                          <span>進捗状況</span>
+                          <span className="font-black text-white">{pct}% 完了</span>
+                        </div>
+                        <div className="w-full h-2.5 bg-black/20 rounded-full overflow-hidden p-0.5 border border-white/30 backdrop-blur-sm">
+                          <div
+                            className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              }
+
+              // Locked / Coming Soon Course Tile (Clean Aqua Frosted Glass Style)
+              return (
+                <div
+                  key={course.id}
+                  className="relative rounded-3xl overflow-hidden shadow-md border-2 border-sky-200 bg-gradient-to-br from-sky-100/90 via-blue-50/80 to-cyan-100/90 p-6 opacity-85"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-200/80 text-blue-900 text-xs font-black border border-sky-300/80">
+                        コース {cIdx + 1}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs font-black text-slate-600 bg-white/80 px-3 py-1 rounded-full border border-sky-200">
+                        <Lock className="w-3 h-3 text-slate-500" />
+                        準備中
+                      </span>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-black text-slate-800 leading-tight">
+                        {course.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm font-bold text-slate-600 mt-1 leading-relaxed">
+                        {course.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 flex items-center justify-between text-xs text-slate-500 font-bold border-t border-sky-200/60">
+                      <span>次回アップデートで公開予定</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
       </div>
     </div>
   );
