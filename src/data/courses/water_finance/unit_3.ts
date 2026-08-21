@@ -17,6 +17,7 @@ const createPlaceholderLesson = (
   title,
   subtitle,
   description: '【作成中】本レッスンは現在問題データを作成中です。（次回アップデートにて公開予定）',
+  isComingSoon: true,
   questions: [
     {
       id: `wf_3_${lessonNumber}_placeholder`,

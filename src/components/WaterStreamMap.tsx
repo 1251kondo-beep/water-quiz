@@ -9,7 +9,7 @@ import WaterMascot from '@/components/WaterMascot';
 interface WaterStreamMapProps {
   units: Unit[];
   completedMap: Record<string, LessonResult>;
-  onLockClick?: (lessonTitle: string) => void;
+  onLockClick?: (lessonTitle: string, isComingSoon?: boolean) => void;
 }
 
 export default function WaterStreamMap({
@@ -33,7 +33,8 @@ export default function WaterStreamMap({
       const isCompleted = !!result && result.passed;
       const prev = globalIdx > 0 ? allLessonsWithUnit[globalIdx - 1].lesson : null;
       const prevPassed = prev ? !!completedMap[prev.id]?.passed : true;
-      const isUnlocked = globalIdx === 0 || prevPassed || isCompleted;
+      const isComingSoon = lesson.isComingSoon ?? false;
+      const isUnlocked = !isComingSoon && (globalIdx === 0 || prevPassed || isCompleted);
 
       return {
         unitId: unit.id,
@@ -42,6 +43,7 @@ export default function WaterStreamMap({
         globalIdx,
         isCompleted,
         isUnlocked,
+        isComingSoon,
         result,
         stars: result?.stars || 0,
       };
@@ -181,6 +183,7 @@ export default function WaterStreamMap({
                     );
                     const isCompleted = globalState?.isCompleted || false;
                     const isUnlocked = globalState?.isUnlocked || false;
+                    const isComingSoon = globalState?.isComingSoon ?? lesson.isComingSoon ?? false;
                     const stars = globalState?.stars || 0;
                     const result = globalState?.result;
 
@@ -309,7 +312,7 @@ export default function WaterStreamMap({
                         ) : (
                           /* Locked Lesson Node */
                           <div
-                            onClick={() => onLockClick && onLockClick(displayTitle)}
+                            onClick={() => onLockClick && onLockClick(displayTitle, isComingSoon)}
                             className="group relative inline-flex items-center cursor-pointer transition-all active:scale-95 max-w-[88%] sm:max-w-[82%]"
                           >
                             <div
@@ -334,7 +337,7 @@ export default function WaterStreamMap({
                                   {displayTitle}
                                 </h4>
                                 <p className="text-[10px] text-sky-300/80 font-medium mt-0.5">
-                                  前のレッスンをクリアで解放
+                                  {isComingSoon ? '教材作成中（次回公開予定）' : '前のレッスンをクリアで解放'}
                                 </p>
                               </div>
                             </div>

@@ -31,6 +31,7 @@ export interface Lesson {
   subtitle: string;
   description: string;
   questions: Question[];
+  isComingSoon?: boolean;
 }
 
 export interface Unit {

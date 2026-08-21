@@ -39,8 +39,12 @@ export default function CoursePage() {
   const progressPct = totalLessons > 0 ? Math.round((passedLessonsCount / totalLessons) * 100) : 0;
   const totalStars = allCourseLessons.reduce((acc, l) => acc + (completedMap[l.id]?.stars || 0), 0);
 
-  const handleLockClick = (lessonTitle: string) => {
-    setToastMessage(`「${lessonTitle}」は前のレッスンを合格すると解放されます！💧`);
+  const handleLockClick = (lessonTitle: string, isComingSoon?: boolean) => {
+    if (isComingSoon) {
+      setToastMessage(`「${lessonTitle}」は現在教材を作成中です。次回アップデートをお待ちください！💧`);
+    } else {
+      setToastMessage(`「${lessonTitle}」は前のレッスンを合格すると解放されます！💧`);
+    }
     setTimeout(() => {
       setToastMessage(null);
     }, 3000);
