@@ -450,65 +450,37 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   // ------------------------------------------------------------------
   return (
     <div ref={quizContainerRef} className="max-w-4xl mx-auto py-2 sm:py-4 px-3 sm:px-6 scroll-mt-16 md:scroll-mt-20">
-      {/* Header Info Bar */}
-      <div className="flex items-center justify-between gap-2 mb-3">
-        <div className="text-xs sm:text-sm font-bold text-cyan-700 dark:text-cyan-400 truncate">
-          {unitTitle}
+      {/* Header Info & Progress Bar (シンプルなプログレスバー) */}
+      <div className="mb-5 sm:mb-6 space-y-2.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-xs sm:text-sm font-bold text-cyan-700 dark:text-cyan-400 truncate">
+            {unitTitle}
+          </div>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="text-xs sm:text-sm font-black text-slate-500 dark:text-slate-400">
+              {currentIndex + 1} / {total}
+            </span>
+            <button
+              onClick={handleToggleBookmarkCurrent}
+              className={`p-1.5 rounded-lg border transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold ${
+                isBookmarked
+                  ? 'bg-amber-100 dark:bg-amber-950/60 border-amber-300 dark:border-amber-500/50 text-amber-700 dark:text-amber-400'
+                  : 'bg-white/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600'
+              }`}
+              title={isBookmarked ? 'ブックマーク解除' : 'ブックマーク登録'}
+            >
+              <Bookmark className="w-3.5 h-3.5" />
+            </button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={handleToggleBookmarkCurrent}
-            className={`p-1.5 sm:p-2 rounded-xl border transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
-              isBookmarked
-                ? 'bg-amber-100 dark:bg-amber-950/60 border-amber-300 dark:border-amber-500/50 text-amber-700 dark:text-amber-400'
-                : 'bg-white/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700'
-            }`}
-            title={isBookmarked ? 'ブックマーク解除' : 'ブックマーク登録'}
-          >
-            {isBookmarked ? (
-              <>
-                <BookmarkCheck className="w-4 h-4 fill-amber-400/20 text-amber-600" />
-                <span className="hidden sm:inline">保存済み</span>
-              </>
-            ) : (
-              <>
-                <Bookmark className="w-4 h-4" />
-                <span className="hidden sm:inline">ブックマーク</span>
-              </>
-            )}
-          </button>
+
+        {/* Progress Bar */}
+        <div className="w-full h-2.5 sm:h-3 bg-slate-200/80 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
+          <div
+            className="h-full bg-gradient-to-r from-cyan-500 via-sky-500 to-blue-600 rounded-full transition-all duration-500 ease-out shadow-sm"
+            style={{ width: `${((currentIndex + 1) / total) * 100}%` }}
+          />
         </div>
-      </div>
-
-      {/* Progress Dots Bar (1..10) */}
-      <div className="bg-white/80 backdrop-blur-md rounded-2xl p-3 sm:p-4 mb-6 flex items-center justify-between gap-2 border border-sky-200/80 shadow-sm whitespace-nowrap overflow-x-auto">
-        <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-between shrink-0">
-          {questions.map((q, idx) => {
-            const isCurrent = idx === currentIndex;
-            const state = answersState[idx];
-
-            let dotStyle = 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500';
-            if (isCurrent) {
-              dotStyle = 'bg-cyan-600 dark:bg-cyan-500 border-cyan-400 text-white ring-2 ring-cyan-400/40 dot-active';
-            } else if (state === 'correct') {
-              dotStyle = 'bg-emerald-500 border-emerald-400 text-white';
-            } else if (state === 'wrong') {
-              dotStyle = 'bg-rose-500 border-rose-400 text-white';
-            }
-
-            return (
-              <div
-                key={q.id}
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border text-xs sm:text-sm font-black flex items-center justify-center transition-all ${dotStyle}`}
-              >
-                {idx + 1}
-              </div>
-            );
-          })}
-        </div>
-        <span className="text-xs sm:text-sm font-black text-slate-600 dark:text-slate-400 ml-3 shrink-0">
-          {currentIndex + 1} / {total}
-        </span>
       </div>
 
       {/* Question Main Content Area (No restrictive outer container box) */}
