@@ -150,8 +150,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   useEffect(() => {
     if (isAnswerConfirmed && explanationRef.current) {
       setTimeout(() => {
-        explanationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 100);
+        explanationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
     }
   }, [isAnswerConfirmed]);
 
