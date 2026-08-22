@@ -18,11 +18,7 @@ interface RightItem {
   rightText: string;
 }
 
-const COLORS = [
-  { stroke: '#2563eb', bg: 'bg-blue-50 text-blue-900 border-blue-500' },
-  { stroke: '#7c3aed', bg: 'bg-purple-50 text-purple-900 border-purple-500' },
-  { stroke: '#0891b2', bg: 'bg-cyan-50 text-cyan-900 border-cyan-500' },
-];
+const UNIFIED_STROKE_COLOR = '#0284c7'; // 統一された清流ブルー
 
 export default function PairMatchingWidget({
   pairs,
@@ -107,7 +103,7 @@ export default function PairMatchingWidget({
 
   // Re-render lines on resize / connection change
   const [lines, setLines] = useState<
-    { leftId: string; rightId: string; x1: number; y1: number; x2: number; y2: number; colorIdx: number }[]
+    { leftId: string; rightId: string; x1: number; y1: number; x2: number; y2: number }[]
   >([]);
 
   useEffect(() => {
@@ -121,10 +117,9 @@ export default function PairMatchingWidget({
         y1: number;
         x2: number;
         y2: number;
-        colorIdx: number;
       }[] = [];
 
-      leftItems.forEach((item, idx) => {
+      leftItems.forEach((item) => {
         const rId = userConnections[item.leftId];
         if (!rId) return;
 
@@ -147,7 +142,6 @@ export default function PairMatchingWidget({
             y1,
             x2,
             y2,
-            colorIdx: idx % COLORS.length,
           });
         }
       });
@@ -193,7 +187,7 @@ export default function PairMatchingWidget({
             const connectedRight = rightItems.find((r) => r.rightId === line.rightId);
             const isCorrectPair = pair?.rightText === connectedRight?.rightText;
 
-            let strokeColor = COLORS[line.colorIdx].stroke;
+            let strokeColor = UNIFIED_STROKE_COLOR;
             if (isConfirmed) {
               strokeColor = isCorrectPair ? '#10b981' : '#ef4444'; // Emerald for correct, Red for wrong
             }
