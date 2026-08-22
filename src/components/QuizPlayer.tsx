@@ -87,8 +87,25 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
   const explanationRef = useRef<HTMLDivElement>(null);
   const quizContainerRef = useRef<HTMLDivElement>(null);
+  const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
   const currentQ: Question = questions[currentIndex];
+
+  const scrollToConfirmButtonIfOverflow = () => {
+    setTimeout(() => {
+      if (confirmButtonRef.current) {
+        const rect = confirmButtonRef.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        // If bottom of confirm button is beyond the visible screen bottom
+        if (rect.bottom > windowHeight - 16) {
+          confirmButtonRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+          });
+        }
+      }
+    }, 60);
+  };
 
   const handleRestartQuiz = () => {
     setShuffledQuestions(shuffleOptionsForQuestions(lesson.questions));
@@ -143,6 +160,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     if (isAnswerConfirmed) return;
     setSelectedOption(index);
     soundFx.playClick(soundEnabled);
+    scrollToConfirmButtonIfOverflow();
   };
 
   // Confirm answer button click -> Grade answer now
@@ -466,6 +484,9 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             onSelectionChange={(full, correct) => {
               setIsMatchFullyConnected(full);
               setIsMatchAllCorrect(correct);
+              if (full) {
+                scrollToConfirmButtonIfOverflow();
+              }
             }}
           />
         ) : (
@@ -530,13 +551,14 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {/* Confirm Answer Button (Before Grading) */}
         {!isAnswerConfirmed && (
           <button
+            ref={confirmButtonRef}
             onClick={handleConfirmAnswer}
             disabled={
               currentQ.matchPairs && currentQ.matchPairs.length > 0
                 ? !isMatchFullyConnected
                 : selectedOption === null
             }
-            className={`w-full py-4 sm:py-4.5 rounded-2xl font-black text-base sm:text-lg shadow-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
+            className={`w-full py-4 sm:py-4.5 rounded-2xl font-black text-base sm:text-lg shadow-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer scroll-mb-6 sm:scroll-mb-8 ${
               (currentQ.matchPairs && currentQ.matchPairs.length > 0 ? isMatchFullyConnected : selectedOption !== null)
                 ? 'bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-500/25 active:scale-[0.99]'
                 : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
