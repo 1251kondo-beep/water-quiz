@@ -3,8 +3,12 @@ import './globals.css';
 import Header from '@/components/Header';
 
 export const metadata: Metadata = {
-  title: '水道事業ステップアップドリル',
+  title: '水ドリ - 水道事業ステップアップドリル',
   description: '異動したての職員向け！市の上水道事業に関する知識・基礎を習得するためのドリル。企業会計（3条・4条）、企業債、減価償却、アセットマネジメント、法規を短時間で学習。',
+  icons: {
+    icon: '/icon.jpg',
+    apple: '/app-icon.jpg',
+  },
 };
 
 export default function RootLayout({
