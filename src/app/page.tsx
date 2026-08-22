@@ -260,27 +260,29 @@ export default function HomePage() {
             {/* Content inside the clean single tile */}
             <div className="relative z-10 space-y-4">
               <div className="flex items-center justify-between gap-2">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-black uppercase tracking-wider border border-white/30 text-white shadow-sm">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-black uppercase tracking-wide border border-white/30 text-white shadow-sm whitespace-nowrap shrink-0">
                   <Droplet className="w-3.5 h-3.5 fill-current" />
                   <span>コース {continueCourseIndex}</span>
-                  <span className="opacity-70">・</span>
-                  <span>
-                    {continueIsAllPassed
-                      ? '完全習得（復習）'
-                      : continueProgressPct > 0
-                      ? '学習中'
-                      : 'おすすめ'}
-                  </span>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  {continueIsAllPassed && (
-                    <span className="inline-flex items-center gap-1 text-[11px] font-black bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full shadow-sm">
+                <div className="flex items-center gap-2 shrink-0">
+                  {continueIsAllPassed ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-black bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap">
                       <CheckCircle2 className="w-3 h-3" />
                       完全習得
                     </span>
+                  ) : continueProgressPct > 0 ? (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-black bg-sky-200 text-blue-950 px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap">
+                      <Sparkles className="w-3 h-3" />
+                      学習中
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-black bg-amber-300 text-amber-950 px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap">
+                      <Sparkles className="w-3 h-3" />
+                      おすすめ
+                    </span>
                   )}
-                  <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white">
+                  <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white whitespace-nowrap">
                     {continueCompletedLessons}/{continueLessons.length}
                   </span>
                 </div>
