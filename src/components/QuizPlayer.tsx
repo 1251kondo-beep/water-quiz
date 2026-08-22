@@ -799,52 +799,28 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           ref={explanationRef}
           className="mt-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-sky-300/80 shadow-xl space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-300 scroll-mt-24"
         >
-          {/* Result Header Banner (高視認性バナー) */}
-          <div
-            className={`p-4 sm:p-5 rounded-2xl border-2 flex items-center justify-between transition-all ${
-              answersState[currentIndex] === 'correct'
-                ? 'bg-emerald-50/90 dark:bg-emerald-950/40 border-emerald-300 dark:border-emerald-700 text-emerald-900 dark:text-emerald-100'
-                : 'bg-rose-50/90 dark:bg-rose-950/40 border-rose-300 dark:border-rose-700 text-rose-900 dark:text-rose-100'
-            }`}
-          >
-            <div className="flex items-center gap-2.5">
+          {/* Result Header Banner (シンプル・高視認性) */}
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div className="flex items-center gap-2 sm:gap-2.5">
               {answersState[currentIndex] === 'correct' ? (
-                <>
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-emerald-500/30">
-                    <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <div className="font-black text-lg sm:text-xl text-emerald-700 dark:text-emerald-300">
-                      正解です！
-                    </div>
-                    <div className="text-xs text-emerald-600/80 dark:text-emerald-400 font-bold">
-                      ナイス回答！解説を確認しよう
-                    </div>
-                  </div>
-                </>
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-black text-xl sm:text-2xl">
+                  <CheckCircle2 className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
+                  <span>正解です！</span>
+                </div>
               ) : (
-                <>
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-rose-500/30">
-                    <XCircle className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5]" />
-                  </div>
-                  <div>
-                    <div className="font-black text-lg sm:text-xl text-rose-700 dark:text-rose-300">
-                      不正解です
-                    </div>
-                    <div className="text-xs text-rose-600/80 dark:text-rose-400 font-bold">
-                      {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? '正しいペアを確認しよう' : `正解: ${['A', 'B', 'C', 'D'][currentQ.answerIndex]}`}
-                    </div>
-                  </div>
-                </>
+                <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-black text-xl sm:text-2xl">
+                  <XCircle className="w-7 h-7 sm:w-8 sm:h-8 stroke-[2.5]" />
+                  <span>不正解です</span>
+                </div>
               )}
             </div>
 
             <button
               onClick={handleToggleBookmarkCurrent}
-              className="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-100/80 dark:bg-amber-900/50 hover:bg-amber-200 px-3 py-1.5 rounded-xl border border-amber-300 dark:border-amber-600 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+              className="text-xs sm:text-sm font-bold text-amber-700 dark:text-amber-300 bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 px-3 py-1.5 rounded-xl border border-amber-200 dark:border-amber-700/60 flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
             >
               <Bookmark className="w-4 h-4" />
-              {isBookmarked ? '保存済み' : 'あとで復習'}
+              <span>{isBookmarked ? '保存済み' : 'あとで復習'}</span>
             </button>
           </div>
 
