@@ -107,7 +107,7 @@ export default function FillInTheBlankWidget({
     <div className="space-y-4 my-2 select-none">
       {/* 1. Blank Sentence Card (文章穴埋めカード) */}
       <div className="bg-sky-50/60 dark:bg-slate-900/70 border-2 border-sky-200/90 dark:border-sky-800/60 rounded-3xl p-5 sm:p-7 shadow-sm">
-        <div className="text-base sm:text-lg text-slate-900 dark:text-slate-100 font-bold leading-loose sm:leading-loose flex flex-wrap items-center gap-y-3">
+        <div className="text-base sm:text-lg text-slate-900 dark:text-slate-100 font-bold leading-[2.2] sm:leading-[2.4]">
           {parts.map((p, idx) => {
             if (!p.isBlank) {
               return <span key={idx}>{p.text}</span>;
@@ -119,19 +119,24 @@ export default function FillInTheBlankWidget({
             const targetBlank = blanks.find((b) => b.id === slotId);
             const isCorrect = isConfirmed && targetBlank ? filledVal === targetBlank.answer : true;
 
-            let slotStyle = 'border border-dashed border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 min-w-[54px] sm:min-w-[64px]';
+            let slotStyle =
+              'border border-dashed border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500';
 
             if (isActive) {
-              slotStyle = 'border border-cyan-500 ring-2 ring-cyan-400/30 bg-cyan-50/90 dark:bg-cyan-950/70 text-cyan-950 dark:text-cyan-100 font-bold shadow-xs';
+              slotStyle =
+                'border border-cyan-500 ring-1 ring-cyan-400/40 bg-cyan-50 dark:bg-cyan-950/70 text-cyan-800 dark:text-cyan-200 font-bold';
             } else if (filledVal && !isConfirmed) {
-              slotStyle = 'border border-cyan-400 bg-white dark:bg-slate-800 text-cyan-900 dark:text-cyan-200 font-bold shadow-xs';
+              slotStyle =
+                'border border-cyan-400 bg-white dark:bg-slate-850 text-cyan-900 dark:text-cyan-200 font-bold shadow-2xs';
             }
 
             if (isConfirmed) {
               if (isCorrect) {
-                slotStyle = 'border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 font-bold';
+                slotStyle =
+                  'border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 font-bold';
               } else {
-                slotStyle = 'border border-rose-500 bg-rose-50 dark:bg-rose-950/60 text-rose-900 dark:text-rose-200 font-bold';
+                slotStyle =
+                  'border border-rose-500 bg-rose-50 dark:bg-rose-950/60 text-rose-900 dark:text-rose-200 font-bold';
               }
             }
 
@@ -141,17 +146,21 @@ export default function FillInTheBlankWidget({
                 type="button"
                 onClick={() => handleClearSlot(slotId)}
                 disabled={isConfirmed}
-                className={`inline-flex items-center justify-center px-2.5 py-0.5 mx-1 rounded-lg transition-all text-sm sm:text-base ${slotStyle} ${
+                className={`inline-flex items-center justify-center align-baseline mx-1 px-2.5 py-0.5 rounded-md transition-all text-base sm:text-lg min-w-[44px] sm:min-w-[52px] ${slotStyle} ${
                   !isConfirmed ? 'cursor-pointer hover:border-cyan-400' : 'cursor-default'
                 }`}
               >
                 {filledVal ? (
-                  <span className="flex items-center gap-1">
-                    {filledVal}
-                    {!isConfirmed && <span className="text-[10px] text-slate-400 ml-0.5">✕</span>}
+                  <span className="inline-flex items-center gap-1 leading-none">
+                    <span>{filledVal}</span>
+                    {!isConfirmed && (
+                      <span className="text-[11px] text-slate-400 hover:text-rose-500 transition-colors ml-0.5">
+                        ✕
+                      </span>
+                    )}
                   </span>
                 ) : (
-                  <span className="text-xs sm:text-sm font-black px-1.5 opacity-80">
+                  <span className="text-xs sm:text-sm font-black opacity-70 px-0.5 leading-none">
                     {slotId}
                   </span>
                 )}
