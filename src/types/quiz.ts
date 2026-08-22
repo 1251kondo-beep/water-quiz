@@ -7,8 +7,15 @@ export interface MatchPair {
   rightText: string;
 }
 
+export interface QuizTable {
+  title?: string;
+  headers?: string[];
+  rows: (string | number)[][];
+}
+
 export interface Question {
   id: string;
+  type?: 'choice' | 'true_false' | 'matching' | 'ordering';
   question: string;
   options: string[];
   answerIndex: number;
@@ -17,6 +24,8 @@ export interface Question {
   referenceSection: string; // 投資財政計画_用語解説.md の対応セクション
   difficulty?: DifficultyLevel;
   sdgsGoals?: number[]; // e.g. [3, 6, 7, 9, 11, 14]
+  table?: QuizTable; // 問題文に付随する表・スペック表・財務諸表抜粋など
+  explanationTable?: QuizTable; // 解説に付随する比較表など
   matchPairs?: MatchPair[];
   extraRightItems?: { rightId: string; rightText: string }[];
   leftTitle?: string;

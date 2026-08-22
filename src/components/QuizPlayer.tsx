@@ -18,7 +18,7 @@ import {
   Sparkles,
   Check
 } from 'lucide-react';
-import { Question, Lesson, LessonResult } from '@/types/quiz';
+import { Question, Lesson, LessonResult, QuizTable } from '@/types/quiz';
 import {
   getUserStats,
   saveLessonResult,
@@ -61,6 +61,63 @@ function shuffleOptionsForQuestions(qs: Question[]): Question[] {
       answerIndex: newAnswerIndex,
     };
   });
+}
+
+function QuizTableCard({ table, isExplanation = false }: { table: QuizTable; isExplanation?: boolean }) {
+  if (!table || !table.rows || table.rows.length === 0) return null;
+
+  return (
+    <div
+      className={`my-3 sm:my-4 rounded-2xl overflow-hidden border shadow-sm ${
+        isExplanation
+          ? 'border-cyan-200 bg-cyan-50/40 dark:bg-slate-900/80 dark:border-cyan-900/60'
+          : 'border-slate-200/90 bg-white/95 dark:bg-slate-800/90 dark:border-slate-700'
+      }`}
+    >
+      {table.title && (
+        <div
+          className={`px-3.5 py-2.5 sm:px-4 sm:py-3 text-xs sm:text-sm font-black flex items-center gap-1.5 border-b ${
+            isExplanation
+              ? 'bg-cyan-100/70 text-cyan-950 border-cyan-200 dark:bg-cyan-950/70 dark:text-cyan-200 dark:border-cyan-900/60'
+              : 'bg-slate-100/90 text-slate-800 border-slate-200/90 dark:bg-slate-700/80 dark:text-slate-200 dark:border-slate-700'
+          }`}
+        >
+          <span>{table.title}</span>
+        </div>
+      )}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs sm:text-sm text-left border-collapse">
+          {table.headers && table.headers.length > 0 && (
+            <thead>
+              <tr className="bg-slate-50/90 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                {table.headers.map((h, i) => (
+                  <th key={i} className="px-3.5 py-2.5 sm:px-4 sm:py-3 font-black whitespace-nowrap">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/50">
+            {table.rows.map((row, rIdx) => (
+              <tr key={rIdx} className={rIdx % 2 === 1 ? 'bg-slate-50/50 dark:bg-slate-800/30' : ''}>
+                {row.map((cell, cIdx) => (
+                  <td
+                    key={cIdx}
+                    className={`px-3.5 py-2.5 sm:px-4 sm:py-3 text-slate-700 dark:text-slate-200 leading-relaxed ${
+                      cIdx === 0 ? 'font-bold' : 'font-medium'
+                    }`}
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 }
 
 export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerProps) {
@@ -434,6 +491,9 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </h2>
         </div>
 
+        {/* Question Problem Table (if present, e.g. Specs, Financial statements) */}
+        {currentQ.table && <QuizTableCard table={currentQ.table} />}
+
         {/* SDGs Goal Tiles (if present) */}
         {currentQ.sdgsGoals && currentQ.sdgsGoals.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -701,6 +761,11 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               {currentQ.explanation}
             </p>
           </div>
+
+          {/* Explanation Comparison Table (if present) */}
+          {currentQ.explanationTable && (
+            <QuizTableCard table={currentQ.explanationTable} isExplanation />
+          )}
 
           {/* Reference Citation */}
           <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/60 rounded-xl p-3 flex items-center gap-2 border border-slate-200 dark:border-slate-800">
