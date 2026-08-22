@@ -23,15 +23,17 @@ import {
   getUserStats,
   saveLessonResult,
   toggleBookmark,
-  recordMistakes
+  recordMistakes,
+  saveLastCourseId,
 } from '@/lib/storage';
 import {
   syncLessonResultToSupabase,
   syncMistakesToSupabase,
-  syncBookmarksToSupabase
+  syncBookmarksToSupabase,
 } from '@/lib/repository';
 import { soundFx } from '@/lib/audio';
 import PairMatchingWidget from '@/components/PairMatchingWidget';
+import FillInTheBlankWidget from '@/components/FillInTheBlankWidget';
 
 interface QuizPlayerProps {
   lesson: Lesson;
@@ -139,8 +141,13 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Match question state
+  // Match question state
   const [isMatchFullyConnected, setIsMatchFullyConnected] = useState(false);
   const [isMatchAllCorrect, setIsMatchAllCorrect] = useState(false);
+
+  // Fill in the blank state
+  const [isFillFullyCompleted, setIsFillFullyCompleted] = useState(false);
+  const [isFillAllCorrect, setIsFillAllCorrect] = useState(false);
 
   const explanationRef = useRef<HTMLDivElement>(null);
   const quizContainerRef = useRef<HTMLDivElement>(null);
@@ -175,6 +182,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setIsQuizCompleted(false);
     setIsMatchFullyConnected(false);
     setIsMatchAllCorrect(false);
+    setIsFillFullyCompleted(false);
+    setIsFillAllCorrect(false);
   };
 
   useEffect(() => {
@@ -188,14 +197,18 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setIsQuizCompleted(false);
     setIsMatchFullyConnected(false);
     setIsMatchAllCorrect(false);
+    setIsFillFullyCompleted(false);
+    setIsFillAllCorrect(false);
   }, [lesson.id, lesson.questions]);
 
-  // Reset match state when switching questions
+  // Reset match & fill state when switching questions
   useEffect(() => {
     setSelectedOption(null);
     setIsAnswerConfirmed(false);
     setIsMatchFullyConnected(false);
     setIsMatchAllCorrect(false);
+    setIsFillFullyCompleted(false);
+    setIsFillAllCorrect(false);
   }, [currentIndex]);
 
   useEffect(() => {
@@ -228,6 +241,9 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     if (currentQ.matchPairs && currentQ.matchPairs.length > 0) {
       if (!isMatchFullyConnected) return;
       isCorrect = isMatchAllCorrect;
+    } else if (currentQ.type === 'fill_in_the_blank' || currentQ.blankText) {
+      if (!isFillFullyCompleted) return;
+      isCorrect = isFillAllCorrect;
     } else {
       if (selectedOption === null) return;
       isCorrect = selectedOption === currentQ.answerIndex;
@@ -533,7 +549,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </div>
         )}
 
-        {/* Match Pairs Widget OR True/False 2-Tile Grid OR 4 Options List */}
+        {/* Match Pairs Widget OR Fill In The Blank Widget OR True/False 2-Tile Grid OR 4 Options List */}
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
           <PairMatchingWidget
             pairs={currentQ.matchPairs}
@@ -544,6 +560,21 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             onSelectionChange={(full, correct) => {
               setIsMatchFullyConnected(full);
               setIsMatchAllCorrect(correct);
+              if (full) {
+                scrollToConfirmButtonIfOverflow();
+              }
+            }}
+          />
+        ) : (currentQ.type === 'fill_in_the_blank' || currentQ.blankText) ? (
+          /* Fill In The Blank Widget (語句の穴埋め問題UI) */
+          <FillInTheBlankWidget
+            blankText={currentQ.blankText || currentQ.question}
+            blanks={currentQ.blanks}
+            options={currentQ.options}
+            isConfirmed={isAnswerConfirmed}
+            onSelectionChange={(full, correct) => {
+              setIsFillFullyCompleted(full);
+              setIsFillAllCorrect(correct);
               if (full) {
                 scrollToConfirmButtonIfOverflow();
               }
@@ -693,10 +724,18 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             disabled={
               currentQ.matchPairs && currentQ.matchPairs.length > 0
                 ? !isMatchFullyConnected
+                : currentQ.type === 'fill_in_the_blank' || currentQ.blankText
+                ? !isFillFullyCompleted
                 : selectedOption === null
             }
             className={`w-full py-4 sm:py-4.5 rounded-2xl font-black text-base sm:text-lg shadow-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer scroll-mb-6 sm:scroll-mb-8 ${
-              (currentQ.matchPairs && currentQ.matchPairs.length > 0 ? isMatchFullyConnected : selectedOption !== null)
+              (
+                currentQ.matchPairs && currentQ.matchPairs.length > 0
+                  ? isMatchFullyConnected
+                  : currentQ.type === 'fill_in_the_blank' || currentQ.blankText
+                  ? isFillFullyCompleted
+                  : selectedOption !== null
+              )
                 ? 'bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-500/25 active:scale-[0.99]'
                 : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
             }`}

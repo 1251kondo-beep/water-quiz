@@ -15,7 +15,7 @@ export interface QuizTable {
 
 export interface Question {
   id: string;
-  type?: 'choice' | 'true_false' | 'matching' | 'ordering';
+  type?: 'choice' | 'true_false' | 'matching' | 'fill_in_the_blank' | 'ordering';
   question: string;
   options: string[];
   answerIndex: number;
@@ -26,6 +26,8 @@ export interface Question {
   sdgsGoals?: number[]; // e.g. [3, 6, 7, 9, 11, 14]
   table?: QuizTable; // 問題文に付随する表・スペック表・財務諸表抜粋など
   explanationTable?: QuizTable; // 解説に付随する比較表など
+  blankText?: string; // 穴埋め問題用の文章
+  blanks?: { id: number; answer: string }[]; // 空欄定義
   matchPairs?: MatchPair[];
   extraRightItems?: { rightId: string; rightText: string }[];
   leftTitle?: string;
