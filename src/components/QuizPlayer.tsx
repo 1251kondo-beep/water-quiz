@@ -624,8 +624,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           />
         ) : (currentQ.options.length === 2 && (currentQ.options.some((o) => o.includes('正し') || o.includes('○') || o.includes('⚪︎') || o.includes('〇') || o === 'True') || currentQ.options.some((o) => o.includes('間違') || o.includes('誤') || o.includes('×') || o === 'False'))) ? (
           /* True/False 2-Tile Grid (2分割大型カードUI) */
-          <div className="space-y-3 my-2">
-            <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+          <div className="space-y-3.5 my-3 mb-6 sm:mb-8">
+            <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mb-1">
               <span className="w-4 h-4 rounded-full bg-cyan-100 text-cyan-800 text-[10px] font-black flex items-center justify-center">?</span>
               正しいか間違いか選んでください
             </p>
@@ -773,7 +773,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                 ? !isFillFullyCompleted
                 : selectedOption === null
             }
-            className={`w-full py-4 sm:py-4.5 rounded-2xl font-black text-base sm:text-lg shadow-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer scroll-mb-6 sm:scroll-mb-8 ${
+            className={`w-full py-4 sm:py-4.5 rounded-2xl font-black text-base sm:text-lg shadow-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer mt-3 sm:mt-5 scroll-mb-6 sm:scroll-mb-8 ${
               (
                 currentQ.matchPairs && currentQ.matchPairs.length > 0
                   ? isMatchFullyConnected
