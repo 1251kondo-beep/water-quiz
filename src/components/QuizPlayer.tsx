@@ -34,6 +34,8 @@ import {
 import { soundFx } from '@/lib/audio';
 import PairMatchingWidget from '@/components/PairMatchingWidget';
 import FillInTheBlankWidget from '@/components/FillInTheBlankWidget';
+import BreakdownGraphCard from '@/components/BreakdownGraphCard';
+import DiagramFlowCard from '@/components/DiagramFlowCard';
 
 interface QuizPlayerProps {
   lesson: Lesson;
@@ -510,6 +512,12 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {/* Question Problem Table (if present, e.g. Specs, Financial statements) */}
         {currentQ.table && <QuizTableCard table={currentQ.table} />}
 
+        {/* Question Breakdown Stacked Bar Graph (if present) */}
+        {currentQ.breakdownGraph && <BreakdownGraphCard graph={currentQ.breakdownGraph} />}
+
+        {/* Question Concept Diagram / Flow (if present) */}
+        {currentQ.diagram && <DiagramFlowCard diagram={currentQ.diagram} />}
+
         {/* SDGs Goal Tiles (if present) */}
         {currentQ.sdgsGoals && currentQ.sdgsGoals.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -804,6 +812,16 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           {/* Explanation Comparison Table (if present) */}
           {currentQ.explanationTable && (
             <QuizTableCard table={currentQ.explanationTable} isExplanation />
+          )}
+
+          {/* Explanation Breakdown Graph (if present) */}
+          {currentQ.explanationBreakdownGraph && (
+            <BreakdownGraphCard graph={currentQ.explanationBreakdownGraph} isExplanation />
+          )}
+
+          {/* Explanation Concept Diagram (if present) */}
+          {currentQ.explanationDiagram && (
+            <DiagramFlowCard diagram={currentQ.explanationDiagram} isExplanation />
           )}
 
           {/* Reference Citation */}

@@ -13,6 +13,33 @@ export interface QuizTable {
   rows: (string | number)[][];
 }
 
+export interface BreakdownItem {
+  label: string;
+  value: string;
+  percentage: number;
+  color?: string;
+  icon?: string;
+}
+
+export interface BreakdownGraph {
+  title?: string;
+  totalLabel?: string;
+  subLabel?: string;
+  items: BreakdownItem[];
+}
+
+export interface DiagramNode {
+  label: string;
+  icon?: string;
+  subText?: string;
+}
+
+export interface QuizDiagram {
+  title?: string;
+  type?: 'flow' | 'cycle' | 'compare';
+  nodes: DiagramNode[];
+}
+
 export interface Question {
   id: string;
   type?: 'choice' | 'true_false' | 'matching' | 'fill_in_the_blank' | 'ordering';
@@ -26,6 +53,10 @@ export interface Question {
   sdgsGoals?: number[]; // e.g. [3, 6, 7, 9, 11, 14]
   table?: QuizTable; // 問題文に付随する表・スペック表・財務諸表抜粋など
   explanationTable?: QuizTable; // 解説に付随する比較表など
+  breakdownGraph?: BreakdownGraph; // 帯グラフ・内訳バーカード
+  diagram?: QuizDiagram; // 概念図解・フロー図カード
+  explanationBreakdownGraph?: BreakdownGraph; // 解説用帯グラフ
+  explanationDiagram?: QuizDiagram; // 解説用概念図解
   blankText?: string; // 穴埋め問題用の文章
   blanks?: { id: number; answer: string }[]; // 空欄定義
   matchPairs?: MatchPair[];
