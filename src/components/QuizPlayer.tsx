@@ -579,6 +579,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {/* Match Pairs Widget OR Ordering Widget OR Fill In The Blank Widget OR True/False 2-Tile Grid OR 4 Options List */}
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
           <PairMatchingWidget
+            key={currentQ.id}
             pairs={currentQ.matchPairs}
             extraRightItems={currentQ.extraRightItems}
             leftTitle={currentQ.leftTitle}
@@ -595,6 +596,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         ) : (currentQ.type === 'ordering' || (currentQ.orderItems && currentQ.orderItems.length > 0)) ? (
           /* Ordering Widget (並び替え・手順問題UI) */
           <OrderingWidget
+            key={currentQ.id}
             items={currentQ.orderItems || []}
             correctOrder={currentQ.correctOrder || []}
             isConfirmed={isAnswerConfirmed}
@@ -609,6 +611,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         ) : (currentQ.type === 'fill_in_the_blank' || currentQ.blankText) ? (
           /* Fill In The Blank Widget (語句の穴埋め問題UI) */
           <FillInTheBlankWidget
+            key={currentQ.id}
             blankText={currentQ.blankText || currentQ.question}
             blanks={currentQ.blanks}
             options={currentQ.options}

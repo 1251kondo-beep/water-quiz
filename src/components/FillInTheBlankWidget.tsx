@@ -31,6 +31,12 @@ export default function FillInTheBlankWidget({
   const [filledSlots, setFilledSlots] = useState<Record<number, string>>({});
   const [activeSlotId, setActiveSlotId] = useState<number>(1);
 
+  // Reset state when blankText or options change
+  useEffect(() => {
+    setFilledSlots({});
+    setActiveSlotId(1);
+  }, [blankText, options]);
+
   // Split text by blank placeholders
   // Supports 【空欄1】, 【空欄2】, [____], [____1], etc.
   const parts = React.useMemo(() => {
