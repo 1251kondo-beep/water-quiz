@@ -804,7 +804,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                 日常のたとえで覚える！
               </div>
               <p className="text-sm sm:text-base text-amber-950 dark:text-amber-100 font-bold leading-relaxed">
-                {currentQ.analogy}
+                {currentQ.analogy.replace(/^【日常のたとえ】\s*/, '')}
               </p>
             </div>
           )}
