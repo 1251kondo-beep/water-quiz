@@ -119,19 +119,19 @@ export default function FillInTheBlankWidget({
             const targetBlank = blanks.find((b) => b.id === slotId);
             const isCorrect = isConfirmed && targetBlank ? filledVal === targetBlank.answer : true;
 
-            let slotStyle = 'border-b-2 border-dashed border-sky-400 bg-white dark:bg-slate-800 text-cyan-800 dark:text-cyan-200 min-w-[100px] sm:min-w-[120px]';
+            let slotStyle = 'border border-dashed border-slate-300 dark:border-slate-600 bg-white/80 dark:bg-slate-800/80 text-slate-400 dark:text-slate-500 min-w-[54px] sm:min-w-[64px]';
 
             if (isActive) {
-              slotStyle = 'border-2 border-cyan-500 ring-4 ring-cyan-400/40 bg-cyan-50/90 dark:bg-cyan-950/70 text-cyan-950 font-black';
+              slotStyle = 'border border-cyan-500 ring-2 ring-cyan-400/30 bg-cyan-50/90 dark:bg-cyan-950/70 text-cyan-950 dark:text-cyan-100 font-bold shadow-xs';
             } else if (filledVal && !isConfirmed) {
-              slotStyle = 'border-2 border-cyan-400 bg-white dark:bg-slate-800 text-cyan-900 dark:text-cyan-200 font-black shadow-sm';
+              slotStyle = 'border border-cyan-400 bg-white dark:bg-slate-800 text-cyan-900 dark:text-cyan-200 font-bold shadow-xs';
             }
 
             if (isConfirmed) {
               if (isCorrect) {
-                slotStyle = 'border-2 border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 font-black';
+                slotStyle = 'border border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 font-bold';
               } else {
-                slotStyle = 'border-2 border-rose-500 bg-rose-50 dark:bg-rose-950/60 text-rose-900 dark:text-rose-200 font-black';
+                slotStyle = 'border border-rose-500 bg-rose-50 dark:bg-rose-950/60 text-rose-900 dark:text-rose-200 font-bold';
               }
             }
 
@@ -141,18 +141,18 @@ export default function FillInTheBlankWidget({
                 type="button"
                 onClick={() => handleClearSlot(slotId)}
                 disabled={isConfirmed}
-                className={`inline-flex items-center justify-center px-3 py-1 mx-1.5 rounded-xl transition-all ${slotStyle} ${
-                  !isConfirmed ? 'cursor-pointer hover:border-cyan-500' : 'cursor-default'
+                className={`inline-flex items-center justify-center px-2.5 py-0.5 mx-1 rounded-lg transition-all text-sm sm:text-base ${slotStyle} ${
+                  !isConfirmed ? 'cursor-pointer hover:border-cyan-400' : 'cursor-default'
                 }`}
               >
                 {filledVal ? (
                   <span className="flex items-center gap-1">
                     {filledVal}
-                    {!isConfirmed && <span className="text-xs text-slate-400 ml-1">✕</span>}
+                    {!isConfirmed && <span className="text-[10px] text-slate-400 ml-0.5">✕</span>}
                   </span>
                 ) : (
-                  <span className="text-xs sm:text-sm text-cyan-600/70 dark:text-cyan-400/70 font-black px-2">
-                    [ 空欄 {slotId} ]
+                  <span className="text-xs sm:text-sm font-black px-1.5 opacity-80">
+                    {slotId}
                   </span>
                 )}
               </button>
