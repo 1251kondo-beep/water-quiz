@@ -47,6 +47,33 @@ interface QuizPlayerProps {
 
 function shuffleOptionsForQuestions(qs: Question[]): Question[] {
   return qs.map((q) => {
+    // ⚪︎×問題（true_false）または選択肢2つの⚪︎×問題はシャッフルせず、常に左:⚪︎、右:×に固定
+    const isTrueFalse =
+      q.type === 'true_false' ||
+      (q.options.length === 2 &&
+        q.options.some((o) => o.includes('正し') || o.includes('○') || o.includes('⚪︎') || o.includes('〇') || o.toLowerCase() === 'true') &&
+        q.options.some((o) => o.includes('間違') || o.includes('誤') || o.includes('×') || o.includes('✕') || o.toLowerCase() === 'false'));
+
+    if (isTrueFalse) {
+      const trueIdx = q.options.findIndex(
+        (o) => o.includes('正し') || o.includes('○') || o.includes('⚪︎') || o.includes('〇') || o.toLowerCase() === 'true'
+      );
+      const falseIdx = q.options.findIndex(
+        (o) => o.includes('間違') || o.includes('誤') || o.includes('×') || o.includes('✕') || o.toLowerCase() === 'false'
+      );
+
+      if (trueIdx !== -1 && falseIdx !== -1) {
+        const sortedOptions = [q.options[trueIdx], q.options[falseIdx]] as [string, string];
+        const newAnswerIndex = q.answerIndex === trueIdx ? 0 : 1;
+        return {
+          ...q,
+          options: sortedOptions,
+          answerIndex: newAnswerIndex,
+        };
+      }
+      return q;
+    }
+
     const pairs = q.options.map((optText, idx) => ({
       text: optText,
       isCorrect: idx === q.answerIndex,
@@ -643,9 +670,9 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                     {/* Big Symbol Circle (大きな丸・バツアイコンサークル) */}
                     <div className={`w-18 h-18 sm:w-24 sm:h-24 rounded-full flex items-center justify-center transition-all ${circleStyle}`}>
                       {isTrueOption ? (
-                        <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-[5px] sm:border-[7px] border-white flex items-center justify-center" />
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-[4px] sm:border-[5px] border-white flex items-center justify-center" />
                       ) : (
-                        <X className="w-11 h-11 sm:w-16 sm:h-16 text-white stroke-[4.5] sm:stroke-[5.5]" />
+                        <X className="w-10 h-10 sm:w-14 sm:h-14 text-white stroke-[2.8] sm:stroke-[3.2]" />
                       )}
                     </div>
 
