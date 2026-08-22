@@ -34,6 +34,7 @@ import {
 import { soundFx } from '@/lib/audio';
 import PairMatchingWidget from '@/components/PairMatchingWidget';
 import FillInTheBlankWidget from '@/components/FillInTheBlankWidget';
+import OrderingWidget from '@/components/OrderingWidget';
 import BreakdownGraphCard from '@/components/BreakdownGraphCard';
 import DiagramFlowCard from '@/components/DiagramFlowCard';
 
@@ -143,13 +144,16 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Match question state
-  // Match question state
   const [isMatchFullyConnected, setIsMatchFullyConnected] = useState(false);
   const [isMatchAllCorrect, setIsMatchAllCorrect] = useState(false);
 
   // Fill in the blank state
   const [isFillFullyCompleted, setIsFillFullyCompleted] = useState(false);
   const [isFillAllCorrect, setIsFillAllCorrect] = useState(false);
+
+  // Ordering question state
+  const [isOrderFullyPlaced, setIsOrderFullyPlaced] = useState(false);
+  const [isOrderAllCorrect, setIsOrderAllCorrect] = useState(false);
 
   const explanationRef = useRef<HTMLDivElement>(null);
   const quizContainerRef = useRef<HTMLDivElement>(null);
@@ -186,6 +190,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setIsMatchAllCorrect(false);
     setIsFillFullyCompleted(false);
     setIsFillAllCorrect(false);
+    setIsOrderFullyPlaced(false);
+    setIsOrderAllCorrect(false);
   };
 
   useEffect(() => {
@@ -201,9 +207,11 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setIsMatchAllCorrect(false);
     setIsFillFullyCompleted(false);
     setIsFillAllCorrect(false);
+    setIsOrderFullyPlaced(false);
+    setIsOrderAllCorrect(false);
   }, [lesson.id, lesson.questions]);
 
-  // Reset match & fill state when switching questions
+  // Reset match, fill & ordering state when switching questions
   useEffect(() => {
     setSelectedOption(null);
     setIsAnswerConfirmed(false);
@@ -211,6 +219,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setIsMatchAllCorrect(false);
     setIsFillFullyCompleted(false);
     setIsFillAllCorrect(false);
+    setIsOrderFullyPlaced(false);
+    setIsOrderAllCorrect(false);
   }, [currentIndex]);
 
   useEffect(() => {
@@ -243,6 +253,9 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     if (currentQ.matchPairs && currentQ.matchPairs.length > 0) {
       if (!isMatchFullyConnected) return;
       isCorrect = isMatchAllCorrect;
+    } else if (currentQ.type === 'ordering' || (currentQ.orderItems && currentQ.orderItems.length > 0)) {
+      if (!isOrderFullyPlaced) return;
+      isCorrect = isOrderAllCorrect;
     } else if (currentQ.type === 'fill_in_the_blank' || currentQ.blankText) {
       if (!isFillFullyCompleted) return;
       isCorrect = isFillAllCorrect;
@@ -557,7 +570,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </div>
         )}
 
-        {/* Match Pairs Widget OR Fill In The Blank Widget OR True/False 2-Tile Grid OR 4 Options List */}
+        {/* Match Pairs Widget OR Ordering Widget OR Fill In The Blank Widget OR True/False 2-Tile Grid OR 4 Options List */}
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
           <PairMatchingWidget
             pairs={currentQ.matchPairs}
@@ -568,6 +581,20 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             onSelectionChange={(full, correct) => {
               setIsMatchFullyConnected(full);
               setIsMatchAllCorrect(correct);
+              if (full) {
+                scrollToConfirmButtonIfOverflow();
+              }
+            }}
+          />
+        ) : (currentQ.type === 'ordering' || (currentQ.orderItems && currentQ.orderItems.length > 0)) ? (
+          /* Ordering Widget (並び替え・手順問題UI) */
+          <OrderingWidget
+            items={currentQ.orderItems || []}
+            correctOrder={currentQ.correctOrder || []}
+            isConfirmed={isAnswerConfirmed}
+            onSelectionChange={(full, correct) => {
+              setIsOrderFullyPlaced(full);
+              setIsOrderAllCorrect(correct);
               if (full) {
                 scrollToConfirmButtonIfOverflow();
               }
@@ -732,6 +759,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             disabled={
               currentQ.matchPairs && currentQ.matchPairs.length > 0
                 ? !isMatchFullyConnected
+                : currentQ.type === 'ordering' || (currentQ.orderItems && currentQ.orderItems.length > 0)
+                ? !isOrderFullyPlaced
                 : currentQ.type === 'fill_in_the_blank' || currentQ.blankText
                 ? !isFillFullyCompleted
                 : selectedOption === null
@@ -740,6 +769,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               (
                 currentQ.matchPairs && currentQ.matchPairs.length > 0
                   ? isMatchFullyConnected
+                  : currentQ.type === 'ordering' || (currentQ.orderItems && currentQ.orderItems.length > 0)
+                  ? isOrderFullyPlaced
                   : currentQ.type === 'fill_in_the_blank' || currentQ.blankText
                   ? isFillFullyCompleted
                   : selectedOption !== null

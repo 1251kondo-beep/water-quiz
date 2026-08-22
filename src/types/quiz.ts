@@ -40,6 +40,11 @@ export interface QuizDiagram {
   nodes: DiagramNode[];
 }
 
+export interface OrderItem {
+  id: string;
+  text: string;
+}
+
 export interface Question {
   id: string;
   type?: 'choice' | 'true_false' | 'matching' | 'fill_in_the_blank' | 'ordering';
@@ -59,6 +64,8 @@ export interface Question {
   explanationDiagram?: QuizDiagram; // 解説用概念図解
   blankText?: string; // 穴埋め問題用の文章
   blanks?: { id: number; answer: string }[]; // 空欄定義
+  orderItems?: OrderItem[]; // 並び替え問題のアイテム一覧
+  correctOrder?: string[]; // 正しいIDの並び順配列
   matchPairs?: MatchPair[];
   extraRightItems?: { rightId: string; rightText: string }[];
   leftTitle?: string;
