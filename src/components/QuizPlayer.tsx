@@ -473,7 +473,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </div>
         )}
 
-        {/* Match Pairs Widget OR 4 Options Grid */}
+        {/* Match Pairs Widget OR True/False 2-Tile Grid OR 4 Options List */}
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
           <PairMatchingWidget
             pairs={currentQ.matchPairs}
@@ -489,6 +489,83 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               }
             }}
           />
+        ) : (currentQ.options.length === 2 && (currentQ.options.some((o) => o.includes('正し') || o.includes('○') || o.includes('⚪︎') || o.includes('〇') || o === 'True') || currentQ.options.some((o) => o.includes('間違') || o.includes('誤') || o.includes('×') || o === 'False'))) ? (
+          /* True/False 2-Tile Grid (2分割大型カードUI) */
+          <div className="space-y-3 my-2">
+            <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <span className="w-4 h-4 rounded-full bg-cyan-100 text-cyan-800 text-[10px] font-black flex items-center justify-center">?</span>
+              正しいか間違いか選んでください
+            </p>
+
+            <div className="grid grid-cols-2 gap-3.5 sm:gap-6">
+              {currentQ.options.map((optionText, optIdx) => {
+                const isSelected = selectedOption === optIdx;
+                const isCorrectOption = optIdx === currentQ.answerIndex;
+                const isTrueOption = optIdx === 0 || optionText.includes('正し') || optionText.includes('○') || optionText.includes('⚪︎');
+
+                let cardStyle = 'bg-white dark:bg-slate-800/90 border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:border-cyan-400 hover:shadow-lg';
+                let circleStyle = 'bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-600 text-white shadow-md shadow-cyan-500/25';
+
+                if (!isAnswerConfirmed) {
+                  if (isSelected) {
+                    cardStyle = 'bg-cyan-50/90 dark:bg-cyan-950/70 border-cyan-500 ring-4 ring-cyan-500/40 shadow-xl font-black scale-[1.02]';
+                    circleStyle = 'bg-gradient-to-br from-cyan-500 to-blue-600 text-white ring-4 ring-white/60 shadow-lg';
+                  }
+                } else {
+                  // Graded state
+                  if (isCorrectOption) {
+                    cardStyle = 'bg-emerald-50/95 dark:bg-emerald-950/80 border-emerald-500 ring-4 ring-emerald-500/50 shadow-xl';
+                    circleStyle = 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-emerald-500/30';
+                  } else if (isSelected && !isCorrectOption) {
+                    cardStyle = 'bg-rose-50/95 dark:bg-rose-950/80 border-rose-500 ring-4 ring-rose-500/50 shadow-xl';
+                    circleStyle = 'bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-rose-500/30';
+                  } else {
+                    cardStyle = 'bg-slate-50/60 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800 opacity-40';
+                    circleStyle = 'bg-slate-300 dark:bg-slate-700 text-slate-500';
+                  }
+                }
+
+                return (
+                  <button
+                    key={optIdx}
+                    onClick={() => handleSelectOption(optIdx)}
+                    disabled={isAnswerConfirmed}
+                    className={`rounded-3xl p-5 sm:p-8 flex flex-col items-center justify-center gap-3 sm:gap-4 border-2 transition-all cursor-pointer ${cardStyle} ${
+                      !isAnswerConfirmed ? 'active:scale-95' : 'cursor-default'
+                    }`}
+                  >
+                    {/* Big Symbol Circle (大きな丸・バツアイコンサークル) */}
+                    <div className={`w-18 h-18 sm:w-24 sm:h-24 rounded-full flex items-center justify-center transition-all ${circleStyle}`}>
+                      {isTrueOption ? (
+                        <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-full border-4 sm:border-6 border-white flex items-center justify-center" />
+                      ) : (
+                        <div className="text-3xl sm:text-5xl font-black leading-none select-none">✕</div>
+                      )}
+                    </div>
+
+                    {/* Label Text */}
+                    <span className="text-base sm:text-xl font-black tracking-wide leading-tight">
+                      {optionText.replace(/^[⚪︎○×✕]\s*/, '')}
+                    </span>
+
+                    {/* Feedback Badges after confirm */}
+                    {isAnswerConfirmed && isCorrectOption && (
+                      <span className="inline-flex items-center gap-1 text-xs font-black bg-emerald-500 text-white px-2.5 py-0.5 rounded-full shadow-sm">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        正解
+                      </span>
+                    )}
+                    {isAnswerConfirmed && isSelected && !isCorrectOption && (
+                      <span className="inline-flex items-center gap-1 text-xs font-black bg-rose-500 text-white px-2.5 py-0.5 rounded-full shadow-sm">
+                        <XCircle className="w-3.5 h-3.5" />
+                        不正解
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:gap-3.5">
             {currentQ.options.map((optionText, optIdx) => {
