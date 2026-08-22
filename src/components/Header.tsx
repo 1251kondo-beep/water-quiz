@@ -61,12 +61,17 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-sky-200/80 dark:border-slate-800 px-4 py-2.5 shadow-sm bg-white/85 dark:bg-slate-900/90 backdrop-blur-md">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsMenuOpen(false)}>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 via-sky-500 to-cyan-400 flex items-center justify-center shadow-md shadow-blue-500/25 group-hover:scale-105 transition-transform">
-            <Droplet className="w-4 h-4 text-white fill-white" />
+        <Link href="/" className="flex items-center gap-2.5 group cursor-pointer" onClick={() => setIsMenuOpen(false)}>
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0 border border-sky-300/60 dark:border-sky-700">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/app-icon.jpg"
+              alt="水ドリ アイコン"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
-            <h1 className="font-black text-sm sm:text-base tracking-tight text-blue-900 dark:text-sky-300">
+            <h1 className="font-black italic text-base sm:text-lg tracking-tight bg-gradient-to-r from-blue-900 via-blue-800 to-sky-700 dark:from-sky-200 dark:to-cyan-400 bg-clip-text text-transparent">
               水道ステップアップドリル
             </h1>
           </div>
