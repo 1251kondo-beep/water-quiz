@@ -12,9 +12,9 @@ const getSessionId = (): string => {
   return id;
 };
 
-export async function syncLessonResultToSupabase(result: LessonResult): Promise<void> {
+export async function syncLessonResultToSupabase(result: LessonResult, courseId?: string): Promise<void> {
   // Always save locally first
-  saveLocalResult(result);
+  saveLocalResult(result, courseId);
 
   if (!isSupabaseConfigured() || !supabase) return;
 

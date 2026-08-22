@@ -32,7 +32,13 @@ export function saveUserStats(stats: UserStats): void {
   }
 }
 
-export function saveLessonResult(result: LessonResult): UserStats {
+export function saveLastCourseId(courseId: string): void {
+  const current = getUserStats();
+  if (current.lastCourseId === courseId) return;
+  saveUserStats({ ...current, lastCourseId: courseId });
+}
+
+export function saveLessonResult(result: LessonResult, courseId?: string): UserStats {
   const current = getUserStats();
   const existing = current.completedLessons[result.lessonId];
 
@@ -51,6 +57,7 @@ export function saveLessonResult(result: LessonResult): UserStats {
     ...current,
     completedLessons: updatedLessons,
     lastStudiedAt: new Date().toISOString(),
+    ...(courseId ? { lastCourseId: courseId } : {}),
   };
 
   saveUserStats(newStats);

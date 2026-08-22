@@ -90,4 +90,6 @@ export interface UserStats {
   soundEnabled: boolean;
   theme: 'dark' | 'light';
   lastStudiedAt?: string;
+  lastCourseId?: string; // 直近で学習・閲覧したコースID
 }
+

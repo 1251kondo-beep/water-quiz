@@ -12,9 +12,9 @@ import {
   Waves,
   CheckCircle2
 } from 'lucide-react';
-import { DOMAINS } from '@/data/domains';
+import { DOMAINS, getCourseById, getLessonById } from '@/data/domains';
 import { getUserStats } from '@/lib/storage';
-import { UserStats } from '@/types/quiz';
+import { UserStats, Course } from '@/types/quiz';
 
 // Course color themes inspired by different clear water streams and springs
 const COURSE_THEMES: Record<
@@ -92,13 +92,75 @@ export default function HomePage() {
     return courseLessonIds.length > 0 && courseLessonIds.every((id) => completedLessonsMap[id]?.passed);
   }).length;
 
-  // Find last active course to continue
-  const continueCourse = availableCourses[0] || selectedDomain.courses[0];
+  // Playable courses across all domains
+  const allPlayableCourses = DOMAINS.flatMap((d) => d.courses).filter((c) => c.units.length > 0);
+
+  // Determine continueCourse dynamically
+  let continueCourse: Course | null = null;
+
+  // 1. Priority: Last accessed course from stats
+  if (stats?.lastCourseId) {
+    const found = getCourseById(stats.lastCourseId);
+    if (found && found.units.length > 0) {
+      continueCourse = found;
+    }
+  }
+
+  // 2. Priority: Course from the most recently completed lesson
+  if (!continueCourse && stats?.completedLessons) {
+    const sortedCompleted = Object.values(stats.completedLessons)
+      .filter((l) => l.completedAt)
+      .sort((a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime());
+
+    for (const res of sortedCompleted) {
+      const match = getLessonById(res.lessonId);
+      if (match?.course && match.course.units.length > 0) {
+        continueCourse = match.course;
+        break;
+      }
+    }
+  }
+
+  // 3. Priority: In-progress course (0% < progress < 100%)
+  if (!continueCourse) {
+    const inProgress = allPlayableCourses.find((course) => {
+      const ids = course.units.flatMap((u) => u.lessons.map((l) => l.id));
+      const passed = ids.filter((id) => completedLessonsMap[id]?.passed).length;
+      return passed > 0 && passed < ids.length;
+    });
+    if (inProgress) {
+      continueCourse = inProgress;
+    }
+  }
+
+  // 4. Priority: First uncompleted playable course
+  if (!continueCourse) {
+    const uncompleted = allPlayableCourses.find((course) => {
+      const ids = course.units.flatMap((u) => u.lessons.map((l) => l.id));
+      const passed = ids.filter((id) => completedLessonsMap[id]?.passed).length;
+      return passed < ids.length;
+    });
+    if (uncompleted) {
+      continueCourse = uncompleted;
+    }
+  }
+
+  // 5. Fallback
+  if (!continueCourse) {
+    continueCourse = availableCourses[0] || selectedDomain.courses[0] || DOMAINS[0].courses[0];
+  }
+
   const continueLessons = continueCourse.units.flatMap((u) => u.lessons);
   const continueCompletedLessons = continueLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
   const continueProgressPct = continueLessons.length > 0
     ? Math.round((continueCompletedLessons / continueLessons.length) * 100)
     : 0;
+  const continueIsAllPassed = continueLessons.length > 0 && continueCompletedLessons === continueLessons.length;
+  const continueTheme = COURSE_THEMES[continueCourse.id] || COURSE_THEMES.handa_vision;
+
+  // Find course index in its domain
+  const continueDomain = DOMAINS.find((d) => d.courses.some((c) => c.id === continueCourse!.id));
+  const continueCourseIndex = continueDomain ? continueDomain.courses.findIndex((c) => c.id === continueCourse!.id) + 1 : 1;
 
   // Calculate simulated streak or continuous days
   const streakDays = completedCount > 0 ? Math.max(1, Math.min(completedCount + 2, 15)) : 1;
@@ -158,13 +220,36 @@ export default function HomePage() {
 
           <Link
             href={`/course/${continueCourse.id}`}
-            className="group block relative rounded-3xl overflow-hidden shadow-lg border-2 border-sky-300 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] cursor-pointer bg-gradient-to-br from-sky-400 via-cyan-500 to-blue-600 text-white p-6 sm:p-7"
+            className={`group block relative rounded-3xl overflow-hidden shadow-lg border-2 ${continueTheme.border} ${continueTheme.gradient} text-white p-6 sm:p-7 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] cursor-pointer`}
           >
             {/* Background water ripples */}
             <div className="absolute inset-0 opacity-20 pointer-events-none">
               <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <path d="M0,50 Q25,30 50,50 T100,50 L100,100 L0,100 Z" fill="#ffffff" />
-                <path d="M0,65 Q35,45 70,65 T100,65 L100,100 L0,100 Z" fill="#ffffff" opacity="0.5" />
+                {continueTheme.waveType === 1 && (
+                  <>
+                    <path d="M0,45 Q25,25 50,45 T100,45 L100,100 L0,100 Z" fill="#ffffff" />
+                    <path d="M0,65 Q35,45 70,65 T100,65 L100,100 L0,100 Z" fill="#ffffff" opacity="0.4" />
+                  </>
+                )}
+                {continueTheme.waveType === 2 && (
+                  <>
+                    <circle cx="20" cy="30" r="18" fill="#ffffff" opacity="0.25" />
+                    <circle cx="85" cy="70" r="25" fill="#ffffff" opacity="0.2" />
+                    <path d="M0,60 Q50,30 100,60 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                  </>
+                )}
+                {continueTheme.waveType === 3 && (
+                  <>
+                    <path d="M0,30 Q30,60 60,30 T100,40 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                    <path d="M0,70 Q40,50 80,70 L100,70 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                  </>
+                )}
+                {continueTheme.waveType === 4 && (
+                  <>
+                    <ellipse cx="50" cy="50" rx="40" ry="20" fill="#ffffff" opacity="0.2" />
+                    <path d="M0,55 Q50,75 100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                  </>
+                )}
               </svg>
             </div>
 
@@ -176,27 +261,43 @@ export default function HomePage() {
             <div className="relative z-10 space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-black uppercase tracking-wider border border-white/30 text-white shadow-sm">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  おすすめコース
+                  <Droplet className="w-3.5 h-3.5 fill-current" />
+                  <span>コース {continueCourseIndex}</span>
+                  <span className="opacity-70">・</span>
+                  <span>
+                    {continueIsAllPassed
+                      ? '完全習得（復習）'
+                      : continueProgressPct > 0
+                      ? '学習中'
+                      : 'おすすめ'}
+                  </span>
                 </div>
 
-                <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white">
-                  {continueCompletedLessons}/{continueLessons.length}
-                </span>
+                <div className="flex items-center gap-2">
+                  {continueIsAllPassed && (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-black bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full shadow-sm">
+                      <CheckCircle2 className="w-3 h-3" />
+                      完全習得
+                    </span>
+                  )}
+                  <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white">
+                    {continueCompletedLessons}/{continueLessons.length}
+                  </span>
+                </div>
               </div>
 
               <div>
                 <h3 className="text-2xl sm:text-3xl font-black text-white drop-shadow-md leading-tight tracking-tight">
                   {continueCourse.title}
                 </h3>
-                <p className="text-xs sm:text-sm font-bold text-sky-100 drop-shadow line-clamp-2 mt-1 leading-relaxed">
+                <p className="text-xs sm:text-sm font-bold text-white/90 drop-shadow line-clamp-2 mt-1 leading-relaxed">
                   {continueCourse.subtitle || continueCourse.description}
                 </p>
               </div>
 
               {/* Progress Bar inside Tile */}
               <div className="space-y-2 pt-1">
-                <div className="flex items-center justify-between text-xs font-bold text-sky-100">
+                <div className="flex items-center justify-between text-xs font-bold text-white/90">
                   <span>進捗状況</span>
                   <span className="font-black text-white">{continueProgressPct}% 完了</span>
                 </div>

@@ -47,10 +47,10 @@ export default function ReviewPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-6 px-4 space-y-6 min-h-screen">
+    <div className="max-w-4xl mx-auto py-6 px-4 space-y-6 min-h-screen">
       <Link
         href="/"
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-600 hover:text-blue-700 bg-white px-3 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all hover:shadow"
+        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 bg-white px-3.5 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all hover:shadow"
       >
         <ArrowLeft className="w-4 h-4" />
         ホームへ戻る

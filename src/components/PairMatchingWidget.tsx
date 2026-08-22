@@ -223,7 +223,7 @@ export default function PairMatchingWidget({
         </svg>
 
         {/* Left Column */}
-        <div className="w-[43%] max-w-[165px] sm:max-w-[190px] space-y-3 z-20 flex flex-col justify-center">
+        <div className="w-[44%] max-w-[200px] sm:max-w-[280px] space-y-3 z-20 flex flex-col justify-center">
           <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider text-center">
             {leftTitle}
           </div>
@@ -279,7 +279,7 @@ export default function PairMatchingWidget({
         </div>
 
         {/* Right Column */}
-        <div className="w-[43%] max-w-[165px] sm:max-w-[190px] space-y-3 z-20 flex flex-col justify-center">
+        <div className="w-[44%] max-w-[200px] sm:max-w-[280px] space-y-3 z-20 flex flex-col justify-center">
           <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider text-center">
             {rightTitle}
           </div>

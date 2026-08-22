@@ -210,11 +210,11 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       completedAt: new Date().toISOString(),
     };
 
-    saveLessonResult(result);
+    saveLessonResult(result, courseId);
     recordMistakes(wrongQuestionIds);
 
     // Sync with Supabase PostgreSQL database
-    syncLessonResultToSupabase(result);
+    syncLessonResultToSupabase(result, courseId);
     syncMistakesToSupabase(wrongQuestionIds);
 
     if (passed) {
@@ -336,39 +336,45 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   // ACTIVE QUIZ RUNNER VIEW
   // ------------------------------------------------------------------
   return (
-    <div ref={quizContainerRef} className="max-w-2xl mx-auto py-4 px-3 sm:px-4 scroll-mt-16 md:scroll-mt-20">
+    <div ref={quizContainerRef} className="max-w-4xl mx-auto py-2 sm:py-4 px-3 sm:px-6 scroll-mt-16 md:scroll-mt-20">
       {/* Header Info Bar */}
       <div className="flex items-center justify-between gap-2 mb-3">
-        <div className="text-xs font-semibold text-cyan-600 dark:text-cyan-400 truncate">
+        <div className="text-xs sm:text-sm font-bold text-cyan-700 dark:text-cyan-400 truncate">
           {unitTitle}
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={handleToggleBookmarkCurrent}
-            className={`p-1.5 rounded-lg border transition-colors cursor-pointer ${
+            className={`p-1.5 sm:p-2 rounded-xl border transition-colors cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
               isBookmarked
                 ? 'bg-amber-100 dark:bg-amber-950/60 border-amber-300 dark:border-amber-500/50 text-amber-700 dark:text-amber-400'
-                : 'bg-slate-100 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                : 'bg-white/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-700'
             }`}
             title={isBookmarked ? 'ブックマーク解除' : 'ブックマーク登録'}
           >
             {isBookmarked ? (
-              <BookmarkCheck className="w-4 h-4 fill-amber-400/20" />
+              <>
+                <BookmarkCheck className="w-4 h-4 fill-amber-400/20 text-amber-600" />
+                <span className="hidden sm:inline">保存済み</span>
+              </>
             ) : (
-              <Bookmark className="w-4 h-4" />
+              <>
+                <Bookmark className="w-4 h-4" />
+                <span className="hidden sm:inline">ブックマーク</span>
+              </>
             )}
           </button>
         </div>
       </div>
 
       {/* Progress Dots Bar (1..10) */}
-      <div className="glass-card rounded-xl p-3 mb-4 flex items-center justify-between gap-1.5 border border-cyan-500/20 whitespace-nowrap overflow-x-auto">
-        <div className="flex items-center gap-1 sm:gap-1.5 flex-1 justify-between shrink-0">
+      <div className="bg-white/80 backdrop-blur-md rounded-2xl p-3 sm:p-4 mb-6 flex items-center justify-between gap-2 border border-sky-200/80 shadow-sm whitespace-nowrap overflow-x-auto">
+        <div className="flex items-center gap-1 sm:gap-2 flex-1 justify-between shrink-0">
           {questions.map((q, idx) => {
             const isCurrent = idx === currentIndex;
             const state = answersState[idx];
 
-            let dotStyle = 'bg-slate-200 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-500';
+            let dotStyle = 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500';
             if (isCurrent) {
               dotStyle = 'bg-cyan-600 dark:bg-cyan-500 border-cyan-400 text-white ring-2 ring-cyan-400/40 dot-active';
             } else if (state === 'correct') {
@@ -380,36 +386,39 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             return (
               <div
                 key={q.id}
-                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border text-[11px] font-bold flex items-center justify-center transition-all ${dotStyle}`}
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border text-xs sm:text-sm font-black flex items-center justify-center transition-all ${dotStyle}`}
               >
                 {idx + 1}
               </div>
             );
           })}
         </div>
-        <span className="text-xs font-bold text-slate-500 dark:text-slate-400 ml-2 shrink-0">
+        <span className="text-xs sm:text-sm font-black text-slate-600 dark:text-slate-400 ml-3 shrink-0">
           {currentIndex + 1} / {total}
         </span>
       </div>
 
-      {/* Question Card */}
-      <div className="glass-card rounded-2xl p-5 md:p-6 mb-4 border border-cyan-500/25 shadow-lg">
-        <div className="flex items-center gap-2 mb-3 min-w-0">
-          <span className="text-[11px] font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-100 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/30 px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0">
-            第 {currentIndex + 1} 問
-          </span>
-          <span className="text-xs text-slate-500 dark:text-slate-400 truncate min-w-0 font-bold">
-            {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
-          </span>
-        </div>
+      {/* Question Main Content Area (No restrictive outer container box) */}
+      <div className="space-y-6">
+        {/* Question Header & Title */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="text-xs sm:text-sm font-black text-cyan-800 dark:text-cyan-300 bg-cyan-100/90 dark:bg-cyan-950/80 border border-cyan-300 dark:border-cyan-500/30 px-3 py-1 rounded-full whitespace-nowrap shrink-0 shadow-sm">
+              第 {currentIndex + 1} 問
+            </span>
+            <span className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 truncate min-w-0 font-bold">
+              {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
+            </span>
+          </div>
 
-        <h2 className="text-base md:text-lg font-bold text-slate-800 dark:text-slate-100 leading-relaxed mb-4">
-          {currentQ.question}
-        </h2>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-black text-slate-900 dark:text-slate-100 leading-relaxed sm:leading-loose">
+            {currentQ.question}
+          </h2>
+        </div>
 
         {/* SDGs Goal Tiles (if present) */}
         {currentQ.sdgsGoals && currentQ.sdgsGoals.length > 0 && (
-          <div className="mb-6 grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {currentQ.sdgsGoals.map((goalNum) => {
               const info: Record<number, { id: string; title: string; color: string }> = {
                 3: { id: '目標 3', title: 'すべての人に健康と福祉を', color: '#4C9F38' },
@@ -426,18 +435,18 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               return (
                 <div
                   key={goalNum}
-                  className="rounded-xl p-3 shadow-md flex flex-col justify-between transition-transform hover:scale-105 border border-white/20"
+                  className="rounded-2xl p-3.5 shadow-md flex flex-col justify-between transition-transform hover:scale-105 border border-white/20"
                   style={{ backgroundColor: sdg.color, color: isGoal7 ? '#0f172a' : '#ffffff' }}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className={`text-[11px] font-black px-2 py-0.5 rounded ${isGoal7 ? 'bg-black/10' : 'bg-black/20'}`}>
+                    <span className={`text-xs font-black px-2 py-0.5 rounded ${isGoal7 ? 'bg-black/10' : 'bg-black/20'}`}>
                       {sdg.id}
                     </span>
-                    <span className="text-[9px] font-black tracking-wider uppercase opacity-80">
+                    <span className="text-[10px] font-black tracking-wider uppercase opacity-80">
                       SDGs
                     </span>
                   </div>
-                  <p className="text-xs font-black leading-tight">
+                  <p className="text-xs sm:text-sm font-black leading-tight">
                     {sdg.title}
                   </p>
                 </div>
@@ -460,29 +469,29 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             }}
           />
         ) : (
-          <div className="grid grid-cols-1 gap-2.5 mb-5">
+          <div className="grid grid-cols-1 gap-3 sm:gap-3.5">
             {currentQ.options.map((optionText, optIdx) => {
               const isSelected = selectedOption === optIdx;
               const isCorrectOption = optIdx === currentQ.answerIndex;
 
-              let btnStyle = 'bg-white dark:bg-slate-800/80 border-slate-200 dark:border-slate-700/80 text-slate-800 dark:text-slate-200 hover:border-cyan-500/60 hover:bg-cyan-50/50 dark:hover:bg-slate-700/80';
-              let labelBadgeStyle = 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300';
+              let btnStyle = 'bg-white dark:bg-slate-800/90 border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:border-cyan-400 hover:bg-cyan-50/40 dark:hover:bg-slate-700/80 shadow-sm hover:shadow-md';
+              let labelBadgeStyle = 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-600';
 
               if (!isAnswerConfirmed) {
                 if (isSelected) {
-                  btnStyle = 'bg-cyan-50 dark:bg-cyan-950/60 border-cyan-500 text-cyan-900 dark:text-cyan-100 ring-2 ring-cyan-500/40 font-bold';
-                  labelBadgeStyle = 'bg-cyan-600 text-white';
+                  btnStyle = 'bg-cyan-50/90 dark:bg-cyan-950/70 border-cyan-500 text-cyan-950 dark:text-cyan-100 ring-2 ring-cyan-500/40 font-bold shadow-md';
+                  labelBadgeStyle = 'bg-cyan-600 text-white border-cyan-600';
                 }
               } else {
                 // Graded state
                 if (isCorrectOption) {
-                  btnStyle = 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-500 text-emerald-900 dark:text-emerald-100 ring-2 ring-emerald-500/50';
-                  labelBadgeStyle = 'bg-emerald-600 text-white';
+                  btnStyle = 'bg-emerald-50/95 dark:bg-emerald-950/80 border-emerald-500 text-emerald-950 dark:text-emerald-100 ring-2 ring-emerald-500/50 shadow-md';
+                  labelBadgeStyle = 'bg-emerald-600 text-white border-emerald-600';
                 } else if (isSelected && !isCorrectOption) {
-                  btnStyle = 'bg-rose-50 dark:bg-rose-950/80 border-rose-500 text-rose-900 dark:text-rose-100 ring-2 ring-rose-500/50';
-                  labelBadgeStyle = 'bg-rose-600 text-white';
+                  btnStyle = 'bg-rose-50/95 dark:bg-rose-950/80 border-rose-500 text-rose-950 dark:text-rose-100 ring-2 ring-rose-500/50 shadow-md';
+                  labelBadgeStyle = 'bg-rose-600 text-white border-rose-600';
                 } else {
-                  btnStyle = 'bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 text-slate-400 dark:text-slate-500 opacity-60';
+                  btnStyle = 'bg-slate-50/60 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800 text-slate-400 dark:text-slate-500 opacity-50';
                 }
               }
 
@@ -493,24 +502,24 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                   key={optIdx}
                   onClick={() => handleSelectOption(optIdx)}
                   disabled={isAnswerConfirmed}
-                  className={`w-full text-left p-3.5 rounded-xl border transition-all flex items-start gap-3 text-sm font-medium ${btnStyle} ${
+                  className={`w-full text-left p-4 sm:p-5 rounded-2xl border-2 transition-all flex items-start gap-3.5 sm:gap-4 text-base sm:text-lg font-bold leading-relaxed ${btnStyle} ${
                     !isAnswerConfirmed ? 'cursor-pointer active:scale-[0.99]' : 'cursor-default'
                   }`}
                 >
-                  <span className={`w-6 h-6 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 mt-0.5 ${labelBadgeStyle}`}>
+                  <span className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-sm sm:text-base font-black flex items-center justify-center shrink-0 mt-0.5 transition-colors ${labelBadgeStyle}`}>
                     {labels[optIdx]}
                   </span>
                   <span className="flex-1 leading-relaxed">{optionText}</span>
 
                   {!isAnswerConfirmed && isSelected && (
-                    <Check className="w-5 h-5 text-cyan-600 dark:text-cyan-400 shrink-0 mt-0.5" />
+                    <Check className="w-6 h-6 text-cyan-600 dark:text-cyan-400 shrink-0 mt-0.5" />
                   )}
 
                   {isAnswerConfirmed && isCorrectOption && (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                   )}
                   {isAnswerConfirmed && isSelected && !isCorrectOption && (
-                    <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                    <XCircle className="w-6 h-6 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                   )}
                 </button>
               );
@@ -527,14 +536,14 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                 ? !isMatchFullyConnected
                 : selectedOption === null
             }
-            className={`w-full py-3.5 rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer ${
+            className={`w-full py-4 sm:py-4.5 rounded-2xl font-black text-base sm:text-lg shadow-lg flex items-center justify-center gap-2.5 transition-all cursor-pointer ${
               (currentQ.matchPairs && currentQ.matchPairs.length > 0 ? isMatchFullyConnected : selectedOption !== null)
-                ? 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-500/25 active:scale-[0.99]'
+                ? 'bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-cyan-500/25 active:scale-[0.99]'
                 : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
             }`}
           >
             <span>回答する（確定）</span>
-            <Check className="w-4 h-4" />
+            <Check className="w-5 h-5" />
           </button>
         )}
       </div>
@@ -543,19 +552,19 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       {isAnswerConfirmed && (
         <div
           ref={explanationRef}
-          className="glass-card rounded-2xl p-5 border border-cyan-500/30 shadow-xl mb-6 space-y-4.5 animate-in fade-in slide-in-from-bottom-4 duration-300 scroll-mt-6"
+          className="mt-6 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-sky-300/80 shadow-xl space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-300 scroll-mt-6"
         >
           {/* Result Header Banner */}
-          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+          <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
             <div className="flex items-center gap-2">
               {answersState[currentIndex] === 'correct' ? (
-                <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold text-base md:text-lg">
-                  <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
+                <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-black text-lg sm:text-xl">
+                  <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7" />
                   正解です！
                 </div>
               ) : (
-                <div className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400 font-bold text-base md:text-lg">
-                  <XCircle className="w-5 h-5 md:w-6 md:h-6" />
+                <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400 font-black text-lg sm:text-xl">
+                  <XCircle className="w-6 h-6 sm:w-7 sm:h-7" />
                   不正解です{currentQ.matchPairs && currentQ.matchPairs.length > 0 ? '' : `（正解: ${['A', 'B', 'C', 'D'][currentQ.answerIndex]}）`}
                 </div>
               )}
@@ -563,56 +572,56 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
             <button
               onClick={handleToggleBookmarkCurrent}
-              className="text-xs text-amber-600 dark:text-amber-400 flex items-center gap-1 hover:underline cursor-pointer"
+              className="text-xs sm:text-sm font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5 hover:underline cursor-pointer"
             >
-              <Bookmark className="w-3.5 h-3.5" />
+              <Bookmark className="w-4 h-4" />
               {isBookmarked ? 'ブックマーク中' : 'あとで復習'}
             </button>
           </div>
 
           {/* Everyday Analogy Box (日常のたとえ - 難解・煩雑な場合のみ表示) */}
           {Boolean(currentQ.analogy && currentQ.analogy.trim().length > 0) && (
-            <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-500/30 rounded-xl p-4">
-              <div className="flex items-center gap-1.5 text-amber-800 dark:text-amber-300 font-bold text-sm mb-2">
-                <Lightbulb className="w-4 h-4 fill-amber-400/20" />
+            <div className="bg-amber-50/90 dark:bg-amber-950/40 border-2 border-amber-300 dark:border-amber-500/30 rounded-2xl p-4 sm:p-5">
+              <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-black text-sm sm:text-base mb-2">
+                <Lightbulb className="w-5 h-5 fill-amber-400/20 text-amber-600" />
                 日常のたとえで覚える！
               </div>
-              <p className="text-sm md:text-base text-amber-950 dark:text-amber-100 font-medium leading-relaxed">
+              <p className="text-sm sm:text-base text-amber-950 dark:text-amber-100 font-bold leading-relaxed">
                 {currentQ.analogy}
               </p>
             </div>
           )}
 
           {/* Detailed Explanation (実務解説) */}
-          <div className="space-y-1.5">
-            <h4 className="text-sm font-bold text-cyan-800 dark:text-cyan-300 flex items-center gap-1.5">
-              <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+          <div className="space-y-2">
+            <h4 className="text-sm sm:text-base font-black text-cyan-900 dark:text-cyan-300 flex items-center gap-2">
+              <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-600 dark:text-cyan-400" />
               実務・詳細解説
             </h4>
-            <p className="text-sm md:text-base text-slate-800 dark:text-slate-100 leading-relaxed font-normal">
+            <p className="text-sm sm:text-base text-slate-800 dark:text-slate-100 leading-relaxed sm:leading-loose font-normal">
               {currentQ.explanation}
             </p>
           </div>
 
           {/* Reference Citation */}
-          <div className="text-xs md:text-sm text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/60 rounded-lg p-2.5 flex items-center gap-1.5 border border-slate-200 dark:border-slate-800">
-            <span className="text-cyan-700 dark:text-cyan-400 font-semibold">📌 参照:</span>
+          <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-900/60 rounded-xl p-3 flex items-center gap-2 border border-slate-200 dark:border-slate-800">
+            <span className="text-cyan-700 dark:text-cyan-400 font-bold">📌 参照:</span>
             <span>「{currentQ.referenceSection}」</span>
           </div>
 
           {/* Next Button */}
           <button
             onClick={handleNextQuestion}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-sm shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.99] cursor-pointer"
+            className="w-full py-4 sm:py-4.5 rounded-2xl bg-gradient-to-r from-cyan-600 via-sky-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-black text-base sm:text-lg shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2.5 transition-all active:scale-[0.99] cursor-pointer"
           >
             {currentIndex + 1 < total ? (
               <>
                 <span>次の問題へ ({currentIndex + 2}/{total})</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-5 h-5" />
               </>
             ) : (
               <>
-                <Sparkles className="w-4 h-4" />
+                <Sparkles className="w-5 h-5" />
                 <span>結果を見る</span>
               </>
             )}
@@ -622,3 +631,4 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     </div>
   );
 }
+
