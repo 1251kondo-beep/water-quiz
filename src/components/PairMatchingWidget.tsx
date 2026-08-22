@@ -163,7 +163,7 @@ export default function PairMatchingWidget({
       <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1">
         <span className="flex items-center gap-1.5 text-blue-700 dark:text-blue-300 font-bold">
           <Link2 className="w-4 h-4 text-blue-600 shrink-0" />
-          左の項目をタップし、右の対応する項目をタップして結んでください
+          左右の対応する項目をタップしてペアを作ってください
         </span>
         {!isConfirmed && Object.keys(userConnections).length > 0 && (
           <button
@@ -290,7 +290,7 @@ export default function PairMatchingWidget({
               'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200';
             if (selectedLeftId) {
               cardStyle +=
-                ' border-blue-400 hover:border-blue-600 hover:bg-blue-50/60 dark:hover:bg-slate-700/80 cursor-pointer ring-2 ring-blue-400/40 animate-pulse';
+                ' border-blue-400 hover:border-blue-600 hover:bg-blue-50/60 dark:hover:bg-slate-700/80 cursor-pointer shadow-sm';
             } else {
               cardStyle += ' cursor-pointer hover:border-slate-400';
             }

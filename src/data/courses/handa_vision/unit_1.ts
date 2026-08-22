@@ -51,7 +51,7 @@ const lesson_1_1: Lesson = {
     {
       id: 'hv_1_1_03',
       type: 'matching',
-      question: '本ビジョンが掲げる3大施策目標（左列）と、その具体的な基本施策の方針（右列）をタップして線で結び、正しいペアを作ってください。',
+      question: '本ビジョンが掲げる3大施策目標と、その具体的な基本施策の方針を結び、正しいペアを作ってください。',
       leftTitle: '【施策目標】',
       rightTitle: '【施策の基本方針】',
       matchPairs: [
@@ -467,7 +467,7 @@ const lesson_1_3: Lesson = {
     {
       id: 'hv_1_3_03',
       type: 'matching',
-      question: '半田市の受水点（左列）と、それぞれの送水元・送水方式（右列）をタップして線で結び、正しいペアを作ってください。',
+      question: '半田市の受水点と、それぞれの送水元・送水方式を結び、正しいペアを作ってください。',
       leftTitle: '【配水場・受水点】',
       rightTitle: '【県水送水元・送水方式】',
       matchPairs: [
