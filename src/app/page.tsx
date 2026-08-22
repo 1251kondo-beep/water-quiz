@@ -15,59 +15,9 @@ import {
 import { DOMAINS, getCourseById, getLessonById } from '@/data/domains';
 import { getUserStats } from '@/lib/storage';
 import { UserStats, Course } from '@/types/quiz';
+import { COURSE_PAGE_THEMES, getCourseTheme } from '@/data/themes';
 
-// Course color themes inspired by different clear water streams and springs
-const COURSE_THEMES: Record<
-  string,
-  {
-    gradient: string;
-    border: string;
-    shadow: string;
-    tagBg: string;
-    waveType: number;
-  }
-> = {
-  handa_vision: {
-    // 清流スカイアクア (澄んだ川・清流)
-    gradient: 'bg-gradient-to-br from-sky-400 via-cyan-500 to-blue-600',
-    border: 'border-sky-300',
-    shadow: 'shadow-sky-500/20',
-    tagBg: 'bg-white/25',
-    waveType: 1,
-  },
-  water_finance: {
-    // 深層水クリスタルオーシャン (深層水・透明感のあるティールブルー)
-    gradient: 'bg-gradient-to-br from-teal-400 via-cyan-600 to-blue-700',
-    border: 'border-teal-300',
-    shadow: 'shadow-teal-500/20',
-    tagBg: 'bg-white/25',
-    waveType: 2,
-  },
-  water_asset: {
-    // 水流インディゴマリン (管路をめぐる清らかな水流)
-    gradient: 'bg-gradient-to-br from-blue-400 via-indigo-500 to-sky-600',
-    border: 'border-indigo-300',
-    shadow: 'shadow-indigo-500/20',
-    tagBg: 'bg-white/25',
-    waveType: 3,
-  },
-  water_law: {
-    // 湧水エメラルドスプリング (山から湧き出るクリスタル湧水)
-    gradient: 'bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-700',
-    border: 'border-emerald-300',
-    shadow: 'shadow-emerald-500/20',
-    tagBg: 'bg-white/25',
-    waveType: 4,
-  },
-  sewerage_finance: {
-    // 水の循環アクアレイン (恵みの雨と水の再生)
-    gradient: 'bg-gradient-to-br from-cyan-600 via-sky-600 to-indigo-700',
-    border: 'border-cyan-300',
-    shadow: 'shadow-cyan-500/20',
-    tagBg: 'bg-white/25',
-    waveType: 1,
-  },
-};
+const COURSE_THEMES = COURSE_PAGE_THEMES;
 
 export default function HomePage() {
   const [stats, setStats] = useState<UserStats | null>(null);

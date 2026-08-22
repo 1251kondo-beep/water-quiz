@@ -5,18 +5,23 @@ import Link from 'next/link';
 import { Check, Lock, Star, Play, Layers } from 'lucide-react';
 import { Unit, Lesson, LessonResult } from '@/types/quiz';
 import WaterMascot from '@/components/WaterMascot';
+import { getCourseTheme } from '@/data/themes';
 
 interface WaterStreamMapProps {
   units: Unit[];
   completedMap: Record<string, LessonResult>;
   onLockClick?: (lessonTitle: string, isComingSoon?: boolean) => void;
+  courseId?: string;
 }
 
 export default function WaterStreamMap({
   units,
   completedMap,
   onLockClick,
+  courseId,
 }: WaterStreamMapProps) {
+  const theme = getCourseTheme(courseId);
+
   // Flatten all lessons across all units to determine global unlock/completion & active position
   const allLessonsWithUnit = useMemo(() => {
     return units.flatMap((unit) =>
@@ -70,11 +75,11 @@ export default function WaterStreamMap({
 
   return (
     <div className="relative w-full max-w-xl mx-auto pt-2 pb-16 px-2 sm:px-4 select-none">
-      {/* Background Water Decor */}
+      {/* Background Water Decor with dynamic theme colors */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-35">
-        <div className="absolute top-1/6 left-4 w-56 h-56 rounded-full bg-cyan-200/50 blur-3xl" />
-        <div className="absolute top-1/2 right-4 w-64 h-64 rounded-full bg-blue-200/50 blur-3xl" />
-        <div className="absolute top-5/6 left-6 w-56 h-56 rounded-full bg-sky-200/50 blur-3xl" />
+        <div className={`absolute top-1/6 left-4 w-56 h-56 rounded-full ${theme.bgBlur1} blur-3xl`} />
+        <div className={`absolute top-1/2 right-4 w-64 h-64 rounded-full ${theme.bgBlur2} blur-3xl`} />
+        <div className={`absolute top-5/6 left-6 w-56 h-56 rounded-full ${theme.bgBlur3} blur-3xl`} />
         
         {/* Floating bubbles */}
         <div className="absolute top-12 left-8 w-6 h-6 rounded-full border-2 border-cyan-400/40 bg-white/30 animate-float-slow" />
@@ -94,7 +99,7 @@ export default function WaterStreamMap({
             <div key={unit.id} id={`section-${unit.unitNumber}`} className="relative scroll-mt-24">
               {/* Prominent Section Header (大きく目立つセクションタイトル) */}
               <div className="text-center mb-6 pt-4 space-y-2 px-3">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-600 text-white font-black text-xs sm:text-sm shadow-md shadow-blue-500/25 tracking-wide">
+                <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full ${theme.sectionHeaderBadge} font-black text-xs sm:text-sm tracking-wide`}>
                   <Layers className="w-4 h-4" />
                   <span>Section {unit.unitNumber}</span>
                   <span className="bg-white/25 px-2 py-0.2 rounded-full text-[11px]">
@@ -121,9 +126,9 @@ export default function WaterStreamMap({
                 >
                   <defs>
                     <linearGradient id={`streamGrad-${unit.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#0284c7" stopOpacity="0.75" />
-                      <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.8" />
-                      <stop offset="100%" stopColor="#0284c7" stopOpacity="0.75" />
+                      <stop offset="0%" stopColor={theme.streamGradStart} stopOpacity="0.8" />
+                      <stop offset="50%" stopColor={theme.streamGradMid} stopOpacity="0.85" />
+                      <stop offset="100%" stopColor={theme.streamGradEnd} stopOpacity="0.8" />
                     </linearGradient>
                   </defs>
 
@@ -154,17 +159,17 @@ export default function WaterStreamMap({
                         <path
                           d={pathD}
                           fill="none"
-                          stroke="#bae6fd"
+                          stroke={theme.streamBaseColor}
                           strokeWidth="28"
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          opacity="0.6"
+                          opacity="0.65"
                         />
                         <path
                           d={pathD}
                           fill="none"
                           stroke={`url(#streamGrad-${unit.id})`}
-                          strokeWidth="5"
+                          strokeWidth="5.5"
                           strokeDasharray="8 8"
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -220,10 +225,10 @@ export default function WaterStreamMap({
                             <div
                               className={`relative flex items-center rounded-3xl sm:rounded-full p-1.5 transition-all duration-300 transform group-hover:scale-105 active:scale-95 w-full ${
                                 isCompleted
-                                  ? 'bg-white shadow-[0_6px_20px_rgba(2,132,199,0.18)] border-2 border-sky-300'
+                                  ? `bg-white shadow-[0_6px_20px_rgba(13,148,136,0.18)] border-2 ${theme.nodeCompletedBorder}`
                                   : hasMascot
-                                  ? 'bg-white shadow-[0_8px_25px_rgba(2,132,199,0.3)] border-2 border-blue-500 ring-4 ring-sky-300/60'
-                                  : 'bg-white shadow-md border-2 border-sky-200'
+                                  ? `bg-white shadow-[0_8px_25px_rgba(13,148,136,0.3)] border-2 ${theme.nodeActiveBorder} ring-4 ${theme.nodeActiveRing}`
+                                  : 'bg-white shadow-md border-2 border-slate-200'
                               }`}
                               style={{
                                 flexDirection: isLeft ? 'row' : 'row-reverse',
@@ -233,9 +238,9 @@ export default function WaterStreamMap({
                               <div
                                 className={`shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-md m-1 transition-all ${
                                   isCompleted
-                                    ? 'bg-gradient-to-br from-sky-400 to-cyan-500 text-white'
+                                    ? `bg-gradient-to-br ${theme.nodeCompletedGrad} text-white`
                                     : hasMascot
-                                    ? 'bg-gradient-to-br from-blue-500 to-cyan-500 text-white animate-water-pulse'
+                                    ? `bg-gradient-to-br ${theme.nodeActiveGrad} text-white animate-water-pulse`
                                     : 'bg-slate-100 text-slate-400'
                                 }`}
                               >
