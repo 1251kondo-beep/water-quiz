@@ -627,7 +627,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               {currentQ.options.map((optionText, optIdx) => {
                 const isSelected = selectedOption === optIdx;
                 const isCorrectOption = optIdx === currentQ.answerIndex;
-                const isTrueOption = optIdx === 0 || optionText.includes('正し') || optionText.includes('○') || optionText.includes('⚪︎');
+                const isFalseOption = optionText.includes('間違') || optionText.includes('誤') || optionText.includes('×') || optionText.includes('✕') || optionText.toLowerCase() === 'false';
+                const isTrueOption = !isFalseOption && (optionText.includes('正し') || optionText.includes('○') || optionText.includes('⚪︎') || optionText.includes('〇') || optionText.toLowerCase() === 'true' || optIdx === 0);
 
                 let cardStyle = 'bg-white dark:bg-slate-800/90 border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:border-cyan-400 hover:shadow-lg';
                 let circleStyle = 'bg-gradient-to-br from-cyan-500 via-sky-500 to-blue-600 text-white shadow-md shadow-cyan-500/25';
