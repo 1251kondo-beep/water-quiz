@@ -161,8 +161,8 @@ export default function PairMatchingWidget({
   return (
     <div className="space-y-3 my-4 touch-manipulation">
       <div className="flex items-center justify-between text-xs text-slate-500 font-bold px-1">
-        <span className="flex items-center gap-1.5 text-blue-700 dark:text-blue-300 font-bold">
-          <Link2 className="w-4 h-4 text-blue-600 shrink-0" />
+        <span className="flex items-center gap-1.5 text-sky-700 dark:text-sky-300 font-bold">
+          <Link2 className="w-4 h-4 text-sky-600 shrink-0" />
           左右の対応する項目をタップしてペアを作ってください
         </span>
         {!isConfirmed && Object.keys(userConnections).length > 0 && (
@@ -171,7 +171,7 @@ export default function PairMatchingWidget({
             className="flex items-center gap-1 text-slate-500 hover:text-rose-600 transition-colors cursor-pointer text-[11px] font-bold shrink-0 ml-2"
           >
             <RotateCcw className="w-3 h-3" />
-            やり直す
+            リセット
           </button>
         )}
       </div>
@@ -197,18 +197,27 @@ export default function PairMatchingWidget({
 
             return (
               <g key={`${line.leftId}-${line.rightId}`}>
+                {/* Connecting S-Curve Line (添付写真基準: 太さ約2.5px〜3px) */}
                 <path
                   d={`M ${line.x1} ${line.y1} C ${cx1} ${line.y1}, ${cx2} ${line.y2}, ${line.x2} ${line.y2}`}
                   fill="none"
                   stroke={strokeColor}
-                  strokeWidth={isConfirmed ? '4' : '3.5'}
+                  strokeWidth={isConfirmed ? '3' : '2.5'}
                   strokeLinecap="round"
                   className="transition-all duration-300"
                 />
+                {/* Left End Connector Dot (左端の丸) */}
                 <circle
-                  cx={(line.x1 + line.x2) / 2}
-                  cy={(line.y1 + line.y2) / 2}
-                  r="6"
+                  cx={line.x1}
+                  cy={line.y1}
+                  r="4.5"
+                  fill={strokeColor}
+                />
+                {/* Right End Connector Dot (右端の丸) */}
+                <circle
+                  cx={line.x2}
+                  cy={line.y2}
+                  r="4.5"
                   fill={strokeColor}
                 />
               </g>
@@ -218,10 +227,12 @@ export default function PairMatchingWidget({
 
         {/* Left Column */}
         <div className="w-[44%] max-w-[200px] sm:max-w-[280px] space-y-3 z-20 flex flex-col justify-center">
-          <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider text-center">
-            {leftTitle}
-          </div>
-          {leftItems.map((item, idx) => {
+          {leftTitle && (
+            <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 tracking-wider text-center">
+              {leftTitle}
+            </div>
+          )}
+          {leftItems.map((item) => {
             const isSelected = selectedLeftId === item.leftId;
             const connectedRightId = userConnections[item.leftId];
             const connectedRightItem = rightItems.find((r) => r.rightId === connectedRightId);
@@ -231,22 +242,28 @@ export default function PairMatchingWidget({
             const isWrong = isConfirmed && connectedRightItem && connectedRightItem.rightText !== pair?.rightText;
 
             let cardStyle =
-              'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-blue-500 hover:shadow-md';
+              'bg-[#edf5f6] dark:bg-slate-800 border-2 border-sky-300/80 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-sky-500 shadow-sm';
+            let dotStyle = 'bg-sky-400 dark:bg-sky-600';
+
             if (isSelected) {
               cardStyle =
-                'bg-blue-50 dark:bg-blue-950/80 border-blue-600 text-blue-900 dark:text-blue-100 ring-2 ring-blue-500/50 shadow-md font-black';
+                'bg-sky-100/90 dark:bg-sky-950/80 border-2 border-sky-600 text-sky-950 dark:text-sky-100 ring-2 ring-sky-500/40 shadow-md font-bold';
+              dotStyle = 'bg-sky-600 ring-2 ring-white dark:ring-slate-900';
             } else if (connectedRightId) {
               cardStyle =
-                'bg-blue-50/90 dark:bg-blue-950/60 border-blue-500 text-blue-900 dark:text-blue-100 font-bold shadow-sm';
+                'bg-sky-100/70 dark:bg-sky-950/60 border-2 border-sky-500 text-sky-900 dark:text-sky-100 font-bold shadow-sm';
+              dotStyle = 'bg-sky-600';
             }
 
             if (isConfirmed) {
               if (isCorrect) {
                 cardStyle =
-                  'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold ring-2 ring-emerald-500/40';
+                  'bg-emerald-50 dark:bg-emerald-950/80 border-2 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold ring-2 ring-emerald-500/40';
+                dotStyle = 'bg-emerald-500';
               } else if (isWrong) {
                 cardStyle =
-                  'bg-rose-50 dark:bg-rose-950/80 border-rose-500 text-rose-900 dark:text-rose-100 font-bold ring-2 ring-rose-500/40';
+                  'bg-rose-50 dark:bg-rose-950/80 border-2 border-rose-500 text-rose-900 dark:text-rose-100 font-bold ring-2 ring-rose-500/40';
+                dotStyle = 'bg-rose-500';
               }
             }
 
@@ -257,16 +274,23 @@ export default function PairMatchingWidget({
                   itemRefs.current[`left_${item.leftId}`] = el;
                 }}
                 onClick={() => handleLeftClick(item.leftId)}
-                className={`p-3 sm:p-3.5 rounded-xl border-2 leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
+                className={`p-3 sm:p-4 rounded-2xl leading-relaxed cursor-pointer transition-all duration-200 flex items-center justify-center text-center relative select-none min-h-[64px] sm:min-h-[72px] ${cardStyle}`}
               >
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="w-4.5 h-4.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-black text-[10px] flex items-center justify-center shrink-0">
-                    {idx + 1}
-                  </span>
-                  <span className="font-bold text-xs sm:text-sm leading-tight break-words">{item.leftText}</span>
-                </div>
-                {isConfirmed && isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />}
-                {isConfirmed && isWrong && <XCircle className="w-4 h-4 text-rose-600 shrink-0 ml-1" />}
+                <span className="font-medium sm:font-semibold text-xs sm:text-[14px] leading-relaxed break-words">
+                  {item.leftText}
+                </span>
+
+                {/* Right side connector circle dot (添付写真基準: カード右端中央の丸) */}
+                <div
+                  className={`absolute -right-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full transition-colors ${dotStyle}`}
+                />
+
+                {isConfirmed && isCorrect && (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 absolute top-2 right-2" />
+                )}
+                {isConfirmed && isWrong && (
+                  <XCircle className="w-4 h-4 text-rose-600 shrink-0 absolute top-2 right-2" />
+                )}
               </div>
             );
           })}
@@ -274,9 +298,11 @@ export default function PairMatchingWidget({
 
         {/* Right Column */}
         <div className="w-[44%] max-w-[200px] sm:max-w-[280px] space-y-3 z-20 flex flex-col justify-center">
-          <div className="text-xs sm:text-sm font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider text-center">
-            {rightTitle}
-          </div>
+          {rightTitle && (
+            <div className="text-xs sm:text-sm font-bold text-slate-600 dark:text-slate-400 tracking-wider text-center">
+              {rightTitle}
+            </div>
+          )}
           {rightItems.map((item) => {
             const connectedLeftId = Object.keys(userConnections).find(
               (k) => userConnections[k] === item.rightId
@@ -287,26 +313,31 @@ export default function PairMatchingWidget({
             const isWrong = isConfirmed && connectedLeftId && connectedLeftPair?.rightText !== item.rightText;
 
             let cardStyle =
-              'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200';
+              'bg-[#edf5f6] dark:bg-slate-800 border-2 border-sky-300/80 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-sky-500 shadow-sm';
+            let dotStyle = 'bg-sky-400 dark:bg-sky-600';
+
             if (selectedLeftId) {
               cardStyle +=
-                ' border-blue-400 hover:border-blue-600 hover:bg-blue-50/60 dark:hover:bg-slate-700/80 cursor-pointer shadow-sm';
+                ' border-sky-400 hover:border-sky-600 hover:bg-sky-100/70 dark:hover:bg-slate-700/80 cursor-pointer';
             } else {
-              cardStyle += ' cursor-pointer hover:border-slate-400';
+              cardStyle += ' cursor-pointer hover:border-sky-400';
             }
 
             if (connectedLeftId) {
               cardStyle =
-                'bg-blue-50/90 dark:bg-blue-950/60 border-blue-500 text-blue-900 dark:text-blue-100 font-bold shadow-sm';
+                'bg-sky-100/70 dark:bg-sky-950/60 border-2 border-sky-500 text-sky-900 dark:text-sky-100 font-bold shadow-sm';
+              dotStyle = 'bg-sky-600';
             }
 
             if (isConfirmed) {
               if (isCorrect) {
                 cardStyle =
-                  'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold ring-2 ring-emerald-500/40';
+                  'bg-emerald-50 dark:bg-emerald-950/80 border-2 border-emerald-500 text-emerald-900 dark:text-emerald-100 font-bold ring-2 ring-emerald-500/40';
+                dotStyle = 'bg-emerald-500';
               } else if (isWrong) {
                 cardStyle =
-                  'bg-rose-50 dark:bg-rose-950/80 border-rose-500 text-rose-900 dark:text-rose-100 font-bold ring-2 ring-rose-500/40';
+                  'bg-rose-50 dark:bg-rose-950/80 border-2 border-rose-500 text-rose-900 dark:text-rose-100 font-bold ring-2 ring-rose-500/40';
+                dotStyle = 'bg-rose-500';
               }
             }
 
@@ -317,11 +348,23 @@ export default function PairMatchingWidget({
                   itemRefs.current[`right_${item.rightId}`] = el;
                 }}
                 onClick={() => handleRightClick(item.rightId)}
-                className={`p-3 sm:p-3.5 rounded-xl border-2 leading-tight cursor-pointer transition-all duration-200 flex items-center justify-between relative select-none ${cardStyle}`}
+                className={`p-3 sm:p-4 rounded-2xl leading-relaxed cursor-pointer transition-all duration-200 flex items-center justify-center text-center relative select-none min-h-[64px] sm:min-h-[72px] ${cardStyle}`}
               >
-                <span className="font-bold text-xs sm:text-sm leading-tight break-words">{item.rightText}</span>
-                {isConfirmed && isCorrect && <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 ml-1" />}
-                {isConfirmed && isWrong && <XCircle className="w-4 h-4 text-rose-600 shrink-0 ml-1" />}
+                {/* Left side connector circle dot (添付写真基準: カード左端中央の丸) */}
+                <div
+                  className={`absolute -left-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full transition-colors ${dotStyle}`}
+                />
+
+                <span className="font-medium sm:font-semibold text-xs sm:text-[14px] leading-relaxed break-words">
+                  {item.rightText}
+                </span>
+
+                {isConfirmed && isCorrect && (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 absolute top-2 right-2" />
+                )}
+                {isConfirmed && isWrong && (
+                  <XCircle className="w-4 h-4 text-rose-600 shrink-0 absolute top-2 right-2" />
+                )}
               </div>
             );
           })}
