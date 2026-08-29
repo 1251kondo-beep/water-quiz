@@ -84,43 +84,41 @@ export default function DiagramFlowCard({
         </div>
       )}
 
-      {/* Nodes Flow Container (スクロール時は左端から表示) */}
-      <div className="p-4 sm:p-6 overflow-x-auto">
-        <div className="flex items-center justify-start md:justify-center gap-2 sm:gap-3 min-w-max py-1 px-1">
+      {/* Nodes Container (スクロールなしで収まるレスポンシブ配置) */}
+      <div className="p-3.5 sm:p-5">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 py-1 px-1">
           {diagram.nodes.map((node, idx) => {
             const isLast = idx === diagram.nodes.length - 1;
 
             return (
-              <React.Fragment key={idx}>
+              <div key={idx} className="flex items-center gap-1.5 sm:gap-3">
                 {/* Node Box */}
-                <div className="flex flex-col items-center text-center space-y-1.5 shrink-0 min-w-[76px] sm:min-w-[88px] max-w-[100px]">
+                <div className="flex flex-col items-center text-center space-y-1 shrink-0 w-[72px] sm:w-[88px]">
                   {/* Icon Card */}
-                  <div className="w-13 h-13 sm:w-15 sm:h-15 rounded-2xl bg-slate-50 dark:bg-slate-750 border-2 border-slate-200 dark:border-slate-650 flex items-center justify-center shadow-xs transition-transform hover:scale-105">
+                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-slate-50 dark:bg-slate-750 border-2 border-slate-200 dark:border-slate-650 flex items-center justify-center shadow-xs transition-transform hover:scale-105">
                     {getNodeIcon(node.icon)}
                   </div>
 
                   {/* Node Label */}
-                  <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100 leading-tight">
+                  <span className="text-[11px] sm:text-xs font-black text-slate-800 dark:text-slate-100 leading-tight">
                     {node.label}
                   </span>
 
                   {/* Subtext */}
                   {node.subText && (
-                    <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold leading-tight">
+                    <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-tight">
                       {node.subText}
                     </span>
                   )}
                 </div>
 
-                {/* Connecting Line / Arrow */}
+                {/* Connecting Line / Arrow (フロー矢印) */}
                 {!isLast && (
-                  <div className="flex items-center justify-center shrink-0 w-5 sm:w-8">
-                    <div className="w-full h-0.5 bg-slate-300 dark:bg-slate-600 relative">
-                      <div className="absolute -top-1 right-0 w-2 h-2 border-t-2 border-r-2 border-slate-400 dark:border-slate-500 rotate-45" />
-                    </div>
+                  <div className="flex items-center justify-center shrink-0 w-3 sm:w-6 text-slate-400 dark:text-slate-500">
+                    <span className="text-xs sm:text-sm font-bold">→</span>
                   </div>
                 )}
-              </React.Fragment>
+              </div>
             );
           })}
         </div>
