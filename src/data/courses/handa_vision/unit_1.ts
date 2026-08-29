@@ -434,21 +434,21 @@ const lesson_1_3: Lesson = {
     {
       id: 'hv_1_3_02',
       type: 'matching',
-      question: '砂谷配水場（敷地内計4池・合計15,470m³）の各配水池と、それぞれの「有効容量」を結び、正しいペアを作ってください。',
+      question: '砂谷配水場の配置図を参考に、各配水池（第１〜第４）と、それぞれの「有効容量」を結び、正しいペアを作ってください。',
       leftTitle: '【砂谷配水場の配水池】',
       rightTitle: '【有効容量】',
       facilityMap: 'sunagaya_reservoirs',
       matchPairs: [
-        { leftId: 's1', leftText: '砂谷第1配水池（RC造）', rightId: 'c1', rightText: '4,000 m³' },
-        { leftId: 's2', leftText: '砂谷第2配水池（PC造・中央）', rightId: 'c2', rightText: '4,970 m³（最大）' },
-        { leftId: 's3', leftText: '砂谷第3配水池（PC造・上側）', rightId: 'c3', rightText: '3,500 m³' },
-        { leftId: 's4', leftText: '砂谷第4配水池（RC造）', rightId: 'c4', rightText: '3,000 m³' }
+        { leftId: 's1', leftText: '第１配水池', rightId: 'c1', rightText: '4,000 m³' },
+        { leftId: 's2', leftText: '第２配水池', rightId: 'c2', rightText: '4,970 m³' },
+        { leftId: 's3', leftText: '第３配水池', rightId: 'c3', rightText: '3,500 m³' },
+        { leftId: 's4', leftText: '第４配水池', rightId: 'c4', rightText: '3,000 m³' }
       ],
       options: [
-        '第1池:4,000m³ ／ 第2池:4,970m³ ／ 第3池:3,500m³ ／ 第4池:3,000m³',
-        '第1池:4,970m³ ／ 第2池:4,000m³ ／ 第3池:3,000m³ ／ 第4池:3,500m³',
-        '第1池:3,500m³ ／ 第2池:3,000m³ ／ 第3池:4,970m³ ／ 第4池:4,000m³',
-        '第1池:3,000m³ ／ 第2池:3,500m³ ／ 第3池:4,000m³ ／ 第4池:4,970m³'
+        '第１:4,000m³ ／ 第２:4,970m³ ／ 第３:3,500m³ ／ 第４:3,000m³',
+        '第１:4,970m³ ／ 第２:4,000m³ ／ 第３:3,000m³ ／ 第４:3,500m³',
+        '第１:3,500m³ ／ 第２:3,000m³ ／ 第３:4,970m³ ／ 第４:4,000m³',
+        '第１:3,000m³ ／ 第２:3,500m³ ／ 第３:4,000m³ ／ 第４:4,970m³'
       ],
       answerIndex: 0,
       explanation: '砂谷配水場は、第1配水池（4,000m³・RC造）、第2配水池（4,970m³・PC造円筒・最大）、第3配水池（3,500m³・PC造円筒）、第4配水池（3,000m³・RC造）の計4池で構成され、合計15,470m³と市内最大の貯留拠点を形成しています。',
