@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Check, Lock, Star, Play, Layers } from 'lucide-react';
 import { Unit, Lesson, LessonResult } from '@/types/quiz';
@@ -55,23 +55,45 @@ export default function WaterStreamMap({
     });
   }, [allLessonsWithUnit, completedMap]);
 
-  // Find the exact active position across all units:
-  // Mascot sits on the lesson that the user last tackled/completed.
-  // If no lessons tackled yet, sits on global index 0 (Lesson 1).
-  const activeGlobalLessonId = useMemo(() => {
-    const tackledStates = globalLessonStates.filter((s) => s.result);
-    if (tackledStates.length === 0) {
+  // 1. Identify the mascot position:
+  // Place on the latest completed lesson. If none completed, place on the first lesson.
+  const activeMascotLessonId = useMemo(() => {
+    const passedStates = globalLessonStates.filter((s) => s.isCompleted);
+    if (passedStates.length === 0) {
       return globalLessonStates[0]?.lesson.id || '';
     }
-    const latestTackled = tackledStates.reduce((latest, curr) => {
+    const latestPassed = passedStates.reduce((latest, curr) => {
       if (!latest.result?.completedAt) return curr;
       if (!curr.result?.completedAt) return latest;
       return new Date(curr.result.completedAt) > new Date(latest.result.completedAt)
         ? curr
         : latest;
     });
-    return latestTackled.lesson.id;
+    return latestPassed.lesson.id;
   }, [globalLessonStates]);
+
+  // 2. Identify the NEXT lesson:
+  // The first unlocked, incomplete lesson
+  const nextLessonId = useMemo(() => {
+    const nextState = globalLessonStates.find((s) => !s.isCompleted && s.isUnlocked);
+    return nextState?.lesson.id || null;
+  }, [globalLessonStates]);
+
+  // 3. Auto-scroll to the mascot's position on mount
+  useEffect(() => {
+    const targetId = activeMascotLessonId;
+    if (!targetId) return;
+
+    // Small timeout to allow DOM layout to settle
+    const timer = setTimeout(() => {
+      const el = document.getElementById(`lesson-node-${targetId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [activeMascotLessonId]);
 
   return (
     <div className="relative w-full max-w-xl mx-auto pt-2 pb-16 px-2 sm:px-4 select-none">
@@ -193,7 +215,8 @@ export default function WaterStreamMap({
                     const result = globalState?.result;
 
                     const isLeft = idx % 2 === 0;
-                    const hasMascot = lesson.id === activeGlobalLessonId;
+                    const hasMascot = lesson.id === activeMascotLessonId;
+                    const isNext = lesson.id === nextLessonId;
 
                     // Clean title
                     const displayTitle = lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '');
@@ -201,7 +224,8 @@ export default function WaterStreamMap({
                     return (
                       <div
                         key={lesson.id}
-                        className={`flex items-center w-full transition-transform duration-300 ${
+                        id={`lesson-node-${lesson.id}`}
+                        className={`flex items-center w-full transition-transform duration-300 scroll-mt-28 ${
                           isLeft ? 'justify-start pl-0 sm:pl-2' : 'justify-end pr-0 sm:pr-2'
                         }`}
                       >
@@ -210,14 +234,31 @@ export default function WaterStreamMap({
                             href={`/quiz/${lesson.id}`}
                             className="group relative inline-flex items-center focus:outline-none max-w-[88%] sm:max-w-[82%]"
                           >
-                            {/* Mascot riding on this node if it's the active one */}
+                            {/* Mascot riding on this node (解き終わった最新レッスンの位置) */}
                             {hasMascot && (
                               <div
-                                className={`absolute -top-6 z-30 transition-transform group-hover:scale-110 pointer-events-none ${
-                                  isLeft ? 'left-1 sm:left-2' : 'right-1 sm:right-2'
+                                className={`absolute -top-7 z-30 transition-transform group-hover:scale-110 pointer-events-none flex items-center gap-1 ${
+                                  isLeft ? 'left-1 sm:left-2' : 'right-1 sm:right-2 flex-row-reverse'
                                 }`}
                               >
-                                <WaterMascot size={42} mood={isCompleted ? 'cheering' : 'happy'} />
+                                <WaterMascot size={46} mood={isCompleted ? 'cheering' : 'happy'} />
+                                <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md border border-white/80 whitespace-nowrap animate-bounce-subtle">
+                                  {isCompleted ? 'クリア! 💧' : '現在地 🚩'}
+                                </span>
+                              </div>
+                            )}
+
+                            {/* NEXT Badge on the next unlocked incomplete lesson */}
+                            {isNext && (
+                              <div
+                                className={`absolute -top-3.5 z-30 pointer-events-none flex items-center gap-1 animate-pulse ${
+                                  isLeft ? 'right-4 sm:right-6' : 'left-4 sm:left-6'
+                                }`}
+                              >
+                                <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-lg border-2 border-white tracking-wider flex items-center gap-1 shadow-orange-500/40">
+                                  <Play className="w-2.5 h-2.5 fill-current" />
+                                  NEXT
+                                </span>
                               </div>
                             )}
 
@@ -226,6 +267,8 @@ export default function WaterStreamMap({
                               className={`relative flex items-center rounded-3xl sm:rounded-full p-1.5 transition-all duration-300 transform group-hover:scale-105 active:scale-95 w-full ${
                                 isCompleted
                                   ? `bg-white shadow-[0_6px_20px_rgba(13,148,136,0.18)] border-2 ${theme.nodeCompletedBorder}`
+                                  : isNext
+                                  ? `bg-white shadow-[0_8px_25px_rgba(249,115,22,0.35)] border-2 border-amber-400 ring-4 ring-amber-300/50`
                                   : hasMascot
                                   ? `bg-white shadow-[0_8px_25px_rgba(13,148,136,0.3)] border-2 ${theme.nodeActiveBorder} ring-4 ${theme.nodeActiveRing}`
                                   : 'bg-white shadow-md border-2 border-slate-200'
@@ -239,6 +282,8 @@ export default function WaterStreamMap({
                                 className={`shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-md m-1 transition-all ${
                                   isCompleted
                                     ? `bg-gradient-to-br ${theme.nodeCompletedGrad} text-white`
+                                    : isNext
+                                    ? `bg-gradient-to-br from-amber-400 to-orange-500 text-white animate-water-pulse shadow-orange-400/40`
                                     : hasMascot
                                     ? `bg-gradient-to-br ${theme.nodeActiveGrad} text-white animate-water-pulse`
                                     : 'bg-slate-100 text-slate-400'
@@ -262,6 +307,8 @@ export default function WaterStreamMap({
                                     className={`text-[10px] sm:text-[11px] font-black uppercase tracking-wider ${
                                       isCompleted
                                         ? 'text-cyan-700'
+                                        : isNext
+                                        ? 'text-orange-600 font-extrabold'
                                         : hasMascot
                                         ? 'text-blue-600'
                                         : 'text-slate-500'
@@ -290,6 +337,8 @@ export default function WaterStreamMap({
                                   className={`text-xs sm:text-sm font-black whitespace-normal break-words leading-snug mt-0.5 ${
                                     isCompleted
                                       ? 'text-slate-900'
+                                      : isNext
+                                      ? 'text-orange-950 font-black'
                                       : hasMascot
                                       ? 'text-blue-950'
                                       : 'text-slate-800'
@@ -303,8 +352,8 @@ export default function WaterStreamMap({
                                     合格 ({result.percentage}点)
                                   </p>
                                 )}
-                                {!isCompleted && hasMascot && (
-                                  <p className={`text-[10px] font-bold text-blue-600 flex items-center gap-1 mt-0.5 ${
+                                {!isCompleted && (isNext || hasMascot) && (
+                                  <p className={`text-[10px] font-bold ${isNext ? 'text-orange-600' : 'text-blue-600'} flex items-center gap-1 mt-0.5 ${
                                     isLeft ? 'justify-start' : 'justify-end'
                                   }`}>
                                     <Play className="w-2.5 h-2.5 fill-current" />
