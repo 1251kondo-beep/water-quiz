@@ -251,11 +251,11 @@ export default function WaterStreamMap({
                             {/* NEXT Badge on the next unlocked incomplete lesson */}
                             {isNext && (
                               <div
-                                className={`absolute -top-3.5 z-30 pointer-events-none flex items-center gap-1 animate-pulse ${
+                                className={`absolute -top-3.5 z-30 pointer-events-none flex items-center gap-1 ${
                                   isLeft ? 'right-4 sm:right-6' : 'left-4 sm:left-6'
                                 }`}
                               >
-                                <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-lg border-2 border-white tracking-wider flex items-center gap-1 shadow-orange-500/40">
+                                <span className="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md border-2 border-white tracking-wider flex items-center gap-1 shadow-orange-500/30">
                                   <Play className="w-2.5 h-2.5 fill-current" />
                                   NEXT
                                 </span>
@@ -268,7 +268,7 @@ export default function WaterStreamMap({
                                 isCompleted
                                   ? `bg-white shadow-[0_6px_20px_rgba(13,148,136,0.18)] border-2 ${theme.nodeCompletedBorder}`
                                   : isNext
-                                  ? `bg-white shadow-[0_8px_25px_rgba(249,115,22,0.35)] border-2 border-amber-400 ring-4 ring-amber-300/50`
+                                  ? `bg-white shadow-[0_8px_25px_rgba(249,115,22,0.25)] border-2 border-amber-400 ring-4 ring-amber-300/40`
                                   : hasMascot
                                   ? `bg-white shadow-[0_8px_25px_rgba(13,148,136,0.3)] border-2 ${theme.nodeActiveBorder} ring-4 ${theme.nodeActiveRing}`
                                   : 'bg-white shadow-md border-2 border-slate-200'
@@ -283,7 +283,7 @@ export default function WaterStreamMap({
                                   isCompleted
                                     ? `bg-gradient-to-br ${theme.nodeCompletedGrad} text-white`
                                     : isNext
-                                    ? `bg-gradient-to-br from-amber-400 to-orange-500 text-white animate-water-pulse shadow-orange-400/40`
+                                    ? `bg-gradient-to-br from-amber-400 to-orange-500 text-white shadow-orange-400/30`
                                     : hasMascot
                                     ? `bg-gradient-to-br ${theme.nodeActiveGrad} text-white animate-water-pulse`
                                     : 'bg-slate-100 text-slate-400'
