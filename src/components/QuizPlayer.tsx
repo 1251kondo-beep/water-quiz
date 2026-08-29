@@ -546,7 +546,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {currentQ.breakdownGraph && <BreakdownGraphCard graph={currentQ.breakdownGraph} />}
         {currentQ.diagram && <DiagramFlowCard diagram={currentQ.diagram} />}
         {currentQ.facilityMap === 'sunagaya_reservoirs' && (
-          <SunagayaMapCard showCapacities={isAnswerConfirmed} />
+          <SunagayaMapCard />
         )}
 
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
