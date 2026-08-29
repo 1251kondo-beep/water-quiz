@@ -38,6 +38,7 @@ import FillInTheBlankWidget from '@/components/FillInTheBlankWidget';
 import OrderingWidget from '@/components/OrderingWidget';
 import BreakdownGraphCard from '@/components/BreakdownGraphCard';
 import DiagramFlowCard from '@/components/DiagramFlowCard';
+import SunagayaMapCard from '@/components/SunagayaMapCard';
 
 interface QuizPlayerProps {
   lesson: Lesson;
@@ -544,6 +545,9 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {currentQ.table && <QuizTableCard table={currentQ.table} />}
         {currentQ.breakdownGraph && <BreakdownGraphCard graph={currentQ.breakdownGraph} />}
         {currentQ.diagram && <DiagramFlowCard diagram={currentQ.diagram} />}
+        {currentQ.facilityMap === 'sunagaya_reservoirs' && (
+          <SunagayaMapCard showCapacities={isAnswerConfirmed} />
+        )}
 
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
           <PairMatchingWidget

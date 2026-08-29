@@ -60,6 +60,7 @@ export interface Question {
   explanationTable?: QuizTable; // 解説に付随する比較表など
   breakdownGraph?: BreakdownGraph; // 帯グラフ・内訳バーカード
   diagram?: QuizDiagram; // 概念図解・フロー図カード
+  facilityMap?: string;
   explanationBreakdownGraph?: BreakdownGraph; // 解説用帯グラフ
   explanationDiagram?: QuizDiagram; // 解説用概念図解
   blankText?: string; // 穴埋め問題用の文章
