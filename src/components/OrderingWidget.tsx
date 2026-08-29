@@ -17,8 +17,36 @@ export default function OrderingWidget({
   isConfirmed,
   onSelectionChange,
 }: OrderingWidgetProps) {
+  // Shuffled items for the bottom selection pool
+  const [shuffledItems, setShuffledItems] = useState<OrderItem[]>([]);
   // Ordered item IDs placed in top area: e.g. ["step_2", "step_1", ...]
   const [placedItemIds, setPlacedItemIds] = useState<string[]>([]);
+
+  // Shuffle items on mount / items change (ensure not in correctOrder initially)
+  useEffect(() => {
+    if (!items || items.length === 0) {
+      setShuffledItems([]);
+      return;
+    }
+
+    const shuffled = [...items];
+    let attempts = 0;
+    // シャッフルし、初期状態で正解順と完全一致しないことを保証
+    while (attempts < 10) {
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      const isIdentical =
+        shuffled.length === correctOrder.length &&
+        shuffled.every((it, idx) => it.id === correctOrder[idx]);
+      if (!isIdentical || items.length <= 1) break;
+      attempts++;
+    }
+
+    setShuffledItems(shuffled);
+    setPlacedItemIds([]);
+  }, [items, correctOrder]);
 
   // Check completion and correctness
   useEffect(() => {
@@ -45,8 +73,8 @@ export default function OrderingWidget({
     setPlacedItemIds([]);
   };
 
-  // Available items not yet placed
-  const availableItems = items.filter((item) => !placedItemIds.includes(item.id));
+  // Available items not yet placed (preserving the shuffled order)
+  const availableItems = shuffledItems.filter((item) => !placedItemIds.includes(item.id));
 
   return (
     <div className="space-y-4 my-2 select-none">

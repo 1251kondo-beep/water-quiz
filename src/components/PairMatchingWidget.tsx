@@ -47,10 +47,20 @@ export default function PairMatchingWidget({
       rights.push(...extraRightItems);
     }
     const shuffled = [...rights];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    let attempts = 0;
+    // シャッフルし、初期状態で左側と完全に同じ順序（真横同士）にならないように保証
+    while (attempts < 10) {
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      const isIdentical =
+        pairs.length > 1 &&
+        pairs.every((p, idx) => shuffled[idx]?.rightText === p.rightText);
+      if (!isIdentical) break;
+      attempts++;
     }
+
     setRightItems(shuffled);
     setUserConnections({});
     setSelectedLeftId(null);
