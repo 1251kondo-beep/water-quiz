@@ -8,7 +8,7 @@ const lesson_1_1: Lesson = {
   id: 'hv_lesson_1_1',
   unitId: 'hv_unit_1',
   lessonNumber: 1,
-  title: 'Lesson 1-1: ビジョンの策定背景・位置付け・期間と基本理念',
+  title: 'Lesson 1-1: ビジョン策定背景と基本理念',
   subtitle: '計画期間（令和3年度〜令和12年度 / 令和8年3月改定）と『安心・安全な水をいつでも、どこでも、いつまでも』',
   description: '半田市新水道ビジョンの計画期間（10年間・中間改定）、基本理念、3大施策目標（安全・強靭・持続）と策定背景を学びます。',
   questions: [
