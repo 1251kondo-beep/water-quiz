@@ -276,7 +276,7 @@ export default function PairMatchingWidget({
                 onClick={() => handleLeftClick(item.leftId)}
                 className={`p-3 sm:p-4 rounded-2xl leading-relaxed cursor-pointer transition-all duration-200 flex items-center justify-center text-center relative select-none min-h-[64px] sm:min-h-[72px] ${cardStyle}`}
               >
-                <span className="font-medium sm:font-semibold text-xs sm:text-[14px] leading-relaxed break-words">
+                <span className="font-bold text-sm sm:text-base leading-snug sm:leading-relaxed break-words">
                   {item.leftText}
                 </span>
 
@@ -355,7 +355,7 @@ export default function PairMatchingWidget({
                   className={`absolute -left-1.5 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full transition-colors ${dotStyle}`}
                 />
 
-                <span className="font-medium sm:font-semibold text-xs sm:text-[14px] leading-relaxed break-words">
+                <span className="font-bold text-sm sm:text-base leading-snug sm:leading-relaxed break-words">
                   {item.rightText}
                 </span>
 

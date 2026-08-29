@@ -84,44 +84,74 @@ export default function DiagramFlowCard({
         </div>
       )}
 
-      {/* Nodes Container (スクロールなしで収まるレスポンシブ配置) */}
+      {/* Nodes Container */}
       <div className="p-3.5 sm:p-5">
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 py-1 px-1">
-          {diagram.nodes.map((node, idx) => {
-            const isLast = idx === diagram.nodes.length - 1;
-
-            return (
-              <div key={idx} className="flex items-center gap-1.5 sm:gap-3">
-                {/* Node Box */}
-                <div className="flex flex-col items-center text-center space-y-1 shrink-0 w-[72px] sm:w-[88px]">
-                  {/* Icon Card */}
-                  <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-slate-50 dark:bg-slate-750 border-2 border-slate-200 dark:border-slate-650 flex items-center justify-center shadow-xs transition-transform hover:scale-105">
-                    {getNodeIcon(node.icon)}
-                  </div>
-
-                  {/* Node Label */}
-                  <span className="text-[11px] sm:text-xs font-black text-slate-800 dark:text-slate-100 leading-tight">
-                    {node.label}
-                  </span>
-
-                  {/* Subtext */}
-                  {node.subText && (
-                    <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-tight">
-                      {node.subText}
-                    </span>
-                  )}
+        {diagram.type === 'grid' || diagram.type === 'compare' ? (
+          /* 2x2 または 4列のグリッド配置（矢印なし・並列課題・比較用） */
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 py-1">
+            {diagram.nodes.map((node, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col items-center text-center p-3 sm:p-4 rounded-2xl bg-slate-50/80 dark:bg-slate-750/70 border border-slate-200/90 dark:border-slate-700 shadow-xs transition-transform hover:scale-[1.02]"
+              >
+                {/* Icon Box */}
+                <div className="w-11 h-11 sm:w-13 sm:h-13 rounded-2xl bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-650 flex items-center justify-center shadow-xs mb-2">
+                  {getNodeIcon(node.icon)}
                 </div>
 
-                {/* Connecting Line / Arrow (フロー矢印) */}
-                {!isLast && (
-                  <div className="flex items-center justify-center shrink-0 w-3 sm:w-6 text-slate-400 dark:text-slate-500">
-                    <span className="text-xs sm:text-sm font-bold">→</span>
-                  </div>
+                {/* Node Label */}
+                <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-100 leading-snug">
+                  {node.label}
+                </span>
+
+                {/* Subtext */}
+                {node.subText && (
+                  <span className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold leading-tight mt-1">
+                    {node.subText}
+                  </span>
                 )}
               </div>
-            );
-          })}
-        </div>
+            ))}
+          </div>
+        ) : (
+          /* フロー配置（時系列プロセス用・矢印付き） */
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 py-1 px-1">
+            {diagram.nodes.map((node, idx) => {
+              const isLast = idx === diagram.nodes.length - 1;
+
+              return (
+                <div key={idx} className="flex items-center gap-1.5 sm:gap-3">
+                  {/* Node Box */}
+                  <div className="flex flex-col items-center text-center space-y-1 shrink-0 w-[72px] sm:w-[88px]">
+                    {/* Icon Card */}
+                    <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-slate-50 dark:bg-slate-750 border-2 border-slate-200 dark:border-slate-650 flex items-center justify-center shadow-xs transition-transform hover:scale-105">
+                      {getNodeIcon(node.icon)}
+                    </div>
+
+                    {/* Node Label */}
+                    <span className="text-[11px] sm:text-xs font-black text-slate-800 dark:text-slate-100 leading-tight">
+                      {node.label}
+                    </span>
+
+                    {/* Subtext */}
+                    {node.subText && (
+                      <span className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-bold leading-tight">
+                        {node.subText}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Connecting Line / Arrow (フロー矢印) */}
+                  {!isLast && (
+                    <div className="flex items-center justify-center shrink-0 w-3 sm:w-6 text-slate-400 dark:text-slate-500">
+                      <span className="text-xs sm:text-sm font-bold">→</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );

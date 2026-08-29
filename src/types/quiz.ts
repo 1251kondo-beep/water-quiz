@@ -36,7 +36,7 @@ export interface DiagramNode {
 
 export interface QuizDiagram {
   title?: string;
-  type?: 'flow' | 'cycle' | 'compare';
+  type?: 'flow' | 'cycle' | 'compare' | 'grid';
   nodes: DiagramNode[];
 }
 

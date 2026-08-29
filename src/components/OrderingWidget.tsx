@@ -114,7 +114,7 @@ export default function OrderingWidget({
                     >
                       {idx + 1}
                     </span>
-                    <span className="text-xs sm:text-sm md:text-base font-bold leading-relaxed">
+                    <span className="text-[15px] sm:text-base font-bold leading-relaxed">
                       {item.text}
                     </span>
                   </div>
@@ -146,7 +146,7 @@ export default function OrderingWidget({
               key={item.id}
               type="button"
               onClick={() => handlePlaceItem(item.id)}
-              className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 shadow-sm hover:border-cyan-400 hover:bg-cyan-50/40 text-slate-800 dark:text-slate-100 transition-all active:scale-[0.99] cursor-pointer flex items-center justify-between gap-3 text-xs sm:text-sm md:text-base font-bold leading-relaxed"
+              className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 shadow-sm hover:border-cyan-400 hover:bg-cyan-50/40 text-slate-800 dark:text-slate-100 transition-all active:scale-[0.99] cursor-pointer flex items-center justify-between gap-3 text-[15px] sm:text-base font-bold leading-relaxed"
             >
               <span>{item.text}</span>
               <span className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-400 text-xs font-black flex items-center justify-center shrink-0">
