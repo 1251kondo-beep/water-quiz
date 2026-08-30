@@ -337,20 +337,18 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     }
   };
 
+  // Scroll to top instantly whenever the question changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentIndex]);
+
   const handleNextQuestion = () => {
     soundFx.playClick(soundEnabled);
     if (currentIndex + 1 < total) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
       setIsAnswerConfirmed(false);
-
-      setTimeout(() => {
-        if (quizContainerRef.current) {
-          quizContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-      }, 50);
+      window.scrollTo({ top: 0, behavior: 'instant' });
     } else {
       finishQuiz();
     }
