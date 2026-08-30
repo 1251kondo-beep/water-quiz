@@ -2,13 +2,14 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import { getLessonById } from '@/data/domains';
 import QuizPlayer from '@/components/QuizPlayer';
 import { getCourseTheme } from '@/data/themes';
 
 export default function LessonQuizPage() {
+  const router = useRouter();
   const params = useParams();
   const lessonId = params?.lessonId as string;
   const found = getLessonById(lessonId);
@@ -29,19 +30,20 @@ export default function LessonQuizPage() {
 
   return (
     <div className={`flex-1 w-full flex flex-col ${theme.pageBg} py-3 sm:py-5 pb-8 sm:pb-12 transition-colors duration-500`}>
-      <div className="max-w-4xl mx-auto w-full px-3 sm:px-6 mb-2 sm:mb-3 flex items-center justify-between">
+      {/* Simple Back Button */}
+      <div className="max-w-2xl mx-auto w-full px-3 sm:px-5 mb-1 flex items-center">
         <Link
           href={`/course/${course.id}`}
-          className={`inline-flex items-center gap-1.5 text-xs sm:text-sm font-black ${theme.accentText} hover:opacity-80 bg-white/95 dark:bg-slate-800/90 border ${theme.progressCardBorder} px-3.5 py-1.5 rounded-full shadow-sm transition-all hover:bg-white active:scale-95 cursor-pointer`}
-          title="レッスン選択へ戻る"
+          onClick={(e) => {
+            e.preventDefault();
+            router.push(`/course/${course.id}`);
+          }}
+          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-sky-200/90 dark:border-slate-700 shadow-sm flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
+          title="戻る"
+          aria-label="レッスン選択へ戻る"
         >
-          <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
-          <span>{course.title}</span>
+          <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
         </Link>
-
-        <span className={`text-[11px] font-black ${theme.accentText} bg-white/95 dark:bg-slate-800/90 border ${theme.progressCardBorder} px-3 py-1 rounded-full shadow-sm`}>
-          Lesson {lesson.lessonNumber}
-        </span>
       </div>
 
       <div className="flex-1 w-full">

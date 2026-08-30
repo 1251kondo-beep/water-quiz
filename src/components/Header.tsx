@@ -2,11 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Droplet, Volume2, VolumeX, Moon, Sun, BookOpen, RotateCcw, Home, Menu, X, Sparkles } from 'lucide-react';
 import { getUserStats, toggleSoundSetting, setThemeSetting } from '@/lib/storage';
 import { soundFx } from '@/lib/audio';
 
 export default function Header() {
+  const router = useRouter();
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const [mistakeCount, setMistakeCount] = useState(0);
@@ -61,7 +63,15 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-sky-200/80 dark:border-slate-800 px-4 py-2.5 shadow-sm bg-white/85 dark:bg-slate-900/90 backdrop-blur-md">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group cursor-pointer" onClick={() => setIsMenuOpen(false)}>
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 group cursor-pointer"
+          onClick={(e) => {
+            e.preventDefault();
+            setIsMenuOpen(false);
+            router.push('/');
+          }}
+        >
           <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl overflow-hidden shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0 border border-sky-300/60 dark:border-sky-700">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -82,7 +92,11 @@ export default function Header() {
           {/* Home Button */}
           <Link
             href="/"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={(e) => {
+              e.preventDefault();
+              setIsMenuOpen(false);
+              router.push('/');
+            }}
             className="p-2 rounded-full bg-sky-50 hover:bg-sky-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-sky-800 dark:text-sky-200 transition-colors cursor-pointer border border-sky-200 dark:border-slate-700 shadow-sm"
             title="ホーム"
           >
@@ -109,7 +123,11 @@ export default function Header() {
                 {/* Glossary */}
                 <Link
                   href="/glossary"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsMenuOpen(false);
+                    router.push('/glossary');
+                  }}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-2xl hover:bg-sky-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
                 >
                   <BookOpen className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
@@ -119,7 +137,11 @@ export default function Header() {
                 {/* Review Mistakes */}
                 <Link
                   href="/review"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setIsMenuOpen(false);
+                    router.push('/review');
+                  }}
                   className="flex items-center justify-between px-3 py-2.5 rounded-2xl hover:bg-amber-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors"
                 >
                   <div className="flex items-center gap-3">
