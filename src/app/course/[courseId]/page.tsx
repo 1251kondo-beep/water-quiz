@@ -68,7 +68,7 @@ export default function CoursePage() {
   };
 
   return (
-    <div className={`min-h-screen ${theme.pageBg} pb-20 relative overflow-x-hidden transition-colors duration-500`}>
+    <div className={`flex-1 w-full flex flex-col ${theme.pageBg} pb-16 relative overflow-x-hidden transition-colors duration-500`}>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-full shadow-2xl backdrop-blur-md border border-cyan-400/40 animate-in fade-in slide-in-from-top duration-300 max-w-[90%] text-center">

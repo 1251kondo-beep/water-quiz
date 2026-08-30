@@ -47,7 +47,8 @@ export default function ReviewPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-6 px-4 space-y-6 min-h-screen">
+    <div className="flex-1 w-full bg-slate-50/60 dark:bg-slate-900/60 pb-16">
+      <div className="max-w-4xl mx-auto py-6 px-4 space-y-6">
       <Link
         href="/"
         className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-blue-600 hover:text-blue-700 bg-white px-3.5 py-1.5 rounded-full border border-blue-200 shadow-sm transition-all hover:shadow"
@@ -123,6 +124,7 @@ export default function ReviewPage() {
           </Link>
         </div>
       )}
+      </div>
     </div>
   );
 }

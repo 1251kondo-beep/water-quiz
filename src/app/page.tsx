@@ -116,8 +116,8 @@ export default function HomePage() {
   const streakDays = completedCount > 0 ? Math.max(1, Math.min(completedCount + 2, 15)) : 1;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-100/70 via-blue-50/50 to-sky-100/60 pb-20">
-      <div className="max-w-2xl mx-auto px-4 py-5 space-y-7">
+    <div className="flex-1 w-full flex flex-col bg-gradient-to-b from-sky-100/70 via-blue-50/50 to-sky-100/60 pb-16">
+      <div className="max-w-2xl mx-auto w-full px-4 py-5 space-y-7">
         
         {/* Top Status Bar (Pills matching Image 1) */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">

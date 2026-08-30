@@ -17,7 +17,9 @@ import {
   BookOpen,
   Sparkles,
   Check,
-  X
+  X,
+  ChevronLeft,
+  Home
 } from 'lucide-react';
 import { Question, Lesson, LessonResult, QuizTable } from '@/types/quiz';
 import {
@@ -482,20 +484,41 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     <div ref={quizContainerRef} className="max-w-2xl mx-auto py-2 sm:py-4 px-3 sm:px-5 scroll-mt-16 md:scroll-mt-20">
       <div className="mb-4 sm:mb-5 space-y-2.5">
         <div className="flex items-center justify-between gap-2">
-          <div className="text-xs sm:text-sm font-bold text-sky-700 dark:text-sky-400 truncate">
-            {unitTitle}
+          {/* Quick Exit Navigation Buttons (回答前でもいつでも他ページへ遷移可能) */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <Link
+              href={`/course/${courseId}`}
+              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-sky-700 dark:text-sky-300 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 border border-sky-200/90 dark:border-slate-700 px-2.5 py-1 rounded-full shadow-sm transition-all active:scale-95 cursor-pointer"
+              title="レッスン選択へ戻る"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span>レッスン選択</span>
+            </Link>
+            <Link
+              href="/"
+              className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-slate-600 dark:text-slate-300 bg-white/90 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-800 border border-slate-200/90 dark:border-slate-700 px-2.5 py-1 rounded-full shadow-sm transition-all active:scale-95 cursor-pointer"
+              title="ホームへ戻る"
+            >
+              <Home className="w-3.5 h-3.5" />
+              <span>ホーム</span>
+            </Link>
           </div>
-          <div className="flex items-center gap-2.5 shrink-0">
+
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden sm:block text-xs font-bold text-sky-700 dark:text-sky-400 truncate max-w-[160px]">
+              {unitTitle}
+            </div>
             <button
               onClick={handleToggleBookmarkCurrent}
               className={`p-1.5 rounded-lg border transition-colors cursor-pointer flex items-center gap-1 text-xs font-bold ${
                 isBookmarked
                   ? 'bg-amber-100 dark:bg-amber-950/60 border-amber-300 dark:border-amber-500/50 text-amber-700 dark:text-amber-400'
-                  : 'bg-white/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600'
+                  : 'bg-white/90 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600'
               }`}
               title={isBookmarked ? 'ブックマーク解除' : 'ブックマーク登録'}
             >
               <Bookmark className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{isBookmarked ? '保存中' : '復習'}</span>
             </button>
           </div>
         </div>

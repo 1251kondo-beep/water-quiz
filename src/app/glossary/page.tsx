@@ -22,7 +22,8 @@ export default function GlossaryPage() {
   });
 
   return (
-    <div className="max-w-4xl mx-auto py-6 px-4 space-y-6 bg-slate-50/50 min-h-screen">
+    <div className="flex-1 w-full bg-slate-50/50 dark:bg-slate-900/50 pb-16">
+      <div className="max-w-4xl mx-auto py-6 px-4 space-y-6">
       {/* Header Back Link & Banner */}
       <div className="space-y-3">
         <Link
@@ -146,6 +147,7 @@ export default function GlossaryPage() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
