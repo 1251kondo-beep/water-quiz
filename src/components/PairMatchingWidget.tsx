@@ -302,11 +302,16 @@ export default function PairMatchingWidget({
                   className={`absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all shadow-sm ${dotStyle}`}
                 />
 
+                {/* 正解・不正解バッジ（文字に重ならないよう左上外側に配置） */}
                 {isConfirmed && isCorrect && (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 absolute top-2 right-2" />
+                  <div className="absolute -top-2 -left-2 bg-emerald-500 text-white rounded-full p-0.5 shadow-md z-30 animate-in zoom-in-50 duration-200">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
                 )}
                 {isConfirmed && isWrong && (
-                  <XCircle className="w-4 h-4 text-rose-600 shrink-0 absolute top-2 right-2" />
+                  <div className="absolute -top-2 -left-2 bg-rose-500 text-white rounded-full p-0.5 shadow-md z-30 animate-in zoom-in-50 duration-200">
+                    <XCircle className="w-4 h-4" />
+                  </div>
                 )}
               </div>
             );
@@ -379,11 +384,16 @@ export default function PairMatchingWidget({
                   {item.rightText}
                 </span>
 
+                {/* 正解・不正解バッジ（文字に重ならないよう右上外側に配置） */}
                 {isConfirmed && isCorrect && (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 absolute top-2 right-2" />
+                  <div className="absolute -top-2 -right-2 bg-emerald-500 text-white rounded-full p-0.5 shadow-md z-30 animate-in zoom-in-50 duration-200">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
                 )}
                 {isConfirmed && isWrong && (
-                  <XCircle className="w-4 h-4 text-rose-600 shrink-0 absolute top-2 right-2" />
+                  <div className="absolute -top-2 -right-2 bg-rose-500 text-white rounded-full p-0.5 shadow-md z-30 animate-in zoom-in-50 duration-200">
+                    <XCircle className="w-4 h-4" />
+                  </div>
                 )}
               </div>
             );
