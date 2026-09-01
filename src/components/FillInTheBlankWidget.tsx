@@ -60,7 +60,14 @@ export default function FillInTheBlankWidget({
 
     let isAllCorrect = false;
     if (isFullyFilled && blanks.length > 0) {
-      isAllCorrect = blanks.every((b) => filledSlots[b.id] === b.answer);
+      const exactMatch = blanks.every((b) => filledSlots[b.id] === b.answer);
+      if (exactMatch) {
+        isAllCorrect = true;
+      } else {
+        const expectedAnswers = blanks.map((b) => b.answer).sort();
+        const selectedAnswers = Object.values(filledSlots).sort();
+        isAllCorrect = expectedAnswers.every((ans, idx) => ans === selectedAnswers[idx]);
+      }
     } else if (isFullyFilled) {
       isAllCorrect = true;
     }
