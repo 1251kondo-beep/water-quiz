@@ -806,9 +806,9 @@ const lesson_3_5: Lesson = {
 export const HV_UNIT_3: Unit = {
   id: 'hv_unit_3',
   unitNumber: 3,
-  title: 'UNIT 3: 《持続》経営基盤・水道DX・広域連携',
-  description: 'アセットマネジメント・投資財政計画・スマートメーターDX・知多半島広域化・技術継承とPDCAを徹底習得',
-  badgeText: '全50問・5レッスン',
+  title: 'UNIT 3: 第5章 具体的な施策内容',
+  description: '《安全》《強靭》《持続》の3大方針に基づく具体的施策（水質管理、耐震化、応急給水、アセットマネジメント、水道DX、健全経営）を完全習得',
+  badgeText: '全60問・6レッスン',
   lessons: [lesson_3_1, lesson_3_2, lesson_3_3, lesson_3_4, lesson_3_5]
 };
 
