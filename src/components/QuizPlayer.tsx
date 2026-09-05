@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import confetti from 'canvas-confetti';
 import {
@@ -14,7 +15,6 @@ import {
   List,
   Award,
   Star,
-  BookOpen,
   Sparkles,
   Check,
   X
@@ -942,13 +942,18 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               </p>
             </div>
           )}
-
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm space-y-3.5">
-            <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-bold text-base sm:text-lg">
-              <div className="w-7 h-7 rounded-lg bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-300 flex items-center justify-center">
-                <BookOpen className="w-4 h-4" />
+            <div className="flex items-center gap-2.5 text-sky-600 dark:text-sky-400 font-bold text-base sm:text-lg">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-sky-100 dark:bg-sky-900/50 border border-sky-200/80 dark:border-sky-700/60 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+                <Image
+                  src="/images/characters/sunadani_face_icon.png"
+                  alt="砂谷先生"
+                  width={32}
+                  height={32}
+                  className="w-full h-full object-contain p-0.5"
+                />
               </div>
-              <h4>マスターのワンポイント解説</h4>
+              <h4>砂谷先生のワンポイント解説</h4>
             </div>
 
             <FormattedExplanationText text={currentQ.explanation} />
