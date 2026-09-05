@@ -426,16 +426,6 @@ export default function WaterStreamMap({
                             )}
                           </g>
                         )}
-
-                        {/* Layer 6: Pipe Surface Glass/Metallic Reflection (全管共通の光沢反射) */}
-                        <path
-                          d={fullPipePathD}
-                          fill="none"
-                          stroke="rgba(255, 255, 255, 0.55)"
-                          strokeWidth="3.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
                       </g>
                     );
                   })()}
