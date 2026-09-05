@@ -2,12 +2,14 @@ import { Course, Unit } from '@/types/quiz';
 import { HV_UNIT_1 } from './unit_1';
 import { HV_UNIT_2 } from './unit_2';
 import { HV_UNIT_3 } from './unit_3';
+import { HV_UNIT_4 } from './unit_4';
 
 export { HV_UNIT_1 } from './unit_1';
 export { HV_UNIT_2 } from './unit_2';
 export { HV_UNIT_3 } from './unit_3';
+export { HV_UNIT_4 } from './unit_4';
 
-export const HANDA_VISION_UNITS: Unit[] = [HV_UNIT_1, HV_UNIT_2, HV_UNIT_3];
+export const HANDA_VISION_UNITS: Unit[] = [HV_UNIT_1, HV_UNIT_2, HV_UNIT_3, HV_UNIT_4];
 
 export const HANDA_VISION_COURSE: Course = {
   id: 'handa_vision',
