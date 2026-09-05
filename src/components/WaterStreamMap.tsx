@@ -176,14 +176,15 @@ export default function WaterStreamMap({
                     const lastX = (total - 1) % 2 === 0 ? 150 : 290;
                     fullPipePathD += ` C ${lastX} ${lastY + 30}, 220 ${lastY + 50}, 220 ${lastY + 80}`;
 
-                    // 2. Build Single Continuous Flowing Path up to the unlocked/completed frontier
-                    let flowingPathD = '';
-                    const firstGlobalState = globalLessonStates.find(
-                      (s) => s.lesson.id === unitLessons[0]?.id
-                    );
+                    // 2. Build Continuous Flowing Paths for 3 invisible tracks (Left, Center, Right)
+                    const buildFlowingPathD = (xOffset: number) => {
+                      const firstGlobalState = globalLessonStates.find(
+                        (s) => s.lesson.id === unitLessons[0]?.id
+                      );
+                      if (!firstGlobalState?.isUnlocked) return '';
 
-                    if (firstGlobalState?.isUnlocked) {
-                      flowingPathD = `M ${x0} ${y0 - 45} C ${x0} ${y0 - 25}, ${x0} ${y0 - 10}, ${x0} ${y0}`;
+                      const startX = 150 + xOffset;
+                      let pathD = `M ${startX} ${y0 - 45} C ${startX} ${y0 - 25}, ${startX} ${y0 - 10}, ${startX} ${y0}`;
 
                       for (let i = 1; i < total; i++) {
                         const prevLesson = unitLessons[i - 1];
@@ -194,11 +195,11 @@ export default function WaterStreamMap({
                         // If previous lesson is completed, flow seamlessly into the next lesson!
                         if (prevGlobalState?.isCompleted) {
                           const prevY = (i - 1) * 145 + 65;
-                          const prevX = (i - 1) % 2 === 0 ? 150 : 290;
+                          const prevX = ((i - 1) % 2 === 0 ? 150 : 290) + xOffset;
                           const currY = i * 145 + 65;
-                          const currX = i % 2 === 0 ? 150 : 290;
+                          const currX = (i % 2 === 0 ? 150 : 290) + xOffset;
                           const midY = (prevY + currY) / 2;
-                          flowingPathD += ` C ${prevX} ${midY + 20}, ${currX} ${midY - 20}, ${currX} ${currY}`;
+                          pathD += ` C ${prevX} ${midY + 20}, ${currX} ${midY - 20}, ${currX} ${currY}`;
                         } else {
                           // Stop flowing at the incomplete lesson frontier
                           break;
@@ -211,9 +212,16 @@ export default function WaterStreamMap({
                         (s) => s.lesson.id === lastLesson?.id
                       );
                       if (lastGlobalState?.isCompleted) {
-                        flowingPathD += ` C ${lastX} ${lastY + 30}, 220 ${lastY + 50}, 220 ${lastY + 80}`;
+                        const lastX = ((total - 1) % 2 === 0 ? 150 : 290) + xOffset;
+                        pathD += ` C ${lastX} ${lastY + 30}, ${220 + xOffset} ${lastY + 50}, ${220 + xOffset} ${lastY + 80}`;
                       }
-                    }
+
+                      return pathD;
+                    };
+
+                    const flowingPathCenter = buildFlowingPathD(0);
+                    const flowingPathLeft = buildFlowingPathD(-5.5);
+                    const flowingPathRight = buildFlowingPathD(5.5);
 
                     return (
                       <g>
@@ -266,13 +274,13 @@ export default function WaterStreamMap({
                         />
 
                         {/* ======================================================== */}
-                        {/* FLOWING WATER PIPE (クリア済み区間：通水 & 川のせせらぎ) */}
+                        {/* FLOWING WATER & 3-TRACK INVISIBLE BUBBLE LANES */}
                         {/* ======================================================== */}
-                        {flowingPathD && (
+                        {flowingPathCenter && (
                           <g>
-                            {/* Water Pipe Active Outer Casing */}
+                            {/* Water Pipe Active Outer Casing (中心線) */}
                             <path
-                              d={flowingPathD}
+                              d={flowingPathCenter}
                               fill="none"
                               stroke={theme.streamGradStart}
                               strokeWidth="38"
@@ -283,7 +291,7 @@ export default function WaterStreamMap({
 
                             {/* Water Pipe Active Inner Rim */}
                             <path
-                              d={flowingPathD}
+                              d={flowingPathCenter}
                               fill="none"
                               stroke={theme.streamBaseColor}
                               strokeWidth="30"
@@ -294,7 +302,7 @@ export default function WaterStreamMap({
 
                             {/* Filled Water Channel (Base Stream) */}
                             <path
-                              d={flowingPathD}
+                              d={flowingPathCenter}
                               fill="none"
                               stroke={`url(#pipeWaterGrad-${unit.id})`}
                               strokeWidth="22"
@@ -303,60 +311,119 @@ export default function WaterStreamMap({
                               opacity="0.98"
                             />
 
-                            {/* Bubble Layer 1: 大気泡 (直径11pxの丸い大きな気泡) */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke="#ffffff"
-                              strokeWidth="11"
-                              strokeDasharray="0 54"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeOpacity="0.88"
-                              className="animate-bubble-layer-1"
-                            />
+                            {/* --- TRACK 1: LEFT INVISIBLE LANE (-5.5px) --- */}
+                            {flowingPathLeft && (
+                              <>
+                                {/* Left: 中気泡 (直径6.5px) */}
+                                <path
+                                  d={flowingPathLeft}
+                                  fill="none"
+                                  stroke="#ffffff"
+                                  strokeWidth="6.5"
+                                  strokeDasharray="0 46"
+                                  strokeDashoffset="12"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.88"
+                                  className="animate-bubble-left-1"
+                                />
+                                {/* Left: 小気泡 (直径3.5px) */}
+                                <path
+                                  d={flowingPathLeft}
+                                  fill="none"
+                                  stroke="#cffafe"
+                                  strokeWidth="3.5"
+                                  strokeDasharray="0 28"
+                                  strokeDashoffset="31"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.92"
+                                  className="animate-bubble-left-2"
+                                />
+                              </>
+                            )}
 
-                            {/* Bubble Layer 2: 中気泡 (直径7pxの中くらいの気泡) */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke="#e0f2fe"
-                              strokeWidth="7"
-                              strokeDasharray="0 36"
-                              strokeDashoffset="18"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeOpacity="0.9"
-                              className="animate-bubble-layer-2"
-                            />
+                            {/* --- TRACK 2: CENTER INVISIBLE LANE (0px) --- */}
+                            {flowingPathCenter && (
+                              <>
+                                {/* Center: 大気泡 (直径10px) */}
+                                <path
+                                  d={flowingPathCenter}
+                                  fill="none"
+                                  stroke="#ffffff"
+                                  strokeWidth="10"
+                                  strokeDasharray="0 62"
+                                  strokeDashoffset="0"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.92"
+                                  className="animate-bubble-center-1"
+                                />
+                                {/* Center: 中気泡 (直径5.5px) */}
+                                <path
+                                  d={flowingPathCenter}
+                                  fill="none"
+                                  stroke="#e0f2fe"
+                                  strokeWidth="5.5"
+                                  strokeDasharray="0 38"
+                                  strokeDashoffset="24"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.88"
+                                  className="animate-bubble-center-2"
+                                />
+                                {/* Center: 微小気泡 (直径2.5px) */}
+                                <path
+                                  d={flowingPathCenter}
+                                  fill="none"
+                                  stroke="#ffffff"
+                                  strokeWidth="2.5"
+                                  strokeDasharray="0 18"
+                                  strokeDashoffset="9"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.95"
+                                  className="animate-bubble-center-3"
+                                />
+                              </>
+                            )}
 
-                            {/* Bubble Layer 3: 小気泡 (直径4pxのきらめく小気泡) */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke="#ffffff"
-                              strokeWidth="4"
-                              strokeDasharray="0 22"
-                              strokeDashoffset="9"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeOpacity="0.95"
-                              className="animate-bubble-layer-3"
-                            />
-
-                            {/* Bubble Layer 4: 微小な星屑きらめき粒 (直径2.5px) */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke="#a5f3fc"
-                              strokeWidth="2.5"
-                              strokeDasharray="0 16"
-                              strokeDashoffset="7"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeOpacity="0.85"
-                              className="animate-bubble-layer-2"
-                            />
+                            {/* --- TRACK 3: RIGHT INVISIBLE LANE (+5.5px) --- */}
+                            {flowingPathRight && (
+                              <>
+                                {/* Right: 大気泡 (直径8.5px) */}
+                                <path
+                                  d={flowingPathRight}
+                                  fill="none"
+                                  stroke="#ffffff"
+                                  strokeWidth="8.5"
+                                  strokeDasharray="0 54"
+                                  strokeDashoffset="35"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.9"
+                                  className="animate-bubble-right-1"
+                                />
+                                {/* Right: 小気泡 (直径4px) */}
+                                <path
+                                  d={flowingPathRight}
+                                  fill="none"
+                                  stroke="#bae6fd"
+                                  strokeWidth="4"
+                                  strokeDasharray="0 26"
+                                  strokeDashoffset="15"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.9"
+                                  className="animate-bubble-right-2"
+                                />
+                                {/* Right: 微小粒 (直径2px) */}
+                                <path
+                                  d={flowingPathRight}
+                                  fill="none"
+                                  stroke="#cffafe"
+                                  strokeWidth="2"
+                                  strokeDasharray="0 16"
+                                  strokeDashoffset="5"
+                                  strokeLinecap="round"
+                                  strokeOpacity="0.8"
+                                  className="animate-bubble-right-2"
+                                />
+                              </>
+                            )}
                           </g>
                         )}
 

@@ -52,34 +52,44 @@
   100% { stroke-dashoffset: 0; }
 }
 
-/* Sparkling Bubble Animations (大小の気泡がキラキラ動く) */
-@keyframes bubbleDrift1 {
+/* 3-Track Sparkling Bubble Animations (3本の見えない線上をランダムに流れる気泡) */
+@keyframes bubbleTrackLeft1 {
+  from { stroke-dashoffset: 120; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes bubbleTrackLeft2 {
+  from { stroke-dashoffset: 104; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes bubbleTrackCenter1 {
+  from { stroke-dashoffset: 140; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes bubbleTrackCenter2 {
   from { stroke-dashoffset: 112; }
   to { stroke-dashoffset: 0; }
 }
 
-@keyframes bubbleDrift2 {
-  from { stroke-dashoffset: 144; }
+@keyframes bubbleTrackRight1 {
+  from { stroke-dashoffset: 126; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes bubbleTrackRight2 {
+  from { stroke-dashoffset: 108; }
   to { stroke-dashoffset: 0; }
 }
 
-@keyframes bubbleDrift3 {
-  from { stroke-dashoffset: 110; }
-  to { stroke-dashoffset: 0; }
+@keyframes bubbleTwinkleA {
+  0%, 100% { opacity: 0.92; }
+  50% { opacity: 0.35; }
 }
-
-@keyframes bubbleTwinkle1 {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 0.4; }
-}
-
-@keyframes bubbleTwinkle2 {
-  0%, 100% { opacity: 0.35; }
+@keyframes bubbleTwinkleB {
+  0%, 100% { opacity: 0.38; }
   45% { opacity: 0.95; }
   75% { opacity: 0.6; }
 }
-
-@keyframes bubbleTwinkleFast {
+@keyframes bubbleTwinkleC {
   0%, 100% { opacity: 0.3; }
   50% { opacity: 1; }
 }
@@ -96,16 +106,31 @@
   animation: waterPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
 }
 
-.animate-bubble-layer-1 {
-  animation: bubbleDrift1 4.5s linear infinite, bubbleTwinkle1 2.2s ease-in-out infinite;
+/* Left Track Bubbles */
+.animate-bubble-left-1 {
+  animation: bubbleTrackLeft1 4.2s linear infinite, bubbleTwinkleA 2.2s ease-in-out infinite;
+}
+.animate-bubble-left-2 {
+  animation: bubbleTrackLeft2 2.8s linear infinite, bubbleTwinkleC 1.5s ease-in-out infinite;
 }
 
-.animate-bubble-layer-2 {
-  animation: bubbleDrift2 3.2s linear infinite, bubbleTwinkle2 1.7s ease-in-out infinite;
+/* Center Track Bubbles */
+.animate-bubble-center-1 {
+  animation: bubbleTrackCenter1 4.8s linear infinite, bubbleTwinkleB 2.5s ease-in-out infinite;
+}
+.animate-bubble-center-2 {
+  animation: bubbleTrackCenter2 3.4s linear infinite, bubbleTwinkleA 1.8s ease-in-out infinite;
+}
+.animate-bubble-center-3 {
+  animation: bubbleTrackCenter1 2.2s linear infinite, bubbleTwinkleC 1.2s ease-in-out infinite;
 }
 
-.animate-bubble-layer-3 {
-  animation: bubbleDrift3 2.5s linear infinite, bubbleTwinkleFast 1.2s ease-in-out infinite;
+/* Right Track Bubbles */
+.animate-bubble-right-1 {
+  animation: bubbleTrackRight1 3.9s linear infinite, bubbleTwinkleC 2.0s ease-in-out infinite;
+}
+.animate-bubble-right-2 {
+  animation: bubbleTrackRight2 2.6s linear infinite, bubbleTwinkleB 1.4s ease-in-out infinite;
 }
 
 /* Frosted glass with subtle aqua tint */
