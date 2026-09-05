@@ -160,20 +160,6 @@ export default function WaterStreamMap({
                       <stop offset="50%" stopColor="#38bdf8" />
                       <stop offset="100%" stopColor={theme.streamGradEnd} />
                     </linearGradient>
-
-                    {/* Flange Joint Gradient */}
-                    <linearGradient id={`flangeGrad-${unit.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#f8fafc" />
-                      <stop offset="30%" stopColor="#94a3b8" />
-                      <stop offset="70%" stopColor="#475569" />
-                      <stop offset="100%" stopColor="#1e293b" />
-                    </linearGradient>
-                    <linearGradient id={`flangeGradActive-${unit.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#e0f2fe" />
-                      <stop offset="30%" stopColor="#38bdf8" />
-                      <stop offset="70%" stopColor="#0284c7" />
-                      <stop offset="100%" stopColor="#0369a1" />
-                    </linearGradient>
                   </defs>
 
                   {/* Segmented Pipeline Rendering */}
@@ -186,7 +172,6 @@ export default function WaterStreamMap({
                       id: string;
                       pathD: string;
                       isFlowing: boolean;
-                      jointPos?: { x: number; y: number; angle: number };
                     }> = [];
 
                     // 1. Entry Pipe Segment (Top of section into Lesson 0)
@@ -200,7 +185,6 @@ export default function WaterStreamMap({
                       id: `entry-${unit.id}`,
                       pathD: `M ${x0} ${y0 - 45} C ${x0} ${y0 - 25}, ${x0} ${y0 - 10}, ${x0} ${y0}`,
                       isFlowing: isEntryFlowing,
-                      jointPos: { x: x0, y: y0 - 25, angle: 90 },
                     });
 
                     // 2. Inter-Lesson Pipe Segments (Lesson i-1 -> Lesson i)
@@ -222,15 +206,10 @@ export default function WaterStreamMap({
 
                       const pathD = `M ${prevX} ${prevY} C ${prevX} ${midY + 20}, ${currX} ${midY - 20}, ${currX} ${currY}`;
 
-                      // Flange joint angle at center (220, midY)
-                      const isLeftToRight = (i - 1) % 2 === 0;
-                      const angle = isLeftToRight ? 21 : -21;
-
                       segments.push({
                         id: `seg-${prevLesson.id}-${currLesson.id}`,
                         pathD,
                         isFlowing,
-                        jointPos: { x: 220, y: midY, angle },
                       });
                     }
 
@@ -246,7 +225,6 @@ export default function WaterStreamMap({
                       id: `exit-${unit.id}`,
                       pathD: `M ${lastX} ${lastY} C ${lastX} ${lastY + 30}, 220 ${lastY + 50}, 220 ${lastY + 80}`,
                       isFlowing: isExitFlowing,
-                      jointPos: { x: 220, y: lastY + 65, angle: 90 },
                     });
 
                     return (
@@ -257,22 +235,22 @@ export default function WaterStreamMap({
                             <path
                               d={seg.pathD}
                               fill="none"
-                              stroke="rgba(15, 23, 42, 0.1)"
-                              strokeWidth="32"
+                              stroke="rgba(15, 23, 42, 0.12)"
+                              strokeWidth="44"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               transform="translate(0, 4)"
                             />
 
-                            {/* Layer 2: Outer Pipe Casing (Metallic / Iron Wall) */}
+                            {/* Layer 2: Outer Pipe Casing (Thick Metallic / Iron Wall) */}
                             <path
                               d={seg.pathD}
                               fill="none"
                               stroke={seg.isFlowing ? theme.streamGradStart : '#64748b'}
-                              strokeWidth="28"
+                              strokeWidth="38"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              opacity={seg.isFlowing ? 0.9 : 0.4}
+                              opacity={seg.isFlowing ? 0.92 : 0.4}
                             />
 
                             {/* Layer 3: Inner Pipe Wall (High-pressure Rim) */}
@@ -280,7 +258,7 @@ export default function WaterStreamMap({
                               d={seg.pathD}
                               fill="none"
                               stroke={seg.isFlowing ? theme.streamBaseColor : '#94a3b8'}
-                              strokeWidth="22"
+                              strokeWidth="30"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               opacity={seg.isFlowing ? 0.95 : 0.35}
@@ -291,50 +269,39 @@ export default function WaterStreamMap({
                               d={seg.pathD}
                               fill="none"
                               stroke={seg.isFlowing ? `url(#pipeWaterGrad-${unit.id})` : '#334155'}
-                              strokeWidth="16"
+                              strokeWidth="22"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               opacity={seg.isFlowing ? 1.0 : 0.25}
                             />
 
-                            {/* Layer 5: Dynamic Flowing Water Actions (Only when flowing!) */}
+                            {/* Layer 5: Sparkling Bubbles Only (Water Flow Action) */}
                             {seg.isFlowing && (
                               <>
-                                {/* Ambient Water Glow */}
-                                <path
-                                  d={seg.pathD}
-                                  fill="none"
-                                  stroke={theme.streamGradMid}
-                                  strokeWidth="14"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="animate-pipe-glow"
-                                />
-
-                                {/* Flowing Water Waves (Speedy and smooth) */}
+                                {/* Main Sparkling Bubbles (Round white water pearls) */}
                                 <path
                                   d={seg.pathD}
                                   fill="none"
                                   stroke="#ffffff"
-                                  strokeWidth="7"
-                                  strokeDasharray="14 18"
+                                  strokeWidth="6"
+                                  strokeDasharray="6 32"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  strokeOpacity="0.8"
-                                  className="animate-pipe-water"
+                                  strokeOpacity="0.9"
+                                  className="animate-pipe-bubble"
                                 />
 
-                                {/* Flowing Water Bubbles / Water Drops */}
+                                {/* Secondary Sparkling Bubbles (Light aqua water droplets) */}
                                 <path
                                   d={seg.pathD}
                                   fill="none"
-                                  stroke="#e0f2fe"
+                                  stroke="#cffafe"
                                   strokeWidth="3.5"
-                                  strokeDasharray="4 28"
+                                  strokeDasharray="3.5 22"
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
-                                  strokeOpacity="0.95"
-                                  className="animate-pipe-bubble"
+                                  strokeOpacity="0.85"
+                                  className="animate-pipe-bubble-fast"
                                 />
                               </>
                             )}
@@ -344,43 +311,10 @@ export default function WaterStreamMap({
                               d={seg.pathD}
                               fill="none"
                               stroke="rgba(255, 255, 255, 0.55)"
-                              strokeWidth="2.5"
+                              strokeWidth="3.5"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                             />
-
-                            {/* Layer 7: Pipe Flange Coupler / Joint Accent */}
-                            {seg.jointPos && (
-                              <g
-                                transform={`translate(${seg.jointPos.x}, ${seg.jointPos.y}) rotate(${seg.jointPos.angle})`}
-                              >
-                                {/* Flange Body */}
-                                <rect
-                                  x="-6"
-                                  y="-17"
-                                  width="12"
-                                  height="34"
-                                  rx="3"
-                                  fill={seg.isFlowing ? `url(#flangeGradActive-${unit.id})` : `url(#flangeGrad-${unit.id})`}
-                                  stroke={seg.isFlowing ? '#bae6fd' : '#cbd5e1'}
-                                  strokeWidth="1.2"
-                                  filter="drop-shadow(0 2px 3px rgba(0,0,0,0.15))"
-                                />
-                                {/* Bolts */}
-                                <circle cx="0" cy="-11" r="1.8" fill={seg.isFlowing ? '#e0f2fe' : '#94a3b8'} />
-                                <circle cx="0" cy="11" r="1.8" fill={seg.isFlowing ? '#e0f2fe' : '#94a3b8'} />
-                                {/* Water Flow Status Indicator Window */}
-                                <circle
-                                  cx="0"
-                                  cy="0"
-                                  r="3.5"
-                                  fill={seg.isFlowing ? '#38bdf8' : '#475569'}
-                                  stroke="#ffffff"
-                                  strokeWidth="1"
-                                  className={seg.isFlowing ? 'animate-pulse' : ''}
-                                />
-                              </g>
-                            )}
                           </g>
                         ))}
                       </g>
