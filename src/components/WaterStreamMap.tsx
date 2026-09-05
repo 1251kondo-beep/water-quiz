@@ -154,11 +154,18 @@ export default function WaterStreamMap({
                       <stop offset="100%" stopColor={theme.streamGradEnd} stopOpacity="0.9" />
                     </linearGradient>
 
-                    {/* Pipe Casing Gradient for active flowing pipe */}
-                    <linearGradient id={`pipeCasingActive-${unit.id}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor={theme.streamGradStart} />
-                      <stop offset="50%" stopColor="#38bdf8" />
-                      <stop offset="100%" stopColor={theme.streamGradEnd} />
+                    {/* Shimmering Band Gradients (帯状のきらきらグラデーション) */}
+                    <linearGradient id={`shimmerBandGrad1-${unit.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
+                      <stop offset="30%" stopColor="#a5f3fc" stopOpacity="0.85" />
+                      <stop offset="50%" stopColor="#ffffff" stopOpacity="0.95" />
+                      <stop offset="70%" stopColor="#38bdf8" stopOpacity="0.8" />
+                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0.4" />
+                    </linearGradient>
+                    <linearGradient id={`shimmerBandGrad2-${unit.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
+                      <stop offset="0%" stopColor="#e0f2fe" stopOpacity="0.8" />
+                      <stop offset="50%" stopColor="#ffffff" stopOpacity="0.9" />
+                      <stop offset="100%" stopColor="#a5f3fc" stopOpacity="0.8" />
                     </linearGradient>
                   </defs>
 
@@ -310,43 +317,41 @@ export default function WaterStreamMap({
                               opacity="0.98"
                             />
 
-                            {/* River Stream 1: メインのさざなみ波紋筋 */}
+                            {/* Shimmering Water Band 1: 幅広のきらめく光の帯 (幅18px) */}
+                            <path
+                              d={flowingPathD}
+                              fill="none"
+                              stroke={`url(#shimmerBandGrad1-${unit.id})`}
+                              strokeWidth="18"
+                              strokeDasharray="90 50 140 60"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="animate-shimmer-band-1 animate-shimmer-gleam"
+                            />
+
+                            {/* Shimmering Water Band 2: 中央を走る第二の光彩帯 (幅12px) */}
+                            <path
+                              d={flowingPathD}
+                              fill="none"
+                              stroke={`url(#shimmerBandGrad2-${unit.id})`}
+                              strokeWidth="12"
+                              strokeDasharray="60 90 80 70"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="animate-shimmer-band-2"
+                            />
+
+                            {/* Shimmering Water Band 3: 水面のきらめきクレスト (幅6px) */}
                             <path
                               d={flowingPathD}
                               fill="none"
                               stroke="#ffffff"
-                              strokeWidth="3.2"
-                              strokeDasharray="45 30 20 45"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeOpacity="0.85"
-                              className="animate-river-stream-1"
-                            />
-
-                            {/* River Stream 2: 寄り添うせせらぎ水紋筋 */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke="#e0f2fe"
-                              strokeWidth="2.2"
-                              strokeDasharray="25 45 55 30"
+                              strokeWidth="6"
+                              strokeDasharray="40 120 70 90"
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeOpacity="0.75"
-                              className="animate-river-stream-2"
-                            />
-
-                            {/* River Stream 3: きらめく水面のさざ波筋 */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke="#a5f3fc"
-                              strokeWidth="1.5"
-                              strokeDasharray="15 50 35 45"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeOpacity="0.65"
-                              className="animate-river-stream-3"
+                              className="animate-shimmer-band-1"
                             />
                           </g>
                         )}

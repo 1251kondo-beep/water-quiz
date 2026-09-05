@@ -52,20 +52,20 @@
   100% { stroke-dashoffset: 0; }
 }
 
-/* River Stream / Seseragi Animations (川のせせらぎ水流) */
-@keyframes riverStreamFlow1 {
-  from { stroke-dashoffset: 140; }
+/* Shimmering River Band Animations (帯状のきらきら水流) */
+@keyframes shimmerBandFlow1 {
+  from { stroke-dashoffset: 340; }
   to { stroke-dashoffset: 0; }
 }
 
-@keyframes riverStreamFlow2 {
-  from { stroke-dashoffset: 160; }
+@keyframes shimmerBandFlow2 {
+  from { stroke-dashoffset: 300; }
   to { stroke-dashoffset: 0; }
 }
 
-@keyframes riverStreamFlow3 {
-  from { stroke-dashoffset: 155; }
-  to { stroke-dashoffset: 0; }
+@keyframes shimmerSparkleGleam {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 0.95; }
 }
 
 .animate-float-slow {
@@ -80,16 +80,16 @@
   animation: waterPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
 }
 
-.animate-river-stream-1 {
-  animation: riverStreamFlow1 2.2s linear infinite;
+.animate-shimmer-band-1 {
+  animation: shimmerBandFlow1 2.8s linear infinite;
 }
 
-.animate-river-stream-2 {
-  animation: riverStreamFlow2 3.0s linear infinite;
+.animate-shimmer-band-2 {
+  animation: shimmerBandFlow2 1.9s linear infinite;
 }
 
-.animate-river-stream-3 {
-  animation: riverStreamFlow3 1.8s linear infinite;
+.animate-shimmer-gleam {
+  animation: shimmerSparkleGleam 2.2s ease-in-out infinite;
 }
 
 /* Frosted glass with subtle aqua tint */
