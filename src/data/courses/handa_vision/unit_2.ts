@@ -207,7 +207,7 @@ const lesson_2_2: Lesson = {
   lessonNumber: 2,
   title: 'Lesson 2-2: 第4章 基本理念・施策目標・基本事項',
   subtitle: '安心・安全な水、3大施策目標、新規・追加施策、計画給水規模、SDGs連動',
-  description: '半田市新水道ビジョン第4章の基本理念『安心・安全な水をいつでも、どこでも、いつまでも』、3大施策目標体系、基本事項（計画期間・規模）、SDGsとの連動を学びます。',
+  description: '基本理念、3大施策目標体系、基本事項（計画期間・規模）、SDGsとの連動を学びます。',
   questions: [
     {
       id: 'hv_2_2_01',
@@ -386,7 +386,7 @@ export const HV_UNIT_2: Unit = {
   id: 'hv_unit_2',
   unitNumber: 2,
   title: 'UNIT 2: 現状と課題・基本理念及び施策目標',
-  description: '3つの視点（安全・強靭・持続）から抽出した現状と課題、基本理念『安心・安全な水をいつでも、どこでも、いつまでも』、3大施策目標体系とSDGsを完全習得',
+  description: '3つの視点（安全・強靭・持続）から抽出した現状と課題、3大施策目標体系とSDGsを完全習得',
   badgeText: '全20問・2レッスン',
   lessons: [lesson_2_1, lesson_2_2]
 };
