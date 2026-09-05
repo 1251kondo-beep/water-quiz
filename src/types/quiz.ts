@@ -47,10 +47,11 @@ export interface OrderItem {
 
 export interface Question {
   id: string;
-  type?: 'choice' | 'true_false' | 'matching' | 'fill_in_the_blank' | 'ordering';
+  type?: 'choice' | 'true_false' | 'matching' | 'fill_in_the_blank' | 'ordering' | 'multiple_choice';
   question: string;
   options: string[];
   answerIndex: number;
+  answerIndices?: number[]; // 複数選択（multiple_choice）用の正解インデックス配列
   explanation: string;
   analogy?: string; // 日常のたとえ（任意：初学者がイメージしにくい場合のみ補足）
   referenceSection: string; // 投資財政計画_用語解説.md の対応セクション

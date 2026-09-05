@@ -75,6 +75,34 @@ function shuffleOptionsForQuestions(qs: Question[]): Question[] {
       return q;
     }
 
+    if (q.type === 'multiple_choice' || (q.answerIndices && q.answerIndices.length > 0)) {
+      const correctIndices = q.answerIndices || [];
+      const pairs = q.options.map((optText, idx) => ({
+        text: optText,
+        isCorrect: correctIndices.includes(idx),
+      }));
+
+      // 連番（第1、第2... / 1, 2...）等の順序選択肢でない場合のみシャッフル
+      const isSequential = q.options.every((opt, i) => opt.includes(`第${i + 1}`) || opt.includes(`${i + 1}`));
+      if (!isSequential) {
+        for (let i = pairs.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [pairs[i], pairs[j]] = [pairs[j], pairs[i]];
+        }
+      }
+
+      const newOptions = pairs.map((p) => p.text);
+      const newAnswerIndices = pairs
+        .map((p, idx) => (p.isCorrect ? idx : -1))
+        .filter((idx) => idx !== -1);
+
+      return {
+        ...q,
+        options: newOptions,
+        answerIndices: newAnswerIndices,
+      };
+    }
+
     const pairs = q.options.map((optText, idx) => ({
       text: optText,
       isCorrect: idx === q.answerIndex,
@@ -196,6 +224,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [selectedMultipleOptions, setSelectedMultipleOptions] = useState<number[]>([]);
   const [isAnswerConfirmed, setIsAnswerConfirmed] = useState(false);
   const [answersState, setAnswersState] = useState<('correct' | 'wrong')[]>([]);
   const [userScore, setUserScore] = useState(0);
@@ -238,6 +267,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setShuffledQuestions(shuffleOptionsForQuestions(lesson.questions));
     setCurrentIndex(0);
     setSelectedOption(null);
+    setSelectedMultipleOptions([]);
     setIsAnswerConfirmed(false);
     setAnswersState([]);
     setUserScore(0);
@@ -255,6 +285,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setShuffledQuestions(shuffleOptionsForQuestions(lesson.questions));
     setCurrentIndex(0);
     setSelectedOption(null);
+    setSelectedMultipleOptions([]);
     setIsAnswerConfirmed(false);
     setAnswersState([]);
     setUserScore(0);
@@ -270,6 +301,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
   useEffect(() => {
     setSelectedOption(null);
+    setSelectedMultipleOptions([]);
     setIsAnswerConfirmed(false);
     setIsMatchFullyConnected(false);
     setIsMatchAllCorrect(false);
@@ -306,6 +338,19 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     scrollToConfirmButtonIfOverflow();
   };
 
+  const handleToggleMultipleOption = (index: number) => {
+    if (isAnswerConfirmed) return;
+    soundFx.playClick(soundEnabled);
+    setSelectedMultipleOptions((prev) => {
+      if (prev.includes(index)) {
+        return prev.filter((i) => i !== index);
+      } else {
+        return [...prev, index];
+      }
+    });
+    scrollToConfirmButtonIfOverflow();
+  };
+
   const handleConfirmAnswer = () => {
     if (isAnswerConfirmed) return;
 
@@ -319,6 +364,12 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     } else if (currentQ.type === 'fill_in_the_blank' || currentQ.blankText) {
       if (!isFillFullyCompleted) return;
       isCorrect = isFillAllCorrect;
+    } else if (currentQ.type === 'multiple_choice' || (currentQ.answerIndices && currentQ.answerIndices.length > 0)) {
+      const required = currentQ.answerIndices || [];
+      if (selectedMultipleOptions.length === 0) return;
+      isCorrect =
+        selectedMultipleOptions.length === required.length &&
+        selectedMultipleOptions.every((idx) => required.includes(idx));
     } else {
       if (selectedOption === null) return;
       isCorrect = selectedOption === currentQ.answerIndex;
@@ -347,6 +398,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     if (currentIndex + 1 < total) {
       setCurrentIndex((prev) => prev + 1);
       setSelectedOption(null);
+      setSelectedMultipleOptions([]);
       setIsAnswerConfirmed(false);
       window.scrollTo({ top: 0, behavior: 'instant' });
     } else {
@@ -594,7 +646,82 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               }
             }}
           />
-        ) : (currentQ.options.length === 2 && (currentQ.options.some((o) => o.includes('正し') || o.includes('○') || o.includes('⚪︎') || o.includes('〇') || o === 'True') || currentQ.options.some((o) => o.includes('間違') || o.includes('誤') || o.includes('×') || o === 'False'))) ? (
+        ) : (currentQ.type === 'multiple_choice' || (currentQ.answerIndices && currentQ.answerIndices.length > 0)) ? (
+          <div className="space-y-3.5 my-3 mb-6 sm:mb-8">
+            <div className="flex items-center justify-between gap-2 px-1 mb-1">
+              <p className="text-xs sm:text-sm font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1.5 bg-sky-50 dark:bg-sky-950/60 px-3.5 py-2 rounded-xl border border-sky-200 dark:border-sky-800/60 shadow-sm">
+                <span className="w-5 h-5 rounded-full bg-sky-500 text-white text-xs font-black flex items-center justify-center shrink-0">✓</span>
+                <span>該当するものをタップして選んでください（複数選択可）</span>
+              </p>
+              {!isAnswerConfirmed && selectedMultipleOptions.length > 0 && (
+                <span className="text-xs font-black text-sky-600 dark:text-sky-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-sky-200 dark:border-sky-800 shrink-0">
+                  {selectedMultipleOptions.length} 個選択中
+                </span>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+              {currentQ.options.map((optionText, optIdx) => {
+                const isSelected = selectedMultipleOptions.includes(optIdx);
+                const isCorrectTarget = (currentQ.answerIndices || []).includes(optIdx);
+
+                let btnStyle = 'bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-sky-400 hover:shadow-md';
+                let checkBadgeStyle = 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800';
+
+                if (!isAnswerConfirmed) {
+                  if (isSelected) {
+                    btnStyle = 'bg-sky-50/90 dark:bg-sky-950/70 border-2 border-sky-500 text-sky-900 dark:text-sky-100 font-bold shadow-md scale-[1.01]';
+                    checkBadgeStyle = 'border-sky-500 bg-sky-500 text-white';
+                  }
+                } else {
+                  if (isCorrectTarget) {
+                    btnStyle = 'bg-emerald-50/95 dark:bg-emerald-950/80 border-2 border-emerald-500 text-emerald-950 dark:text-emerald-100 font-bold shadow-md';
+                    checkBadgeStyle = 'border-emerald-500 bg-emerald-500 text-white';
+                  } else if (isSelected && !isCorrectTarget) {
+                    btnStyle = 'bg-rose-50/95 dark:bg-rose-950/80 border-2 border-rose-500 text-rose-950 dark:text-rose-100 font-bold shadow-md';
+                    checkBadgeStyle = 'border-rose-500 bg-rose-500 text-white';
+                  } else {
+                    btnStyle = 'bg-slate-50/60 dark:bg-slate-900/40 border-2 border-slate-200/60 dark:border-slate-800 text-slate-400 dark:text-slate-500 opacity-40';
+                    checkBadgeStyle = 'border-slate-300 dark:border-slate-700 bg-transparent';
+                  }
+                }
+
+                return (
+                  <button
+                    key={optIdx}
+                    onClick={() => handleToggleMultipleOption(optIdx)}
+                    disabled={isAnswerConfirmed}
+                    className={`w-full text-left p-4 sm:p-5 rounded-2xl transition-all flex items-center justify-between gap-3 text-base sm:text-[17px] font-bold tracking-normal ${btnStyle} ${
+                      !isAnswerConfirmed ? 'cursor-pointer active:scale-[0.98]' : 'cursor-default'
+                    }`}
+                  >
+                    <span className="flex-1 leading-relaxed">
+                      {optionText}
+                    </span>
+
+                    {!isAnswerConfirmed ? (
+                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 transition-colors ${checkBadgeStyle}`}>
+                        {isSelected && <Check className="w-4 h-4 stroke-[3]" />}
+                      </div>
+                    ) : isCorrectTarget ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-black bg-emerald-500 text-white px-2.5 py-1 rounded-full shadow-sm shrink-0">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        正解
+                      </span>
+                    ) : isSelected ? (
+                      <span className="inline-flex items-center gap-1 text-xs font-black bg-rose-500 text-white px-2.5 py-1 rounded-full shadow-sm shrink-0">
+                        <XCircle className="w-3.5 h-3.5" />
+                        不正解
+                      </span>
+                    ) : (
+                      <div className="w-6 h-6 rounded-lg border-2 border-slate-200 dark:border-slate-700 shrink-0 opacity-40" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : (currentQ.options.length === 2 && (currentQ.options.some((o) => o.includes('正し') || o.includes('○') || o.includes('⚪︎') || o.includes('〇') || o === 'True') || currentQ.options.some((o) => o.includes('間違') || o.includes('誤') || o.includes('×') || o.includes('✕') || o.toLowerCase() === 'false'))) ? (
           <div className="space-y-3.5 my-3 mb-6 sm:mb-8">
             <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mb-1">
               <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 text-[10px] font-black flex items-center justify-center">?</span>
@@ -743,6 +870,8 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                 ? !isOrderFullyPlaced
                 : currentQ.type === 'fill_in_the_blank' || currentQ.blankText
                 ? !isFillFullyCompleted
+                : currentQ.type === 'multiple_choice' || (currentQ.answerIndices && currentQ.answerIndices.length > 0)
+                ? selectedMultipleOptions.length === 0
                 : selectedOption === null
             }
             className={`w-full py-3.5 sm:py-4 rounded-2xl font-bold text-base shadow-md flex items-center justify-center gap-2 transition-all cursor-pointer mt-3 sm:mt-4 scroll-mb-6 sm:scroll-mb-8 ${
@@ -753,13 +882,21 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                   ? isOrderFullyPlaced
                   : currentQ.type === 'fill_in_the_blank' || currentQ.blankText
                   ? isFillFullyCompleted
+                  : currentQ.type === 'multiple_choice' || (currentQ.answerIndices && currentQ.answerIndices.length > 0)
+                  ? selectedMultipleOptions.length > 0
                   : selectedOption !== null
               )
                 ? 'bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-sky-500/25 active:scale-[0.99]'
                 : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
             }`}
           >
-            <span>回答する</span>
+            <span>
+              {currentQ.type === 'multiple_choice' || (currentQ.answerIndices && currentQ.answerIndices.length > 0)
+                ? selectedMultipleOptions.length > 0
+                  ? `${selectedMultipleOptions.length}個選択中 — これで回答する`
+                  : '回答する'
+                : '回答する'}
+            </span>
             <Check className="w-4 h-4 stroke-[2.5]" />
           </button>
         )}
