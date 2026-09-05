@@ -162,161 +162,204 @@ export default function WaterStreamMap({
                     </linearGradient>
                   </defs>
 
-                  {/* Segmented Pipeline Rendering */}
+                  {/* Continuous Pipeline & River Stream Rendering */}
                   {(() => {
                     const total = unitLessons.length;
                     if (total === 0) return null;
 
-                    // Build pipe segments
-                    const segments: Array<{
-                      id: string;
-                      pathD: string;
-                      isFlowing: boolean;
-                    }> = [];
-
-                    // 1. Entry Pipe Segment (Top of section into Lesson 0)
-                    const firstGlobalState = globalLessonStates.find(
-                      (s) => s.lesson.id === unitLessons[0].id
-                    );
-                    const isEntryFlowing = firstGlobalState?.isUnlocked || false;
+                    // 1. Build Single Full Continuous Path for the entire pipeline (完全シームレス・ゼロ継ぎ目)
                     const x0 = 150;
                     const y0 = 65;
-                    segments.push({
-                      id: `entry-${unit.id}`,
-                      pathD: `M ${x0} ${y0 - 45} C ${x0} ${y0 - 25}, ${x0} ${y0 - 10}, ${x0} ${y0}`,
-                      isFlowing: isEntryFlowing,
-                    });
-
-                    // 2. Inter-Lesson Pipe Segments (Lesson i-1 -> Lesson i)
+                    let fullPipePathD = `M ${x0} ${y0 - 45} C ${x0} ${y0 - 25}, ${x0} ${y0 - 10}, ${x0} ${y0}`;
                     for (let i = 1; i < total; i++) {
-                      const prevLesson = unitLessons[i - 1];
-                      const currLesson = unitLessons[i];
-                      const prevGlobalState = globalLessonStates.find(
-                        (s) => s.lesson.id === prevLesson.id
-                      );
-
-                      // Water flows through this pipe ONLY if previous lesson is completed!
-                      const isFlowing = prevGlobalState?.isCompleted || false;
-
                       const prevY = (i - 1) * 145 + 65;
                       const prevX = (i - 1) % 2 === 0 ? 150 : 290;
                       const currY = i * 145 + 65;
                       const currX = i % 2 === 0 ? 150 : 290;
                       const midY = (prevY + currY) / 2;
-
-                      const pathD = `M ${prevX} ${prevY} C ${prevX} ${midY + 20}, ${currX} ${midY - 20}, ${currX} ${currY}`;
-
-                      segments.push({
-                        id: `seg-${prevLesson.id}-${currLesson.id}`,
-                        pathD,
-                        isFlowing,
-                      });
+                      fullPipePathD += ` C ${prevX} ${midY + 20}, ${currX} ${midY - 20}, ${currX} ${currY}`;
                     }
-
-                    // 3. Exit Pipe Segment (Last Lesson -> Bottom of section)
-                    const lastLesson = unitLessons[total - 1];
-                    const lastGlobalState = globalLessonStates.find(
-                      (s) => s.lesson.id === lastLesson.id
-                    );
-                    const isExitFlowing = lastGlobalState?.isCompleted || false;
                     const lastY = (total - 1) * 145 + 65;
                     const lastX = (total - 1) % 2 === 0 ? 150 : 290;
-                    segments.push({
-                      id: `exit-${unit.id}`,
-                      pathD: `M ${lastX} ${lastY} C ${lastX} ${lastY + 30}, 220 ${lastY + 50}, 220 ${lastY + 80}`,
-                      isFlowing: isExitFlowing,
-                    });
+                    fullPipePathD += ` C ${lastX} ${lastY + 30}, 220 ${lastY + 50}, 220 ${lastY + 80}`;
+
+                    // 2. Build Single Continuous Flowing Path up to the unlocked/completed frontier
+                    let flowingPathD = '';
+                    const firstGlobalState = globalLessonStates.find(
+                      (s) => s.lesson.id === unitLessons[0]?.id
+                    );
+
+                    if (firstGlobalState?.isUnlocked) {
+                      flowingPathD = `M ${x0} ${y0 - 45} C ${x0} ${y0 - 25}, ${x0} ${y0 - 10}, ${x0} ${y0}`;
+
+                      for (let i = 1; i < total; i++) {
+                        const prevLesson = unitLessons[i - 1];
+                        const prevGlobalState = globalLessonStates.find(
+                          (s) => s.lesson.id === prevLesson.id
+                        );
+
+                        // If previous lesson is completed, flow seamlessly into the next lesson!
+                        if (prevGlobalState?.isCompleted) {
+                          const prevY = (i - 1) * 145 + 65;
+                          const prevX = (i - 1) % 2 === 0 ? 150 : 290;
+                          const currY = i * 145 + 65;
+                          const currX = i % 2 === 0 ? 150 : 290;
+                          const midY = (prevY + currY) / 2;
+                          flowingPathD += ` C ${prevX} ${midY + 20}, ${currX} ${midY - 20}, ${currX} ${currY}`;
+                        } else {
+                          // Stop flowing at the incomplete lesson frontier
+                          break;
+                        }
+                      }
+
+                      // If the last lesson of this unit is also completed, flow into the exit tube
+                      const lastLesson = unitLessons[total - 1];
+                      const lastGlobalState = globalLessonStates.find(
+                        (s) => s.lesson.id === lastLesson?.id
+                      );
+                      if (lastGlobalState?.isCompleted) {
+                        flowingPathD += ` C ${lastX} ${lastY + 30}, 220 ${lastY + 50}, 220 ${lastY + 80}`;
+                      }
+                    }
 
                     return (
                       <g>
-                        {segments.map((seg) => (
-                          <g key={seg.id}>
-                            {/* Layer 1: Pipe Drop Shadow (Ground depth) */}
-                            <path
-                              d={seg.pathD}
-                              fill="none"
-                              stroke="rgba(15, 23, 42, 0.12)"
-                              strokeWidth="44"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              transform="translate(0, 4)"
-                            />
+                        {/* ======================================================== */}
+                        {/* BASE CONTINUOUS PIPE (継ぎ目のない一本の美しい水道管) */}
+                        {/* ======================================================== */}
 
-                            {/* Layer 2: Outer Pipe Casing (Thick Metallic / Iron Wall) */}
+                        {/* Layer 1: Pipe Drop Shadow */}
+                        <path
+                          d={fullPipePathD}
+                          fill="none"
+                          stroke="rgba(15, 23, 42, 0.12)"
+                          strokeWidth="44"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          transform="translate(0, 4)"
+                        />
+
+                        {/* Layer 2: Outer Pipe Casing (Metallic Wall) */}
+                        <path
+                          d={fullPipePathD}
+                          fill="none"
+                          stroke="#64748b"
+                          strokeWidth="38"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          opacity="0.4"
+                        />
+
+                        {/* Layer 3: Inner Pipe Wall (Rim) */}
+                        <path
+                          d={fullPipePathD}
+                          fill="none"
+                          stroke="#94a3b8"
+                          strokeWidth="30"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          opacity="0.35"
+                        />
+
+                        {/* Layer 4: Dry Pipe Bore (Empty Channel) */}
+                        <path
+                          d={fullPipePathD}
+                          fill="none"
+                          stroke="#334155"
+                          strokeWidth="22"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          opacity="0.25"
+                        />
+
+                        {/* ======================================================== */}
+                        {/* FLOWING WATER PIPE (クリア済み区間：通水 & 川のせせらぎ) */}
+                        {/* ======================================================== */}
+                        {flowingPathD && (
+                          <g>
+                            {/* Water Pipe Active Outer Casing */}
                             <path
-                              d={seg.pathD}
+                              d={flowingPathD}
                               fill="none"
-                              stroke={seg.isFlowing ? theme.streamGradStart : '#64748b'}
+                              stroke={theme.streamGradStart}
                               strokeWidth="38"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              opacity={seg.isFlowing ? 0.92 : 0.4}
+                              opacity="0.92"
                             />
 
-                            {/* Layer 3: Inner Pipe Wall (High-pressure Rim) */}
+                            {/* Water Pipe Active Inner Rim */}
                             <path
-                              d={seg.pathD}
+                              d={flowingPathD}
                               fill="none"
-                              stroke={seg.isFlowing ? theme.streamBaseColor : '#94a3b8'}
+                              stroke={theme.streamBaseColor}
                               strokeWidth="30"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              opacity={seg.isFlowing ? 0.95 : 0.35}
+                              opacity="0.95"
                             />
 
-                            {/* Layer 4: Pipe Bore / Internal Channel (Filled with Water vs Dry Empty) */}
+                            {/* Filled Water Channel (Base Stream) */}
                             <path
-                              d={seg.pathD}
+                              d={flowingPathD}
                               fill="none"
-                              stroke={seg.isFlowing ? `url(#pipeWaterGrad-${unit.id})` : '#334155'}
+                              stroke={`url(#pipeWaterGrad-${unit.id})`}
                               strokeWidth="22"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              opacity={seg.isFlowing ? 1.0 : 0.25}
+                              opacity="0.98"
                             />
 
-                            {/* Layer 5: Sparkling Bubbles Only (Water Flow Action) */}
-                            {seg.isFlowing && (
-                              <>
-                                {/* Main Sparkling Bubbles (Round white water pearls) */}
-                                <path
-                                  d={seg.pathD}
-                                  fill="none"
-                                  stroke="#ffffff"
-                                  strokeWidth="6"
-                                  strokeDasharray="6 32"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeOpacity="0.9"
-                                  className="animate-pipe-bubble"
-                                />
-
-                                {/* Secondary Sparkling Bubbles (Light aqua water droplets) */}
-                                <path
-                                  d={seg.pathD}
-                                  fill="none"
-                                  stroke="#cffafe"
-                                  strokeWidth="3.5"
-                                  strokeDasharray="3.5 22"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeOpacity="0.85"
-                                  className="animate-pipe-bubble-fast"
-                                />
-                              </>
-                            )}
-
-                            {/* Layer 6: Pipe Surface Glass/Metallic Reflection (Curved tube highlight) */}
+                            {/* River Stream 1: メインのさざなみ波紋筋 */}
                             <path
-                              d={seg.pathD}
+                              d={flowingPathD}
                               fill="none"
-                              stroke="rgba(255, 255, 255, 0.55)"
-                              strokeWidth="3.5"
+                              stroke="#ffffff"
+                              strokeWidth="3.2"
+                              strokeDasharray="45 30 20 45"
                               strokeLinecap="round"
                               strokeLinejoin="round"
+                              strokeOpacity="0.85"
+                              className="animate-river-stream-1"
+                            />
+
+                            {/* River Stream 2: 寄り添うせせらぎ水紋筋 */}
+                            <path
+                              d={flowingPathD}
+                              fill="none"
+                              stroke="#e0f2fe"
+                              strokeWidth="2.2"
+                              strokeDasharray="25 45 55 30"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeOpacity="0.75"
+                              className="animate-river-stream-2"
+                            />
+
+                            {/* River Stream 3: きらめく水面のさざ波筋 */}
+                            <path
+                              d={flowingPathD}
+                              fill="none"
+                              stroke="#a5f3fc"
+                              strokeWidth="1.5"
+                              strokeDasharray="15 50 35 45"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeOpacity="0.65"
+                              className="animate-river-stream-3"
                             />
                           </g>
-                        ))}
+                        )}
+
+                        {/* Layer 6: Pipe Surface Glass/Metallic Reflection (全管共通の光沢反射) */}
+                        <path
+                          d={fullPipePathD}
+                          fill="none"
+                          stroke="rgba(255, 255, 255, 0.55)"
+                          strokeWidth="3.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </g>
                     );
                   })()}
