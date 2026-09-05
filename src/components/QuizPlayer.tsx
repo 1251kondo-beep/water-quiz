@@ -759,7 +759,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                 : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
             }`}
           >
-            <span>回答する（確定）</span>
+            <span>回答する</span>
             <Check className="w-4 h-4 stroke-[2.5]" />
           </button>
         )}
