@@ -153,20 +153,6 @@ export default function WaterStreamMap({
                       <stop offset="50%" stopColor={theme.streamGradMid} stopOpacity="0.95" />
                       <stop offset="100%" stopColor={theme.streamGradEnd} stopOpacity="0.9" />
                     </linearGradient>
-
-                    {/* Shimmering Band Gradients (帯状のきらきらグラデーション) */}
-                    <linearGradient id={`shimmerBandGrad1-${unit.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" stopOpacity="0.4" />
-                      <stop offset="30%" stopColor="#a5f3fc" stopOpacity="0.85" />
-                      <stop offset="50%" stopColor="#ffffff" stopOpacity="0.95" />
-                      <stop offset="70%" stopColor="#38bdf8" stopOpacity="0.8" />
-                      <stop offset="100%" stopColor="#ffffff" stopOpacity="0.4" />
-                    </linearGradient>
-                    <linearGradient id={`shimmerBandGrad2-${unit.id}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#e0f2fe" stopOpacity="0.8" />
-                      <stop offset="50%" stopColor="#ffffff" stopOpacity="0.9" />
-                      <stop offset="100%" stopColor="#a5f3fc" stopOpacity="0.8" />
-                    </linearGradient>
                   </defs>
 
                   {/* Continuous Pipeline & River Stream Rendering */}
@@ -317,41 +303,59 @@ export default function WaterStreamMap({
                               opacity="0.98"
                             />
 
-                            {/* Shimmering Water Band 1: 幅広のきらめく光の帯 (幅18px) */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke={`url(#shimmerBandGrad1-${unit.id})`}
-                              strokeWidth="18"
-                              strokeDasharray="90 50 140 60"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="animate-shimmer-band-1 animate-shimmer-gleam"
-                            />
-
-                            {/* Shimmering Water Band 2: 中央を走る第二の光彩帯 (幅12px) */}
-                            <path
-                              d={flowingPathD}
-                              fill="none"
-                              stroke={`url(#shimmerBandGrad2-${unit.id})`}
-                              strokeWidth="12"
-                              strokeDasharray="60 90 80 70"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="animate-shimmer-band-2"
-                            />
-
-                            {/* Shimmering Water Band 3: 水面のきらめきクレスト (幅6px) */}
+                            {/* Bubble Layer 1: 大気泡 (直径11pxの丸い大きな気泡) */}
                             <path
                               d={flowingPathD}
                               fill="none"
                               stroke="#ffffff"
-                              strokeWidth="6"
-                              strokeDasharray="40 120 70 90"
+                              strokeWidth="11"
+                              strokeDasharray="0 54"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              strokeOpacity="0.75"
-                              className="animate-shimmer-band-1"
+                              strokeOpacity="0.88"
+                              className="animate-bubble-layer-1"
+                            />
+
+                            {/* Bubble Layer 2: 中気泡 (直径7pxの中くらいの気泡) */}
+                            <path
+                              d={flowingPathD}
+                              fill="none"
+                              stroke="#e0f2fe"
+                              strokeWidth="7"
+                              strokeDasharray="0 36"
+                              strokeDashoffset="18"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeOpacity="0.9"
+                              className="animate-bubble-layer-2"
+                            />
+
+                            {/* Bubble Layer 3: 小気泡 (直径4pxのきらめく小気泡) */}
+                            <path
+                              d={flowingPathD}
+                              fill="none"
+                              stroke="#ffffff"
+                              strokeWidth="4"
+                              strokeDasharray="0 22"
+                              strokeDashoffset="9"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeOpacity="0.95"
+                              className="animate-bubble-layer-3"
+                            />
+
+                            {/* Bubble Layer 4: 微小な星屑きらめき粒 (直径2.5px) */}
+                            <path
+                              d={flowingPathD}
+                              fill="none"
+                              stroke="#a5f3fc"
+                              strokeWidth="2.5"
+                              strokeDasharray="0 16"
+                              strokeDashoffset="7"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeOpacity="0.85"
+                              className="animate-bubble-layer-2"
                             />
                           </g>
                         )}

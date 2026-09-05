@@ -52,20 +52,36 @@
   100% { stroke-dashoffset: 0; }
 }
 
-/* Shimmering River Band Animations (帯状のきらきら水流) */
-@keyframes shimmerBandFlow1 {
-  from { stroke-dashoffset: 340; }
+/* Sparkling Bubble Animations (大小の気泡がキラキラ動く) */
+@keyframes bubbleDrift1 {
+  from { stroke-dashoffset: 112; }
   to { stroke-dashoffset: 0; }
 }
 
-@keyframes shimmerBandFlow2 {
-  from { stroke-dashoffset: 300; }
+@keyframes bubbleDrift2 {
+  from { stroke-dashoffset: 144; }
   to { stroke-dashoffset: 0; }
 }
 
-@keyframes shimmerSparkleGleam {
-  0%, 100% { opacity: 0.65; }
-  50% { opacity: 0.95; }
+@keyframes bubbleDrift3 {
+  from { stroke-dashoffset: 110; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes bubbleTwinkle1 {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes bubbleTwinkle2 {
+  0%, 100% { opacity: 0.35; }
+  45% { opacity: 0.95; }
+  75% { opacity: 0.6; }
+}
+
+@keyframes bubbleTwinkleFast {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
 }
 
 .animate-float-slow {
@@ -80,16 +96,16 @@
   animation: waterPulse 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
 }
 
-.animate-shimmer-band-1 {
-  animation: shimmerBandFlow1 2.8s linear infinite;
+.animate-bubble-layer-1 {
+  animation: bubbleDrift1 4.5s linear infinite, bubbleTwinkle1 2.2s ease-in-out infinite;
 }
 
-.animate-shimmer-band-2 {
-  animation: shimmerBandFlow2 1.9s linear infinite;
+.animate-bubble-layer-2 {
+  animation: bubbleDrift2 3.2s linear infinite, bubbleTwinkle2 1.7s ease-in-out infinite;
 }
 
-.animate-shimmer-gleam {
-  animation: shimmerSparkleGleam 2.2s ease-in-out infinite;
+.animate-bubble-layer-3 {
+  animation: bubbleDrift3 2.5s linear infinite, bubbleTwinkleFast 1.2s ease-in-out infinite;
 }
 
 /* Frosted glass with subtle aqua tint */
