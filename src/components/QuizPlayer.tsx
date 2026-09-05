@@ -943,16 +943,14 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             </div>
           )}
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm space-y-3.5">
-            <div className="flex items-center gap-2.5 text-sky-600 dark:text-sky-400 font-bold text-base sm:text-lg">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-sky-100 dark:bg-sky-900/50 border border-sky-200/80 dark:border-sky-700/60 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
-                <Image
-                  src="/images/characters/sunadani_face_icon.png"
-                  alt="砂谷先生"
-                  width={32}
-                  height={32}
-                  className="w-full h-full object-contain p-0.5"
-                />
-              </div>
+            <div className="flex items-center gap-3 text-sky-600 dark:text-sky-400 font-bold text-base sm:text-lg">
+              <Image
+                src="/images/characters/sunadani_face_transparent.png"
+                alt="砂谷先生"
+                width={80}
+                height={39}
+                className="h-9 sm:h-10 w-auto object-contain shrink-0 drop-shadow-xs"
+              />
               <h4>砂谷先生のワンポイント解説</h4>
             </div>
 
