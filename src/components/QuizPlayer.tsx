@@ -524,7 +524,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             </span>
           </div>
 
-          <h2 className="text-[19px] sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-snug sm:leading-relaxed tracking-normal">
+          <h2 className="text-[19px] sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-snug sm:leading-relaxed tracking-normal whitespace-pre-line">
             {currentQ.question.split(/(<u>.*?<\/u>)/g).map((part, i) => {
               if (part.startsWith('<u>') && part.endsWith('</u>')) {
                 const inner = part.slice(3, -4);
