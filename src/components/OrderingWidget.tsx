@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpDown, RotateCcw, CheckCircle2, XCircle } from 'lucide-react';
 import { OrderItem } from '@/types/quiz';
+import { getCourseTheme } from '@/data/themes';
 
 interface OrderingWidgetProps {
   items: OrderItem[];
   correctOrder: string[];
   isConfirmed: boolean;
+  courseId?: string;
   onSelectionChange: (isFullyOrdered: boolean, isAllCorrect: boolean) => void;
 }
 
@@ -15,8 +17,10 @@ export default function OrderingWidget({
   items,
   correctOrder,
   isConfirmed,
+  courseId,
   onSelectionChange,
 }: OrderingWidgetProps) {
+  const theme = getCourseTheme(courseId);
   // Shuffled items for the bottom selection pool
   const [shuffledItems, setShuffledItems] = useState<OrderItem[]>([]);
   // Ordered item IDs placed in top area: e.g. ["step_2", "step_1", ...]
@@ -80,7 +84,7 @@ export default function OrderingWidget({
     <div className="space-y-4 my-2 select-none">
       {/* Subtitle Indicator */}
       <div className="flex items-center justify-between text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400">
-        <span className="flex items-center gap-1 text-cyan-700 dark:text-cyan-400">
+        <span className={`flex items-center gap-1 ${theme.quiz.accentText}`}>
           <ArrowUpDown className="w-4 h-4" />
           正しい順番に並べてください
         </span>
@@ -88,7 +92,7 @@ export default function OrderingWidget({
           <button
             type="button"
             onClick={handleReset}
-            className="text-xs text-cyan-600 hover:underline flex items-center gap-1 cursor-pointer font-bold"
+            className={`text-xs hover:underline flex items-center gap-1 cursor-pointer font-bold ${theme.quiz.accentText}`}
           >
             <RotateCcw className="w-3 h-3" />
             やり直す
@@ -97,7 +101,7 @@ export default function OrderingWidget({
       </div>
 
       {/* 1. Top Placed Container (点線配置スロットエリア) */}
-      <div className="bg-slate-50/70 dark:bg-slate-900/60 rounded-3xl p-4 sm:p-5 border-2 border-dashed border-sky-300 dark:border-sky-700/80 min-h-[120px] sm:min-h-[140px] flex flex-col justify-center transition-all shadow-inner">
+      <div className={`bg-slate-50/70 dark:bg-slate-900/60 rounded-3xl p-4 sm:p-5 border-2 border-dashed ${theme.quiz.cardBorder} min-h-[120px] sm:min-h-[140px] flex flex-col justify-center transition-all shadow-inner`}>
         {placedItemIds.length === 0 ? (
           <p className="text-center text-xs sm:text-sm text-slate-400 dark:text-slate-500 font-bold py-6">
             下の選択肢をタップして順番に並べてね
@@ -111,8 +115,8 @@ export default function OrderingWidget({
               const isItemCorrect = isConfirmed ? correctOrder[idx] === itemId : true;
 
               let cardStyle =
-                'bg-white dark:bg-slate-800 border-2 border-cyan-400/80 dark:border-cyan-600 shadow-sm text-slate-800 dark:text-slate-100 hover:border-cyan-500';
-              let badgeStyle = 'bg-cyan-600 text-white';
+                `bg-white dark:bg-slate-800 border-2 ${theme.quiz.cardBorder} shadow-sm text-slate-800 dark:text-slate-100 ${theme.quiz.optionHoverBorder}`;
+              let badgeStyle = theme.quiz.optionBadgeActive;
 
               if (isConfirmed) {
                 if (isItemCorrect) {
@@ -174,7 +178,7 @@ export default function OrderingWidget({
               key={item.id}
               type="button"
               onClick={() => handlePlaceItem(item.id)}
-              className="w-full text-left p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 shadow-sm hover:border-cyan-400 hover:bg-cyan-50/40 text-slate-800 dark:text-slate-100 transition-all active:scale-[0.99] cursor-pointer flex items-center justify-between gap-3 text-[15px] sm:text-base font-bold leading-relaxed"
+              className={`w-full text-left p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 shadow-sm ${theme.quiz.optionHoverBorder} hover:${theme.quiz.optionSelectedBg} text-slate-800 dark:text-slate-100 transition-all active:scale-[0.99] cursor-pointer flex items-center justify-between gap-3 text-[15px] sm:text-base font-bold leading-relaxed`}
             >
               <span>{item.text}</span>
               <span className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-400 text-xs font-black flex items-center justify-center shrink-0">

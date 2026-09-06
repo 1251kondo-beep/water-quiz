@@ -4,12 +4,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MatchPair } from '@/types/quiz';
 import { CheckCircle2, XCircle, RotateCcw, Link2 } from 'lucide-react';
 
+import { getCourseTheme } from '@/data/themes';
+
 interface PairMatchingWidgetProps {
   pairs: MatchPair[];
   extraRightItems?: { rightId: string; rightText: string }[];
   leftTitle?: string;
   rightTitle?: string;
   isConfirmed: boolean;
+  courseId?: string;
   onSelectionChange: (isFullyMatched: boolean, isAllCorrect: boolean) => void;
 }
 
@@ -18,16 +21,17 @@ interface RightItem {
   rightText: string;
 }
 
-const UNIFIED_STROKE_COLOR = '#0284c7'; // 統一された清流ブルー
-
 export default function PairMatchingWidget({
   pairs,
   extraRightItems,
   leftTitle = '【配水場】',
   rightTitle = '【送水系統】',
   isConfirmed,
+  courseId,
   onSelectionChange,
 }: PairMatchingWidgetProps) {
+  const theme = getCourseTheme(courseId);
+  const UNIFIED_STROKE_COLOR = theme.streamGradMid || '#0284c7';
   // Left items (fixed order)
   const leftItems = pairs.map((p) => ({ leftId: p.leftId, leftText: p.leftText }));
 
@@ -256,17 +260,17 @@ export default function PairMatchingWidget({
             const isWrong = isConfirmed && connectedRightItem && connectedRightItem.rightText !== pair?.rightText;
 
             let cardStyle =
-              'bg-[#edf5f6] dark:bg-slate-800 border-2 border-sky-300/80 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-sky-500 shadow-sm';
-            let dotStyle = 'bg-sky-400 dark:bg-sky-500 border border-white dark:border-slate-900';
+              `bg-[#edf5f6] dark:bg-slate-800 border-2 ${theme.quiz.cardBorder} text-slate-800 dark:text-slate-200 ${theme.quiz.optionHoverBorder} shadow-sm`;
+            let dotStyle = `${theme.quiz.optionBadgeActive} border border-white dark:border-slate-900`;
 
             if (isSelected) {
               cardStyle =
-                'bg-sky-100/90 dark:bg-sky-950/80 border-2 border-sky-600 text-sky-950 dark:text-sky-100 ring-2 ring-sky-500/40 shadow-md font-bold';
-              dotStyle = 'bg-sky-600 border-2 border-white dark:border-slate-900 scale-125';
+                `${theme.quiz.widgetActiveBg} border-2 ${theme.quiz.widgetActiveBorder} ring-2 ${theme.quiz.widgetActiveRing} shadow-md font-bold`;
+              dotStyle = `${theme.quiz.optionBadgeActive} border-2 border-white dark:border-slate-900 scale-125`;
             } else if (connectedRightId) {
               cardStyle =
-                'bg-sky-100/70 dark:bg-sky-950/60 border-2 border-sky-500 text-sky-900 dark:text-sky-100 font-bold shadow-sm';
-              dotStyle = 'bg-sky-600 border border-white dark:border-slate-900';
+                `${theme.quiz.widgetActiveBg} border-2 ${theme.quiz.widgetActiveBorder} font-bold shadow-sm`;
+              dotStyle = `${theme.quiz.optionBadgeActive} border border-white dark:border-slate-900`;
             }
 
             if (isConfirmed) {
@@ -335,20 +339,20 @@ export default function PairMatchingWidget({
             const isWrong = isConfirmed && connectedLeftId && connectedLeftPair?.rightText !== item.rightText;
 
             let cardStyle =
-              'bg-[#edf5f6] dark:bg-slate-800 border-2 border-sky-300/80 dark:border-slate-700 text-slate-800 dark:text-slate-200 hover:border-sky-500 shadow-sm';
-            let dotStyle = 'bg-sky-400 dark:bg-sky-500 border border-white dark:border-slate-900';
+              `bg-[#edf5f6] dark:bg-slate-800 border-2 ${theme.quiz.cardBorder} text-slate-800 dark:text-slate-200 ${theme.quiz.optionHoverBorder} shadow-sm`;
+            let dotStyle = `${theme.quiz.optionBadgeActive} border border-white dark:border-slate-900`;
 
             if (selectedLeftId) {
               cardStyle +=
-                ' border-sky-400 hover:border-sky-600 hover:bg-sky-100/70 dark:hover:bg-slate-700/80 cursor-pointer';
+                ` ${theme.quiz.optionHoverBorder} hover:${theme.quiz.widgetActiveBorder} hover:${theme.quiz.widgetActiveBg} cursor-pointer`;
             } else {
-              cardStyle += ' cursor-pointer hover:border-sky-400';
+              cardStyle += ` cursor-pointer ${theme.quiz.optionHoverBorder}`;
             }
 
             if (connectedLeftId) {
               cardStyle =
-                'bg-sky-100/70 dark:bg-sky-950/60 border-2 border-sky-500 text-sky-900 dark:text-sky-100 font-bold shadow-sm';
-              dotStyle = 'bg-sky-600 border border-white dark:border-slate-900';
+                `${theme.quiz.widgetActiveBg} border-2 ${theme.quiz.widgetActiveBorder} font-bold shadow-sm`;
+              dotStyle = `${theme.quiz.optionBadgeActive} border border-white dark:border-slate-900`;
             }
 
             if (isConfirmed) {

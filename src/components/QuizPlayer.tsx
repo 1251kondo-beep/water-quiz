@@ -39,6 +39,7 @@ import OrderingWidget from '@/components/OrderingWidget';
 import BreakdownGraphCard from '@/components/BreakdownGraphCard';
 import DiagramFlowCard from '@/components/DiagramFlowCard';
 import SunagayaMapCard from '@/components/SunagayaMapCard';
+import { getCourseTheme } from '@/data/themes';
 
 interface QuizPlayerProps {
   lesson: Lesson;
@@ -215,6 +216,7 @@ function FormattedExplanationText({ text }: { text: string }) {
 }
 
 export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerProps) {
+  const theme = getCourseTheme(courseId);
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>(() =>
     shuffleOptionsForQuestions(lesson.questions)
   );
@@ -536,7 +538,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         <div className="flex items-center justify-between gap-2 px-0.5">
           {/* Lesson番号 + レッスン名称 */}
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-xs sm:text-sm font-black text-sky-900 dark:text-sky-200 truncate">
+            <span className={`text-xs sm:text-sm font-black truncate ${theme.quiz.lessonTitle}`}>
               {lesson.title.includes('Lesson') ? lesson.title : `Lesson ${lesson.lessonNumber}: ${lesson.title}`}
             </span>
           </div>
@@ -559,7 +561,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {/* Progress Bar */}
         <div className="w-full h-2 sm:h-2.5 bg-slate-200/80 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
           <div
-            className="h-full bg-gradient-to-r from-sky-400 to-sky-600 rounded-full transition-all duration-500 ease-out shadow-sm"
+            className={`h-full bg-gradient-to-r ${theme.quiz.progressBar} rounded-full transition-all duration-500 ease-out shadow-sm`}
             style={{ width: `${((currentIndex + 1) / total) * 100}%` }}
           />
         </div>
@@ -568,7 +570,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       <div className="space-y-5">
         <div className="space-y-2.5">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-xs sm:text-sm font-bold text-white bg-sky-400 dark:bg-sky-500 px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0 shadow-sm">
+            <span className={`text-xs sm:text-sm font-bold text-white px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0 shadow-sm ${theme.quiz.qBadge}`}>
               Q{currentIndex + 1}
             </span>
             <span className="text-xs sm:text-sm text-slate-400 dark:text-slate-400 font-medium">
@@ -609,6 +611,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             leftTitle={currentQ.leftTitle}
             rightTitle={currentQ.rightTitle}
             isConfirmed={isAnswerConfirmed}
+            courseId={courseId}
             onSelectionChange={(full, correct) => {
               setIsMatchFullyConnected(full);
               setIsMatchAllCorrect(correct);
@@ -623,6 +626,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             items={currentQ.orderItems || []}
             correctOrder={currentQ.correctOrder || []}
             isConfirmed={isAnswerConfirmed}
+            courseId={courseId}
             onSelectionChange={(full, correct) => {
               setIsOrderFullyPlaced(full);
               setIsOrderAllCorrect(correct);
@@ -638,6 +642,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             blanks={currentQ.blanks}
             options={currentQ.options}
             isConfirmed={isAnswerConfirmed}
+            courseId={courseId}
             onSelectionChange={(full, correct) => {
               setIsFillFullyCompleted(full);
               setIsFillAllCorrect(correct);
@@ -649,12 +654,12 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         ) : (currentQ.type === 'multiple_choice' || (currentQ.answerIndices && currentQ.answerIndices.length > 0)) ? (
           <div className="space-y-3.5 my-3 mb-6 sm:mb-8">
             <div className="flex items-center justify-between gap-2 px-1 mb-1">
-              <p className="text-xs sm:text-sm font-bold text-sky-700 dark:text-sky-300 flex items-center gap-1.5 bg-sky-50 dark:bg-sky-950/60 px-3.5 py-2 rounded-xl border border-sky-200 dark:border-sky-800/60 shadow-sm">
-                <span className="w-5 h-5 rounded-full bg-sky-500 text-white text-xs font-black flex items-center justify-center shrink-0">✓</span>
+              <p className={`text-xs sm:text-sm font-bold flex items-center gap-1.5 px-3.5 py-2 rounded-xl border shadow-sm ${theme.quiz.multiSelectNotice}`}>
+                <span className={`w-5 h-5 rounded-full ${theme.quiz.multiSelectBadge} text-white text-xs font-black flex items-center justify-center shrink-0`}>✓</span>
                 <span>該当するものをタップして選んでください（複数選択可）</span>
               </p>
               {!isAnswerConfirmed && selectedMultipleOptions.length > 0 && (
-                <span className="text-xs font-black text-sky-600 dark:text-sky-400 bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border border-sky-200 dark:border-sky-800 shrink-0">
+                <span className={`text-xs font-black bg-white dark:bg-slate-800 px-2.5 py-1 rounded-lg border shrink-0 ${theme.quiz.accentText} ${theme.quiz.cardBorder}`}>
                   {selectedMultipleOptions.length} 個選択中
                 </span>
               )}
@@ -665,13 +670,13 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                 const isSelected = selectedMultipleOptions.includes(optIdx);
                 const isCorrectTarget = (currentQ.answerIndices || []).includes(optIdx);
 
-                let btnStyle = 'bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-sky-400 hover:shadow-md';
+                let btnStyle = `bg-white dark:bg-slate-800/90 border-2 border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ${theme.quiz.optionHoverBorder} hover:shadow-md`;
                 let checkBadgeStyle = 'border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800';
 
                 if (!isAnswerConfirmed) {
                   if (isSelected) {
-                    btnStyle = 'bg-sky-50/90 dark:bg-sky-950/70 border-2 border-sky-500 text-sky-900 dark:text-sky-100 font-bold shadow-md scale-[1.01]';
-                    checkBadgeStyle = 'border-sky-500 bg-sky-500 text-white';
+                    btnStyle = `${theme.quiz.optionSelectedBg} border-2 ${theme.quiz.optionSelectedBorder} ${theme.quiz.optionSelectedText} font-bold shadow-md scale-[1.01]`;
+                    checkBadgeStyle = theme.quiz.checkBadge;
                   }
                 } else {
                   if (isCorrectTarget) {
@@ -724,7 +729,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         ) : (currentQ.options.length === 2 && (currentQ.options.some((o) => o.includes('正し') || o.includes('○') || o.includes('⚪︎') || o.includes('〇') || o === 'True') || currentQ.options.some((o) => o.includes('間違') || o.includes('誤') || o.includes('×') || o.includes('✕') || o.toLowerCase() === 'false'))) ? (
           <div className="space-y-3.5 my-3 mb-6 sm:mb-8">
             <p className="text-xs sm:text-sm font-bold text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mb-1">
-              <span className="w-4 h-4 rounded-full bg-sky-100 text-sky-800 text-[10px] font-black flex items-center justify-center">?</span>
+              <span className={`w-4 h-4 rounded-full ${theme.quiz.optionBadge} text-[10px] font-black flex items-center justify-center`}>?</span>
               正しいか間違いか選んでください
             </p>
 
@@ -735,13 +740,13 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                 const isFalseOption = optionText.includes('間違') || optionText.includes('誤') || optionText.includes('×') || optionText.includes('✕') || optionText.toLowerCase() === 'false';
                 const isTrueOption = !isFalseOption && (optionText.includes('正し') || optionText.includes('○') || optionText.includes('⚪︎') || optionText.includes('〇') || optionText.toLowerCase() === 'true' || optIdx === 0);
 
-                let cardStyle = 'bg-white dark:bg-slate-800/90 border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:border-sky-400 hover:shadow-lg';
-                let circleStyle = 'bg-gradient-to-br from-sky-400 via-sky-500 to-blue-600 text-white shadow-md shadow-sky-500/25';
+                let cardStyle = `bg-white dark:bg-slate-800/90 border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-100 ${theme.quiz.optionHoverBorder} hover:shadow-lg`;
+                let circleStyle = theme.quiz.tfCircleGrad;
 
                 if (!isAnswerConfirmed) {
                   if (isSelected) {
-                    cardStyle = 'bg-sky-50/90 dark:bg-sky-950/70 border-sky-500 ring-4 ring-sky-500/40 shadow-xl font-black scale-[1.02]';
-                    circleStyle = 'bg-gradient-to-br from-sky-500 to-blue-600 text-white ring-4 ring-white/60 shadow-lg';
+                    cardStyle = `${theme.quiz.tfSelectedRing} shadow-xl font-black scale-[1.02]`;
+                    circleStyle = `${theme.quiz.tfCircleGrad} ring-4 ring-white/60 shadow-lg`;
                   }
                 } else {
                   if (isCorrectOption) {
@@ -798,13 +803,13 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               const isSelected = selectedOption === optIdx;
               const isCorrectOption = optIdx === currentQ.answerIndex;
 
-              let btnStyle = 'bg-white dark:bg-slate-800/90 border border-slate-100 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:border-sky-300 hover:shadow-md';
-              let labelBadgeStyle = 'bg-sky-100/80 dark:bg-sky-900/60 text-sky-600 dark:text-sky-300';
+              let btnStyle = `bg-white dark:bg-slate-800/90 border border-slate-100 dark:border-slate-700/80 text-slate-700 dark:text-slate-200 shadow-[0_2px_8px_rgba(0,0,0,0.04)] ${theme.quiz.optionHoverBorder} hover:shadow-md`;
+              let labelBadgeStyle = theme.quiz.optionBadge;
 
               if (!isAnswerConfirmed) {
                 if (isSelected) {
-                  btnStyle = 'bg-sky-50/70 dark:bg-sky-950/70 border-2 border-sky-500 text-sky-800 dark:text-sky-200 font-bold shadow-md';
-                  labelBadgeStyle = 'bg-sky-500 text-white';
+                  btnStyle = `${theme.quiz.optionSelectedBg} border-2 ${theme.quiz.optionSelectedBorder} ${theme.quiz.optionSelectedText} font-bold shadow-md`;
+                  labelBadgeStyle = theme.quiz.optionBadgeActive;
                 }
               } else {
                 if (isCorrectOption) {
@@ -839,7 +844,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
                   {!isAnswerConfirmed && (
                     isSelected ? (
-                      <div className="w-5 h-5 rounded-md bg-sky-500 text-white flex items-center justify-center shrink-0">
+                      <div className={`w-5 h-5 rounded-md ${theme.quiz.optionBadgeActive} flex items-center justify-center shrink-0`}>
                         <Check className="w-3.5 h-3.5 stroke-[3]" />
                       </div>
                     ) : (
@@ -886,7 +891,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                   ? selectedMultipleOptions.length > 0
                   : selectedOption !== null
               )
-                ? 'bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-sky-500/25 active:scale-[0.99]'
+                ? `${theme.quiz.confirmBtnGradient} active:scale-[0.99]`
                 : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
             }`}
           >
@@ -910,7 +915,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
               {answersState[currentIndex] === 'correct' ? (
-                <div className="flex items-center gap-2 text-sky-600 dark:text-sky-400 font-bold text-xl sm:text-2xl">
+                <div className={`flex items-center gap-2 ${theme.quiz.accentText} font-bold text-xl sm:text-2xl`}>
                   <CheckCircle2 className="w-6 h-6 sm:w-7 sm:h-7 stroke-[2.5]" />
                   <span>正解！</span>
                 </div>
@@ -943,7 +948,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             </div>
           )}
           <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-6 border border-slate-100 dark:border-slate-800 shadow-sm space-y-3.5">
-            <div className="flex items-center gap-3 text-sky-600 dark:text-sky-400 font-bold text-base sm:text-lg">
+            <div className={`flex items-center gap-3 ${theme.quiz.accentText} font-bold text-base sm:text-lg`}>
               <Image
                 src="/images/characters/sunadani_face_transparent.png"
                 alt="砂谷先生"
@@ -970,7 +975,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
             {currentQ.referenceSection && (
               <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-xl p-2.5 flex items-center gap-1.5 border border-slate-100 dark:border-slate-800 mt-2">
-                <span className="text-sky-600 dark:text-sky-400 font-bold">📌 参照:</span>
+                <span className={`${theme.quiz.accentText} font-bold`}>📌 参照:</span>
                 <span>「{currentQ.referenceSection}」</span>
               </div>
             )}

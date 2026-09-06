@@ -34,7 +34,7 @@ export default function LessonQuizPage() {
       <div className="max-w-2xl mx-auto w-full px-3 sm:px-5 mb-1 flex items-center">
         <a
           href={`/course/${course.id}`}
-          className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-sky-200/90 dark:border-slate-700 shadow-sm flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
+          className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white/95 dark:bg-slate-800/90 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border ${theme.quiz.cardBorder} shadow-sm flex items-center justify-center transition-transform active:scale-95 cursor-pointer`}
           title="戻る"
           aria-label="レッスン選択へ戻る"
         >
