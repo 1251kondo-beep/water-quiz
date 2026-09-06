@@ -989,6 +989,23 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
               <DiagramFlowCard diagram={currentQ.explanationDiagram} isExplanation />
             )}
 
+            {currentQ.explanationImage && (
+              <div className="my-3 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2.5 shadow-sm">
+                <div className="relative w-full flex justify-center items-center bg-slate-50 dark:bg-slate-950/60 rounded-xl p-2 sm:p-4">
+                  <img
+                    src={currentQ.explanationImage.url}
+                    alt={currentQ.explanationImage.alt || '解説図'}
+                    className="max-h-60 sm:max-h-72 w-auto object-contain rounded-lg"
+                  />
+                </div>
+                {currentQ.explanationImage.caption && (
+                  <p className="text-xs text-center text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                    {currentQ.explanationImage.caption}
+                  </p>
+                )}
+              </div>
+            )}
+
             {currentQ.referenceSection && (
               <div className="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800/60 rounded-xl p-2.5 flex items-center gap-1.5 border border-slate-100 dark:border-slate-800 mt-2">
                 <span className={`${theme.quiz.accentText} font-bold`}>📌 参照:</span>

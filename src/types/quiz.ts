@@ -66,6 +66,7 @@ export interface Question {
   table?: QuizTable; // 問題文に付随する表・スペック表・財務諸表抜粋など
   explanationTable?: QuizTable; // 解説に付随する比較表など
   image?: QuizImage; // 問題文に付随する図・画像
+  explanationImage?: QuizImage; // 解説に付随する図・画像
   breakdownGraph?: BreakdownGraph; // 帯グラフ・内訳バーカード
   diagram?: QuizDiagram; // 概念図解・フロー図カード
   facilityMap?: string;
