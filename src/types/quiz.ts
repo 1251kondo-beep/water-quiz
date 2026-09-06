@@ -45,6 +45,12 @@ export interface OrderItem {
   text: string;
 }
 
+export interface QuizImage {
+  url: string;
+  alt?: string;
+  caption?: string;
+}
+
 export interface Question {
   id: string;
   type?: 'choice' | 'true_false' | 'matching' | 'fill_in_the_blank' | 'ordering' | 'multiple_choice';
@@ -59,6 +65,7 @@ export interface Question {
   sdgsGoals?: number[]; // e.g. [3, 6, 7, 9, 11, 14]
   table?: QuizTable; // 問題文に付随する表・スペック表・財務諸表抜粋など
   explanationTable?: QuizTable; // 解説に付随する比較表など
+  image?: QuizImage; // 問題文に付随する図・画像
   breakdownGraph?: BreakdownGraph; // 帯グラフ・内訳バーカード
   diagram?: QuizDiagram; // 概念図解・フロー図カード
   facilityMap?: string;

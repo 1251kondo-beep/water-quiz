@@ -602,6 +602,22 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {currentQ.facilityMap === 'sunagaya_reservoirs' && (
           <SunagayaMapCard />
         )}
+        {currentQ.image && (
+          <div className="my-3 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2.5 shadow-sm">
+            <div className="relative w-full flex justify-center items-center bg-slate-50 dark:bg-slate-950/60 rounded-xl p-2 sm:p-4">
+              <img
+                src={currentQ.image.url}
+                alt={currentQ.image.alt || '問題図'}
+                className="max-h-60 sm:max-h-72 w-auto object-contain rounded-lg"
+              />
+            </div>
+            {currentQ.image.caption && (
+              <p className="text-xs text-center text-slate-500 dark:text-slate-400 mt-2 font-medium">
+                {currentQ.image.caption}
+              </p>
+            )}
+          </div>
+        )}
 
         {currentQ.matchPairs && currentQ.matchPairs.length > 0 ? (
           <PairMatchingWidget
