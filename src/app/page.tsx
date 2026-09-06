@@ -200,6 +200,12 @@ export default function HomePage() {
                     <path d="M0,55 Q50,75 100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
                   </>
                 )}
+                {continueTheme.waveType === 5 && (
+                  <>
+                    <path d="M0,35 Q25,55 55,35 T100,45 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                    <path d="M0,65 Q30,45 65,65 T100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.35" />
+                  </>
+                )}
               </svg>
             </div>
 
@@ -342,6 +348,12 @@ export default function HomePage() {
                           <>
                             <ellipse cx="50" cy="50" rx="40" ry="20" fill="#ffffff" opacity="0.2" />
                             <path d="M0,55 Q50,75 100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                          </>
+                        )}
+                        {theme.waveType === 5 && (
+                          <>
+                            <path d="M0,35 Q25,55 55,35 T100,45 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                            <path d="M0,65 Q30,45 65,65 T100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.35" />
                           </>
                         )}
                       </svg>

@@ -1,6 +1,7 @@
 import { Domain } from '@/types/quiz';
 import { HANDA_VISION_COURSE } from '@/data/courses/handa_vision';
 import { WATER_FINANCE_COURSE } from '@/data/courses/water_finance';
+import { WATER_DESIGN_COURSE } from '@/data/courses/water_design';
 
 export const DOMAINS: Domain[] = [
   {
@@ -11,6 +12,7 @@ export const DOMAINS: Domain[] = [
     courses: [
       HANDA_VISION_COURSE,
       WATER_FINANCE_COURSE,
+      WATER_DESIGN_COURSE,
       {
         id: 'water_asset',
         domainId: 'water_supply',
