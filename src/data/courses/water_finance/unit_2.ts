@@ -20,10 +20,10 @@ const lesson_2_1: Lesson = {
       type: 'ordering',
       question: '公営企業会計の予算書における勘定科目体系について、大分類から細分類へと上から順に正しく並び替えてください。',
       orderItems: [
-        { id: 'item_kan', text: '款' },
-        { id: 'item_ko', text: '項' },
-        { id: 'item_moku', text: '目' },
-        { id: 'item_setsu', text: '節' }
+        { id: 'item_kan', text: '款（水道事業収益や水道事業費用など）' },
+        { id: 'item_ko', text: '項（営業収益や営業費用などの議決単位）' },
+        { id: 'item_moku', text: '目（給水収益や配水及び給水費など）' },
+        { id: 'item_setsu', text: '節（給料や修繕費・薬品費などの具体的費目）' }
       ],
       correctOrder: ['item_kan', 'item_ko', 'item_moku', 'item_setsu'],
       options: [
