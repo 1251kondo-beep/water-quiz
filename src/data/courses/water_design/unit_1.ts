@@ -479,7 +479,12 @@ const lesson_1_3: Lesson = {
     {
       id: 'wd_1_3_08',
       type: 'choice',
-      question: '給水装置の審査実務における「余裕水頭（残存水頭 M）」の算出式として最も適切なものはどれですか？',
+      question: '図の水頭関係における「余裕水頭（残存水頭 M）」の算出式として最も適切なものはどれですか？',
+      image: {
+        url: '/images/quiz/effective_and_residual_head.png',
+        alt: '給水装置における有効水頭と余裕水頭（残存水頭）の関係図',
+        caption: '【図】有効水頭と余裕水頭（残存水頭）'
+      },
       options: [
         '有効水頭から摩擦損失水頭の総計を差し引いた値',
         '設計水頭に配管の立上り高さを加算した合計値',
@@ -505,6 +510,11 @@ const lesson_1_3: Lesson = {
       id: 'wd_1_3_09',
       type: 'choice',
       question: '給水装置の計算で余裕水頭（残存水頭）がマイナスとなった場合に、現場で発生する問題として最も適切なものはどれですか？',
+      image: {
+        url: '/images/quiz/effective_and_residual_head.png',
+        alt: '給水装置における有効水頭と余裕水頭（残存水頭）の関係図',
+        caption: '【図】有効水頭と余裕水頭（残存水頭）'
+      },
       options: [
         '水圧不足により給湯器が着火せず出水不良が起きる',
         '管内流速が制限値を超過してウォータハンマが起きる',
