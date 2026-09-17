@@ -216,6 +216,40 @@ function FormattedExplanationText({ text }: { text: string }) {
   );
 }
 
+// 問題文や選択肢のMarkdown太字（**...**）および<u>...</u>を整形表示するヘルパー
+function renderFormattedInlineText(text: string, isHeading = false) {
+  if (!text) return null;
+  // <u>タグまたは**太字**で分割
+  const parts = text.split(/(<u>.*?<\/u>|\*\*.*?\*\*)/g);
+
+  return parts.map((part, i) => {
+    if (part.startsWith('<u>') && part.endsWith('</u>')) {
+      const inner = part.slice(3, -4);
+      return (
+        <span
+          key={i}
+          className="underline decoration-rose-500 decoration-2 underline-offset-4 font-black text-rose-600 dark:text-rose-400"
+        >
+          {inner}
+        </span>
+      );
+    }
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const inner = part.slice(2, -2);
+      return (
+        <strong
+          key={i}
+          className="font-black text-slate-950 dark:text-white tracking-wide"
+        >
+          {inner}
+        </strong>
+      );
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
+
+
 export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerProps) {
   const theme = getCourseTheme(courseId);
   const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>(() =>
@@ -580,20 +614,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
           </div>
 
           <h2 className="text-[19px] sm:text-xl md:text-2xl font-bold text-slate-900 dark:text-slate-100 leading-snug sm:leading-relaxed tracking-normal whitespace-pre-line">
-            {currentQ.question.split(/(<u>.*?<\/u>)/g).map((part, i) => {
-              if (part.startsWith('<u>') && part.endsWith('</u>')) {
-                const inner = part.slice(3, -4);
-                return (
-                  <span
-                    key={i}
-                    className="underline decoration-rose-500 decoration-2 underline-offset-4 font-black text-rose-600 dark:text-rose-400"
-                  >
-                    {inner}
-                  </span>
-                );
-              }
-              return part;
-            })}
+            {renderFormattedInlineText(currentQ.question, true)}
           </h2>
         </div>
 
@@ -705,7 +726,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                     }`}
                   >
                     <span className="flex-1 leading-relaxed">
-                      {optionText}
+                      {renderFormattedInlineText(optionText)}
                     </span>
 
                     {!isAnswerConfirmed ? (
@@ -843,7 +864,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
                     {labels[optIdx]}
                   </span>
                   <span className={`flex-1 leading-relaxed ${isSelected ? 'font-bold' : 'font-medium'}`}>
-                    {optionText}
+                    {renderFormattedInlineText(optionText)}
                   </span>
 
                   {!isAnswerConfirmed && (
