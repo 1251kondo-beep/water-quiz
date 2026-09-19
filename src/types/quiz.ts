@@ -11,6 +11,7 @@ export interface QuizTable {
   title?: string;
   headers?: string[];
   rows: (string | number)[][];
+  colWidths?: string[];
 }
 
 export interface BreakdownItem {

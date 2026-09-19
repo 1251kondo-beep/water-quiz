@@ -150,7 +150,14 @@ function QuizTableCard({ table, isExplanation = false }: { table: QuizTable; isE
         </div>
       )}
       <div className="overflow-x-auto">
-        <table className="w-full text-xs sm:text-sm text-left border-collapse">
+        <table className={`w-full text-xs sm:text-sm text-left border-collapse ${table.colWidths ? 'table-fixed min-w-[560px]' : ''}`}>
+          {table.colWidths && table.colWidths.length > 0 && (
+            <colgroup>
+              {table.colWidths.map((w, idx) => (
+                <col key={idx} style={{ width: w }} />
+              ))}
+            </colgroup>
+          )}
           {table.headers && table.headers.length > 0 && (
             <thead>
               <tr className="bg-slate-50/90 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">

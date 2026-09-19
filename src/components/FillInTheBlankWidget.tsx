@@ -50,7 +50,8 @@ export default function FillInTheBlankWidget({
 
     return splitArr.map((part) => {
       if (regex.test(part)) {
-        const currentSlotId = blankIndex++;
+        const numMatch = part.match(/\d+/);
+        const currentSlotId = numMatch ? parseInt(numMatch[0], 10) : blankIndex++;
         return { isBlank: true, slotId: currentSlotId, original: part };
       }
       return { isBlank: false, text: part };
