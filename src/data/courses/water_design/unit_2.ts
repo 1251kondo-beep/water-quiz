@@ -477,25 +477,36 @@ const lesson_2_3: Lesson = {
     },
     {
       id: 'wd_2_3_05',
-      type: 'choice',
-      question: '流速2.0m/sec制限下における、呼称口径φ13およびφ20の給水管の許容最大流量（表1-6）として最も適切なものはどれですか？',
+      type: 'matching',
+      question: '給水管の呼称口径（φ13、φ20）と、流速2.0m/sec制限時における許容最大流量（表1-6）の正しい組み合わせを結びつけてください。',
+      leftTitle: '【給水管の呼称口径】',
+      rightTitle: '【流速2.0m/s時の許容最大流量】',
+      matchPairs: [
+        { leftId: 'd13', leftText: '呼称口径 φ13', rightId: 'q13', rightText: '許容最大流量 15.9 L/min' },
+        { leftId: 'd20', leftText: '呼称口径 φ20', rightId: 'q20', rightText: '許容最大流量 37.6 L/min' }
+      ],
+      extraRightItems: [
+        { rightId: 'dummy_q25', rightText: '許容最大流量 25.0 L/min' },
+        { rightId: 'dummy_q58', rightText: '許容最大流量 58.9 L/min' }
+      ],
       options: [
-        'φ13は15.9L/min、φ20は37.6L/minである',
-        'φ13は25.0L/min、φ20は50.0L/minである',
-        'φ13は8.0L/min、φ20は16.0L/minである',
-        'φ13は37.6L/min、φ20は58.9L/minである'
+        'φ13: 15.9L/min ／ φ20: 37.6L/min',
+        'φ13: 25.0L/min ／ φ20: 50.0L/min',
+        'φ13: 8.0L/min ／ φ20: 16.0L/min',
+        'φ13: 37.6L/min ／ φ20: 58.9L/min'
       ],
       answerIndex: 0,
       explanation: '連続の式 Q＝A・v（A＝(π/4)D²、v＝2.0m/sec）に基づき算定される呼称口径の許容最大流量（【表1-6】および【表2-6】）は、φ13で「15.9 L/min（約16.0 L/min）」、φ20で「37.6 L/min（約37.7 L/min）」となります。戸建住宅等の水理計算では、この流量以下に収まる口径を選定します。',
       explanationTable: {
         title: '小中口径給水管の流速2.0m/sec限界流量（呼称口径基準）',
-        headers: ['呼称口径', '内径D [mm]', '流速v [m/sec]', '許容最大流量Q [L/min]'],
+        headers: ['呼称口径', '内径D\n[mm]', '流速v\n[m/sec]', '許容最大流量Q\n[L/min]'],
         rows: [
           ['φ13', '13.0', '2.0', '15.9 L/min（約16.0 L/min）'],
           ['φ20', '20.0', '2.0', '37.6 L/min（約37.7 L/min）'],
           ['φ25', '25.0', '2.0', '58.9 L/min'],
           ['φ30', '30.0', '2.0', '84.8 L/min']
-        ]
+        ],
+        colWidths: ['18%', '20%', '20%', '42%']
       },
       analogy: 'φ13の細い道路は毎分約16台、φ20の標準道路は毎分約38台までなら制限速度（2.0m/s）を守って安全に通行できる交通容量です。',
       referenceSection: '『参考設計資料』1.(10)③ 表1-6 P.6、2.(4)② 表2-6 P.16'
