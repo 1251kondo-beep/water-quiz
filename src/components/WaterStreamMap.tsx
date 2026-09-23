@@ -546,7 +546,7 @@ export default function WaterStreamMap({
                                     Lesson {lesson.lessonNumber}
                                   </span>
 
-                                  {isCompleted && stars > 0 && (
+                                  {isCompleted && (
                                     <div className="flex items-center gap-0.5">
                                       {[1, 2, 3].map((s) => (
                                         <Star

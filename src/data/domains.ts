@@ -54,3 +54,25 @@ export function getLessonById(lessonId: string) {
   }
   return null;
 }
+
+export function getNextLesson(lessonId: string) {
+  for (const domain of DOMAINS) {
+    for (const course of domain.courses) {
+      const allLessonsWithUnit = course.units.flatMap((unit) =>
+        unit.lessons.map((lesson) => ({ unit, lesson }))
+      );
+      const currentIndex = allLessonsWithUnit.findIndex((item) => item.lesson.id === lessonId);
+      if (currentIndex !== -1) {
+        if (currentIndex + 1 < allLessonsWithUnit.length) {
+          const nextItem = allLessonsWithUnit[currentIndex + 1];
+          if (!nextItem.lesson.isComingSoon) {
+            return { nextLesson: nextItem.lesson, nextUnit: nextItem.unit, course };
+          }
+        }
+        return { nextLesson: null, course };
+      }
+    }
+  }
+  return null;
+}
+

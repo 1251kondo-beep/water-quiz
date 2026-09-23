@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
-import { getLessonById } from '@/data/domains';
+import { getLessonById, getNextLesson } from '@/data/domains';
 import QuizPlayer from '@/components/QuizPlayer';
 import { getCourseTheme } from '@/data/themes';
 
@@ -26,6 +26,7 @@ export default function LessonQuizPage() {
   }
 
   const { lesson, unit, course } = found;
+  const nextLessonInfo = getNextLesson(lesson.id);
   const theme = getCourseTheme(course.id);
 
   return (
@@ -47,6 +48,7 @@ export default function LessonQuizPage() {
           lesson={lesson}
           unitTitle={unit.title}
           courseId={course.id}
+          nextLesson={nextLessonInfo?.nextLesson || null}
         />
       </div>
     </div>

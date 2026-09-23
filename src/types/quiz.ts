@@ -138,8 +138,8 @@ export interface LessonResult {
   score: number; // e.g. 9
   totalQuestions: number; // e.g. 10
   percentage: number; // e.g. 90
-  passed: boolean; // >= 80%
-  stars: number; // 1 to 3 stars
+  passed: boolean; // all answered correctly (unlocked)
+  stars: number; // 0 to 3 stars (0: <=4, 1: 5-7, 2: 8-9, 3: 10)
   completedAt: string;
 }
 

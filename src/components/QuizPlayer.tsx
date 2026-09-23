@@ -46,6 +46,22 @@ interface QuizPlayerProps {
   lesson: Lesson;
   unitTitle: string;
   courseId: string;
+  nextLesson?: Lesson | null;
+}
+
+function calculateLessonStars(score: number, total: number): number {
+  if (total === 10) {
+    if (score === 10) return 3;
+    if (score >= 8) return 2;
+    if (score >= 5) return 1;
+    return 0;
+  }
+  // Proportionate fallback for non-10 question sets (e.g. review mode)
+  if (score === total) return 3;
+  const ratio = score / total;
+  if (ratio >= 0.8) return 2;
+  if (ratio >= 0.5) return 1;
+  return 0;
 }
 
 function shuffleOptionsForQuestions(qs: Question[]): Question[] {
@@ -257,22 +273,32 @@ function renderFormattedInlineText(text: string, isHeading = false) {
 }
 
 
-export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerProps) {
+export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: QuizPlayerProps) {
   const theme = getCourseTheme(courseId);
-  const [shuffledQuestions, setShuffledQuestions] = useState<Question[]>(() =>
+  const totalOriginalQuestions = lesson.questions.length;
+
+  const [currentQuestions, setCurrentQuestions] = useState<Question[]>(() =>
     shuffleOptionsForQuestions(lesson.questions)
   );
 
-  const questions = shuffledQuestions.length > 0 ? shuffledQuestions : lesson.questions;
-  const total = questions.length;
-
+  const total = currentQuestions.length;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [selectedMultipleOptions, setSelectedMultipleOptions] = useState<number[]>([]);
   const [isAnswerConfirmed, setIsAnswerConfirmed] = useState(false);
   const [answersState, setAnswersState] = useState<('correct' | 'wrong')[]>([]);
-  const [userScore, setUserScore] = useState(0);
-  const [wrongQuestionIds, setWrongQuestionIds] = useState<string[]>([]);
+
+  // 1st attempt tracking for stars
+  const [firstAttemptScore, setFirstAttemptScore] = useState(0);
+  const [firstAttemptStars, setFirstAttemptStars] = useState(0);
+
+  // Retry mode tracking
+  const [isRetryMode, setIsRetryMode] = useState(false);
+  const [retryRound, setRetryRound] = useState(0);
+  const [isRetryPrompt, setIsRetryPrompt] = useState(false);
+  const [roundWrongQuestionIds, setRoundWrongQuestionIds] = useState<string[]>([]);
+  const wrongIdsInCurrentRoundRef = useRef<string[]>([]);
+
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
@@ -290,7 +316,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   const quizContainerRef = useRef<HTMLDivElement>(null);
   const confirmButtonRef = useRef<HTMLButtonElement>(null);
 
-  const currentQ: Question = questions[currentIndex];
+  const currentQ: Question = currentQuestions[currentIndex] || currentQuestions[0];
 
   const scrollToConfirmButtonIfOverflow = () => {
     setTimeout(() => {
@@ -308,14 +334,19 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
   };
 
   const handleRestartQuiz = () => {
-    setShuffledQuestions(shuffleOptionsForQuestions(lesson.questions));
+    wrongIdsInCurrentRoundRef.current = [];
+    setCurrentQuestions(shuffleOptionsForQuestions(lesson.questions));
     setCurrentIndex(0);
     setSelectedOption(null);
     setSelectedMultipleOptions([]);
     setIsAnswerConfirmed(false);
     setAnswersState([]);
-    setUserScore(0);
-    setWrongQuestionIds([]);
+    setFirstAttemptScore(0);
+    setFirstAttemptStars(0);
+    setIsRetryMode(false);
+    setRetryRound(0);
+    setIsRetryPrompt(false);
+    setRoundWrongQuestionIds([]);
     setIsQuizCompleted(false);
     setIsMatchFullyConnected(false);
     setIsMatchAllCorrect(false);
@@ -323,24 +354,11 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setIsFillAllCorrect(false);
     setIsOrderFullyPlaced(false);
     setIsOrderAllCorrect(false);
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   useEffect(() => {
-    setShuffledQuestions(shuffleOptionsForQuestions(lesson.questions));
-    setCurrentIndex(0);
-    setSelectedOption(null);
-    setSelectedMultipleOptions([]);
-    setIsAnswerConfirmed(false);
-    setAnswersState([]);
-    setUserScore(0);
-    setWrongQuestionIds([]);
-    setIsQuizCompleted(false);
-    setIsMatchFullyConnected(false);
-    setIsMatchAllCorrect(false);
-    setIsFillFullyCompleted(false);
-    setIsFillAllCorrect(false);
-    setIsOrderFullyPlaced(false);
-    setIsOrderAllCorrect(false);
+    handleRestartQuiz();
   }, [lesson.id, lesson.questions]);
 
   useEffect(() => {
@@ -424,10 +442,14 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     setAnswersState(newAnswers);
 
     if (isCorrect) {
-      setUserScore((prev) => prev + 1);
+      if (!isRetryMode) {
+        setFirstAttemptScore((prev) => prev + 1);
+      }
       soundFx.playCorrect(soundEnabled);
     } else {
-      setWrongQuestionIds((prev) => [...prev, currentQ.id]);
+      if (!wrongIdsInCurrentRoundRef.current.includes(currentQ.id)) {
+        wrongIdsInCurrentRoundRef.current.push(currentQ.id);
+      }
       soundFx.playIncorrect(soundEnabled);
     }
   };
@@ -446,47 +468,100 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       setIsAnswerConfirmed(false);
       window.scrollTo({ top: 0, behavior: 'instant' });
     } else {
-      finishQuiz();
+      handleRoundFinished();
     }
   };
 
-  const finishQuiz = () => {
-    setIsQuizCompleted(true);
-    const scorePct = Math.round((userScore / total) * 100);
-    const passed = scorePct >= 80;
+  const handleRoundFinished = () => {
+    const wrongThisRound = [...wrongIdsInCurrentRoundRef.current];
 
-    let stars = 1;
-    if (userScore === total) stars = 3;
-    else if (passed) stars = 2;
+    if (!isRetryMode) {
+      // 1st attempt finished!
+      const calculatedScore = totalOriginalQuestions - wrongThisRound.length;
+      setFirstAttemptScore(calculatedScore);
+
+      const calculatedStars = calculateLessonStars(calculatedScore, totalOriginalQuestions);
+      setFirstAttemptStars(calculatedStars);
+
+      if (wrongThisRound.length === 0) {
+        // 10/10 all correct on 1st try!
+        finishQuiz(calculatedStars, calculatedScore);
+      } else {
+        // Record mistakes for review session
+        recordMistakes(wrongThisRound);
+        syncMistakesToSupabase(wrongThisRound);
+
+        setRoundWrongQuestionIds(wrongThisRound);
+        setIsRetryPrompt(true);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    } else {
+      // Retry round finished!
+      if (wrongThisRound.length === 0) {
+        // All wrong questions in this retry round were answered correctly!
+        finishQuiz(firstAttemptStars, firstAttemptScore);
+      } else {
+        // Still has mistakes, prompt for next retry round
+        setRoundWrongQuestionIds(wrongThisRound);
+        setIsRetryPrompt(true);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+    }
+  };
+
+  const handleStartRetryRound = () => {
+    soundFx.playClick(soundEnabled);
+    const questionsToRetry = lesson.questions.filter((q) => roundWrongQuestionIds.includes(q.id));
+    const shuffledRetry = shuffleOptionsForQuestions(questionsToRetry);
+    wrongIdsInCurrentRoundRef.current = [];
+    setCurrentQuestions(shuffledRetry);
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setSelectedMultipleOptions([]);
+    setIsAnswerConfirmed(false);
+    setAnswersState([]);
+    setIsRetryMode(true);
+    setRetryRound((prev) => prev + 1);
+    setIsRetryPrompt(false);
+    setIsMatchFullyConnected(false);
+    setIsMatchAllCorrect(false);
+    setIsFillFullyCompleted(false);
+    setIsFillAllCorrect(false);
+    setIsOrderFullyPlaced(false);
+    setIsOrderAllCorrect(false);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+
+  const finishQuiz = (finalStars: number, initialScore: number) => {
+    setIsQuizCompleted(true);
+    setIsRetryPrompt(false);
+
+    const scorePct = Math.round((initialScore / totalOriginalQuestions) * 100);
 
     const result: LessonResult = {
       lessonId: lesson.id,
-      score: userScore,
-      totalQuestions: total,
+      score: initialScore,
+      totalQuestions: totalOriginalQuestions,
       percentage: scorePct,
-      passed,
-      stars,
+      passed: true,
+      stars: finalStars,
       completedAt: new Date().toISOString(),
     };
 
     saveLessonResult(result, courseId);
-    recordMistakes(wrongQuestionIds);
-
     syncLessonResultToSupabase(result, courseId);
-    syncMistakesToSupabase(wrongQuestionIds);
 
-    if (passed) {
-      soundFx.playFanfare(soundEnabled);
-      try {
-        confetti({
-          particleCount: 80,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
-      } catch (err) {
-        console.error('Confetti error:', err);
-      }
+    soundFx.playFanfare(soundEnabled);
+    try {
+      confetti({
+        particleCount: 85,
+        spread: 75,
+        origin: { y: 0.6 },
+      });
+    } catch (err) {
+      console.error('Confetti error:', err);
     }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   const handleToggleBookmarkCurrent = () => {
@@ -500,74 +575,185 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
 
   const isBookmarked = bookmarks.includes(currentQ.id);
 
-  if (isQuizCompleted) {
-    const pct = Math.round((userScore / total) * 100);
-    const passed = pct >= 80;
-    const stars = userScore === total ? 3 : passed ? 2 : 1;
-
+  if (isRetryPrompt) {
     return (
-      <div className="max-w-xl mx-auto py-8 px-4">
-        <div className="glass-card rounded-3xl p-6 md:p-8 text-center border border-cyan-500/30 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
-          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-cyan-500/20 to-blue-600/30 border border-cyan-400/30 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-            {passed ? (
-              <Award className="w-10 h-10 text-cyan-600 fill-cyan-400/20" />
-            ) : (
-              <RotateCcw className="w-10 h-10 text-amber-500" />
-            )}
+      <div className="max-w-xl mx-auto py-8 px-4 animate-in fade-in zoom-in-95 duration-300">
+        <div className="glass-card rounded-3xl p-6 md:p-8 text-center border border-amber-400/40 dark:border-amber-500/30 shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95">
+          <div className="absolute top-0 left-0 right-0 h-2.5 bg-gradient-to-r from-amber-400 via-orange-500 to-cyan-500" />
+          
+          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-400/40 flex items-center justify-center shadow-lg shadow-amber-500/20">
+            <RotateCcw className="w-10 h-10 text-amber-500" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">
-            {passed ? 'レッスンクリア！ 🎉' : 'もう少しで合格！'}
+
+          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
+            {retryRound === 0 ? '1周目終了！解き直しへ' : `解き直し Round ${retryRound} 終了`}
           </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-bold">
             {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
           </p>
-          <div className="flex items-center justify-center gap-2 mb-6">
+
+          {/* Stars & Score Status */}
+          <div className="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700/50 rounded-2xl p-4 mb-5 space-y-2">
+            <div className="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center justify-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span>初回スコアによる獲得予定の星</span>
+            </div>
+            
+            <div className="flex items-center justify-center gap-2">
+              {[1, 2, 3].map((starIdx) => (
+                <Star
+                  key={starIdx}
+                  className={`w-7 h-7 transition-all ${
+                    starIdx <= firstAttemptStars
+                      ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] scale-110'
+                      : 'text-slate-300 dark:text-slate-700 fill-slate-200 dark:fill-slate-800'
+                  }`}
+                />
+              ))}
+            </div>
+
+            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
+              {firstAttemptStars === 2 && `初回正解 ${firstAttemptScore} / ${totalOriginalQuestions}問 → 星2つ（★★☆）獲得！`}
+              {firstAttemptStars === 1 && `初回正解 ${firstAttemptScore} / ${totalOriginalQuestions}問 → 星1つ（★☆☆）獲得！`}
+              {firstAttemptStars === 0 && `初回正解 ${firstAttemptScore} / ${totalOriginalQuestions}問 → 星0（☆☆☆）`}
+            </p>
+          </div>
+
+          <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-6">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">解き直し対象</p>
+            <p className="text-2xl font-black text-amber-600 dark:text-amber-400">
+              残り {roundWrongQuestionIds.length} 問
+            </p>
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium leading-relaxed">
+              すべて正解するまで繰り返し出題されます。<br />
+              <strong>星の数に関わらず、全問正解すると次のレッスンに進めます！</strong>
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              onClick={handleStartRetryRound}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 cursor-pointer active:scale-95"
+            >
+              <RotateCcw className="w-4 h-4 stroke-[2.5]" />
+              <span>間違えた問題を解き直す ({roundWrongQuestionIds.length}問)</span>
+            </button>
+            <Link
+              href={`/course/${courseId}`}
+              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            >
+              <List className="w-4 h-4" />
+              <span>レッスン一覧へ戻る</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isQuizCompleted) {
+    const pct = Math.round((firstAttemptScore / totalOriginalQuestions) * 100);
+
+    return (
+      <div className="max-w-xl mx-auto py-8 px-4 animate-in fade-in zoom-in-95 duration-300">
+        <div className="glass-card rounded-3xl p-6 md:p-8 text-center border border-cyan-500/30 shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95">
+          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
+          
+          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-cyan-500/20 to-blue-600/30 border border-cyan-400/30 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+            {firstAttemptStars === 3 ? (
+              <Award className="w-10 h-10 text-amber-500 fill-amber-400/20" />
+            ) : (
+              <CheckCircle2 className="w-10 h-10 text-cyan-600 fill-cyan-400/20" />
+            )}
+          </div>
+
+          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">
+            レッスンクリア！ 🎉
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-bold">
+            {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
+          </p>
+
+          {/* Stars display */}
+          <div className="flex items-center justify-center gap-2 mb-2">
             {[1, 2, 3].map((starIdx) => (
               <Star
                 key={starIdx}
                 className={`w-8 h-8 transition-all ${
-                  starIdx <= stars
+                  starIdx <= firstAttemptStars
                     ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] scale-110'
                     : 'text-slate-300 dark:text-slate-700 fill-slate-200 dark:fill-slate-800'
                 }`}
               />
             ))}
           </div>
+
+          <p className="text-xs font-bold mb-6 text-slate-600 dark:text-slate-300">
+            {firstAttemptStars === 3 && '獲得星数: ★★★（全問一発正解！）'}
+            {firstAttemptStars === 2 && '獲得星数: ★★☆（初回8〜9問正解）'}
+            {firstAttemptStars === 1 && '獲得星数: ★☆☆（初回5〜7問正解）'}
+            {firstAttemptStars === 0 && '獲得星数: ☆☆☆（初回4問以下正解）'}
+          </p>
+
           <div className="bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mb-6 grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">正解数</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">初回スコア</p>
               <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400">
-                {userScore} / {total} 問
+                {firstAttemptScore} / {totalOriginalQuestions} 問
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">正解率</p>
-              <p className={`text-2xl font-black ${passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">初回正解率</p>
+              <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
                 {pct}%
               </p>
             </div>
           </div>
-          <div className="text-xs text-slate-700 dark:text-slate-300 bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/20 rounded-xl p-3 mb-6">
-            {passed
-              ? '素晴らしい理解度です！80%以上の合格基準をクリアしました。次のレッスンへ進みましょう。'
-              : '80%以上のクリア基準に届きませんでした。解説を見直してもう一度挑戦しましょう！'}
+
+          <div className="text-xs text-slate-700 dark:text-slate-300 bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/20 rounded-xl p-3 mb-6 font-medium leading-relaxed">
+            {firstAttemptStars === 3 ? (
+              '素晴らしい理解度です！1回で全問正解し、星3つを獲得しました。次のレッスンへ進みましょう！'
+            ) : (
+              '間違えた問題も解き直してすべて正解しました！星の数に関わらず次のレッスンへ進めます。'
+            )}
           </div>
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            {nextLesson ? (
+              <Link
+                href={`/quiz/${nextLesson.id}`}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 active:scale-95 cursor-pointer"
+              >
+                <span>次のレッスンへ進む</span>
+                <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+              </Link>
+            ) : (
+              <Link
+                href={`/course/${courseId}`}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 active:scale-95 cursor-pointer"
+              >
+                <List className="w-4 h-4" />
+                <span>コース一覧へ戻る</span>
+              </Link>
+            )}
+
             <button
               onClick={handleRestartQuiz}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
             >
               <RotateCcw className="w-4 h-4" />
-              もう一度挑戦
+              <span>もう一度挑戦</span>
             </button>
-            <Link
-              href={`/course/${courseId}`}
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/20 cursor-pointer"
-            >
-              <List className="w-4 h-4" />
-              レッスン一覧へ
-            </Link>
+
+            {nextLesson && (
+              <Link
+                href={`/course/${courseId}`}
+                className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              >
+                <List className="w-4 h-4" />
+                <span>レッスン一覧</span>
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -578,11 +764,18 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
     <div ref={quizContainerRef} className="max-w-2xl mx-auto py-1 sm:py-3 px-3 sm:px-5 scroll-mt-16 md:scroll-mt-20">
       <div className="mb-4 sm:mb-5 space-y-2">
         <div className="flex items-center justify-between gap-2 px-0.5">
-          {/* Lesson番号 + レッスン名称 */}
+          {/* Lesson番号 + レッスン名称 または 解き直しモード表示 */}
           <div className="flex items-center gap-2 min-w-0">
-            <span className={`text-xs sm:text-sm font-black truncate ${theme.quiz.lessonTitle}`}>
-              {lesson.title.includes('Lesson') ? lesson.title : `Lesson ${lesson.lessonNumber}: ${lesson.title}`}
-            </span>
+            {isRetryMode ? (
+              <span className="text-xs sm:text-sm font-black text-amber-600 dark:text-amber-400 bg-amber-100/80 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-600/40 flex items-center gap-1.5 shrink-0">
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>解き直し Round {retryRound}</span>
+              </span>
+            ) : (
+              <span className={`text-xs sm:text-sm font-black truncate ${theme.quiz.lessonTitle}`}>
+                {lesson.title.includes('Lesson') ? lesson.title : `Lesson ${lesson.lessonNumber}: ${lesson.title}`}
+              </span>
+            )}
           </div>
 
           {/* Bookmark Button */}
@@ -603,7 +796,11 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
         {/* Progress Bar */}
         <div className="w-full h-2 sm:h-2.5 bg-slate-200/80 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
           <div
-            className={`h-full bg-gradient-to-r ${theme.quiz.progressBar} rounded-full transition-all duration-500 ease-out shadow-sm`}
+            className={`h-full ${
+              isRetryMode
+                ? 'bg-gradient-to-r from-amber-400 to-orange-500'
+                : `bg-gradient-to-r ${theme.quiz.progressBar}`
+            } rounded-full transition-all duration-500 ease-out shadow-sm`}
             style={{ width: `${((currentIndex + 1) / total) * 100}%` }}
           />
         </div>
@@ -612,8 +809,14 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
       <div className="space-y-5">
         <div className="space-y-2.5">
           <div className="flex items-center gap-2 min-w-0">
-            <span className={`text-xs sm:text-sm font-bold text-white px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0 shadow-sm ${theme.quiz.qBadge}`}>
-              Q{currentIndex + 1}
+            <span
+              className={`text-xs sm:text-sm font-bold text-white px-2.5 py-0.5 rounded-full whitespace-nowrap shrink-0 shadow-sm ${
+                isRetryMode
+                  ? 'bg-gradient-to-r from-amber-500 to-orange-500'
+                  : theme.quiz.qBadge
+              }`}
+            >
+              {isRetryMode ? `解き直し Q${currentIndex + 1}` : `Q${currentIndex + 1}`}
             </span>
             <span className="text-xs sm:text-sm text-slate-400 dark:text-slate-400 font-medium">
               / {total}問
@@ -1030,7 +1233,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId }: QuizPlayerPr
             ) : (
               <>
                 <Sparkles className="w-4 h-4 text-amber-500" />
-                <span>結果を見る</span>
+                <span>{isRetryMode ? '解き直しの判定へ' : '結果を見る'}</span>
               </>
             )}
           </button>

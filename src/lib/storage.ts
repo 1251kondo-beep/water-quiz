@@ -44,13 +44,17 @@ export function saveLessonResult(result: LessonResult, courseId?: string): UserS
 
   // Keep best score if previously completed with higher stars
   let shouldUpdate = true;
-  if (existing && existing.stars > result.stars) {
-    shouldUpdate = false;
+  if (existing) {
+    if (existing.stars > result.stars) {
+      shouldUpdate = false;
+    } else if (existing.stars === result.stars && existing.score > result.score) {
+      shouldUpdate = false;
+    }
   }
 
   const updatedLessons = {
     ...current.completedLessons,
-    [result.lessonId]: shouldUpdate ? result : existing,
+    [result.lessonId]: shouldUpdate ? result : { ...existing, passed: existing.passed || result.passed },
   };
 
   const newStats: UserStats = {
