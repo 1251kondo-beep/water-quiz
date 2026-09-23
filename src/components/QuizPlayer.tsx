@@ -577,63 +577,50 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
 
   if (isRetryPrompt) {
     return (
-      <div className="max-w-xl mx-auto py-8 px-4 animate-in fade-in zoom-in-95 duration-300">
-        <div className="glass-card rounded-3xl p-6 md:p-8 text-center border border-amber-400/40 dark:border-amber-500/30 shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95">
-          <div className="absolute top-0 left-0 right-0 h-2.5 bg-gradient-to-r from-amber-400 via-orange-500 to-cyan-500" />
+      <div className="max-w-xl mx-auto pt-1 sm:pt-2 pb-8 px-4 animate-in fade-in zoom-in-95 duration-300">
+        <div className={`glass-card rounded-3xl p-6 md:p-8 text-center border ${theme.quiz.cardBorder} shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95`}>
+          <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${theme.progressBarGradient}`} />
           
-          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-400/40 flex items-center justify-center shadow-lg shadow-amber-500/20">
-            <RotateCcw className="w-10 h-10 text-amber-500" />
+          <div className={`w-16 h-16 mx-auto mb-3.5 rounded-2xl border ${theme.quiz.cardBorder} flex items-center justify-center shadow-lg ${theme.shadow} bg-white/80 dark:bg-slate-800/80`}>
+            <RotateCcw className={`w-8 h-8 ${theme.quiz.accentText}`} />
           </div>
 
           <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
-            {retryRound === 0 ? '1周目終了！解き直しへ' : `解き直し Round ${retryRound} 終了`}
+            {firstAttemptScore} / {totalOriginalQuestions}問 正解
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-bold">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mb-5 font-bold">
             {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
           </p>
 
-          {/* Stars & Score Status */}
-          <div className="bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-700/50 rounded-2xl p-4 mb-5 space-y-2">
-            <div className="text-xs font-bold text-amber-800 dark:text-amber-300 flex items-center justify-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>初回スコアによる獲得予定の星</span>
-            </div>
-            
-            <div className="flex items-center justify-center gap-2">
-              {[1, 2, 3].map((starIdx) => (
-                <Star
-                  key={starIdx}
-                  className={`w-7 h-7 transition-all ${
-                    starIdx <= firstAttemptStars
-                      ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] scale-110'
-                      : 'text-slate-300 dark:text-slate-700 fill-slate-200 dark:fill-slate-800'
-                  }`}
-                />
-              ))}
-            </div>
-
-            <p className="text-xs font-bold text-slate-700 dark:text-slate-300">
-              {firstAttemptStars === 2 && `初回正解 ${firstAttemptScore} / ${totalOriginalQuestions}問 → 星2つ（★★☆）獲得！`}
-              {firstAttemptStars === 1 && `初回正解 ${firstAttemptScore} / ${totalOriginalQuestions}問 → 星1つ（★☆☆）獲得！`}
-              {firstAttemptStars === 0 && `初回正解 ${firstAttemptScore} / ${totalOriginalQuestions}問 → 星0（☆☆☆）`}
-            </p>
+          {/* Stars Only */}
+          <div className={`border ${theme.quiz.cardBorder} bg-white/60 dark:bg-slate-800/40 rounded-2xl py-3 px-4 mb-4 flex items-center justify-center gap-2 shadow-sm`}>
+            {[1, 2, 3].map((starIdx) => (
+              <Star
+                key={starIdx}
+                className={`w-8 h-8 transition-all ${
+                  starIdx <= firstAttemptStars
+                    ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] scale-110'
+                    : 'text-slate-300 dark:text-slate-700 fill-slate-200 dark:fill-slate-800'
+                }`}
+              />
+            ))}
           </div>
 
-          <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 mb-6">
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">解き直し対象</p>
-            <p className="text-2xl font-black text-amber-600 dark:text-amber-400">
+          {/* Retry Target Card */}
+          <div className={`border ${theme.quiz.cardBorder} bg-slate-50/80 dark:bg-slate-800/60 rounded-2xl p-4 mb-6`}>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1 font-bold">解き直し対象</p>
+            <p className={`text-2xl font-black ${theme.quiz.accentText}`}>
               残り {roundWrongQuestionIds.length} 問
             </p>
             <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium leading-relaxed">
-              すべて正解するまで繰り返し出題されます。<br />
-              <strong>星の数に関わらず、全問正解すると次のレッスンに進めます！</strong>
+              すべて正解するまで繰り返し出題されます。
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={handleStartRetryRound}
-              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 cursor-pointer active:scale-95"
+              className={`w-full sm:w-auto px-6 py-3.5 rounded-xl ${theme.quiz.confirmBtnGradient} text-white font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer active:scale-95`}
             >
               <RotateCcw className="w-4 h-4 stroke-[2.5]" />
               <span>間違えた問題を解き直す ({roundWrongQuestionIds.length}問)</span>
