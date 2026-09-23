@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, Award, Sparkles, BookOpen } from 'lucide-react';
+import { ChevronLeft, BookOpen } from 'lucide-react';
 import { getCourseById, DOMAINS } from '@/data/domains';
 import WaterStreamMap from '@/components/WaterStreamMap';
 import { getUserStats, saveLastCourseId } from '@/lib/storage';
@@ -43,11 +43,6 @@ export default function CoursePage() {
   const courseIndex = domain ? domain.courses.findIndex((c) => c.id === course.id) + 1 : 1;
 
   const completedMap = stats?.completedLessons || {};
-  const allCourseLessons = course.units.flatMap((u) => u.lessons);
-  const totalLessons = allCourseLessons.length;
-  const passedLessonsCount = allCourseLessons.filter((l) => completedMap[l.id]?.passed).length;
-  const progressPct = totalLessons > 0 ? Math.round((passedLessonsCount / totalLessons) * 100) : 0;
-  const totalStars = allCourseLessons.reduce((acc, l) => acc + (completedMap[l.id]?.stars || 0), 0);
 
   const handleLockClick = (lessonTitle: string, isComingSoon?: boolean) => {
     if (isComingSoon) {
@@ -58,13 +53,6 @@ export default function CoursePage() {
     setTimeout(() => {
       setToastMessage(null);
     }, 3000);
-  };
-
-  const handleScrollToSection = (unitNumber: number) => {
-    const el = document.getElementById(`section-${unitNumber}`);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
   };
 
   return (
@@ -106,55 +94,6 @@ export default function CoursePage() {
           >
             <BookOpen className="w-4 h-4" />
           </Link>
-        </div>
-      </div>
-
-      {/* Course Sub-Header & Progress Bar */}
-      <div className="max-w-xl mx-auto pt-4 px-4">
-        <div className={`bg-white/85 backdrop-blur-md rounded-3xl p-4 sm:p-5 border-2 ${theme.progressCardBorder} shadow-lg space-y-3`}>
-          <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
-            <span className="font-black text-slate-700 flex items-center gap-1.5">
-              <Sparkles className={`w-4 h-4 ${theme.accentText}`} />
-              コース全体の進捗
-            </span>
-            <div className="flex items-center gap-3">
-              <span className={`font-extrabold ${theme.accentText}`}>
-                {passedLessonsCount} / {totalLessons} 合格
-              </span>
-              <span className="font-bold text-amber-500 flex items-center gap-0.5 text-xs">
-                ★ {totalStars}
-              </span>
-            </div>
-          </div>
-
-          {/* Progress Bar with Water Flow look */}
-          <div className={`w-full h-3 ${theme.progressTrackBg} rounded-full overflow-hidden p-0.5 shadow-inner`}>
-            <div
-              className={`h-full bg-gradient-to-r ${theme.progressBarGradient} rounded-full transition-all duration-700 shadow-sm`}
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-
-          {/* Section jump buttons (スクロール連動セクション選択ボタン) */}
-          {course.units.length > 1 && (
-            <div className="pt-2 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-              {course.units.map((unit) => {
-                const unitPassed = unit.lessons.filter((l) => completedMap[l.id]?.passed).length;
-                return (
-                  <button
-                    key={unit.id}
-                    onClick={() => handleScrollToSection(unit.unitNumber)}
-                    className={`px-3.5 py-1.5 rounded-2xl text-xs font-black transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5 ${theme.sectionJumpBtn} active:scale-95 shadow-sm`}
-                  >
-                    <span>Section {unit.unitNumber}</span>
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${theme.sectionJumpBadge}`}>
-                      {unitPassed}/{unit.lessons.length}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
       </div>
 
