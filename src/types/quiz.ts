@@ -103,6 +103,22 @@ export interface Unit {
   lessons: Lesson[];
 }
 
+export type TechFieldCategory =
+  | 'all'
+  | 'legal_management'
+  | 'hygiene_planning'
+  | 'purification_facility'
+  | 'pipeline_earthquake';
+
+export interface TechCategoryMeta {
+  id: TechFieldCategory;
+  name: string;
+  shortName: string;
+  badge: string;
+  description: string;
+  color: string;
+}
+
 export interface Course {
   id: string;
   domainId: string;
@@ -112,6 +128,11 @@ export interface Course {
   iconName: string;
   themeColor: string;
   units: Unit[];
+  category?: 'legal_management' | 'hygiene_planning' | 'purification_facility' | 'pipeline_earthquake';
+  fieldNumber?: number; // 1〜20
+  badge?: string; // 例: '★最重要', '頻出', '基礎必須'
+  estimatedQuestions?: number; // 予定問題数 (100〜300問)
+  keywords?: string[]; // 重要キーワードタグ
 }
 
 export interface Domain {
@@ -120,6 +141,7 @@ export interface Domain {
   description: string;
   courses: Course[];
   available: boolean;
+  isPortal?: boolean; // 資格特設ポータルフラグ
 }
 
 export interface GlossaryTerm {

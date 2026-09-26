@@ -53,14 +53,14 @@ export default function OrderingWidget({
   }, [items, correctOrder]);
 
   // Check completion and correctness
-  useEffect(() => {
-    const isFullyOrdered = placedItemIds.length === items.length && items.length > 0;
-    const isAllCorrect =
-      isFullyOrdered &&
-      placedItemIds.every((id, idx) => id === correctOrder[idx]);
+  const isFullyOrdered = placedItemIds.length === items.length && items.length > 0;
+  const isAllCorrect =
+    isFullyOrdered &&
+    placedItemIds.every((id, idx) => id === correctOrder[idx]);
 
+  useEffect(() => {
     onSelectionChange(isFullyOrdered, isAllCorrect);
-  }, [placedItemIds, items.length, correctOrder, onSelectionChange]);
+  }, [isFullyOrdered, isAllCorrect, onSelectionChange]);
 
   const handlePlaceItem = (itemId: string) => {
     if (isConfirmed) return;
@@ -101,74 +101,119 @@ export default function OrderingWidget({
       </div>
 
       {/* 1. Top Placed Container (点線配置スロットエリア) */}
-      <div className={`bg-slate-50/70 dark:bg-slate-900/60 rounded-3xl p-4 sm:p-5 border-2 border-dashed ${theme.quiz.cardBorder} min-h-[120px] sm:min-h-[140px] flex flex-col justify-center transition-all shadow-inner`}>
-        {placedItemIds.length === 0 ? (
-          <p className="text-center text-xs sm:text-sm text-slate-400 dark:text-slate-500 font-bold py-6">
-            下の選択肢をタップして順番に並べてね
-          </p>
-        ) : (
-          <div className="space-y-2.5 w-full">
-            {placedItemIds.map((itemId, idx) => {
-              const item = items.find((i) => i.id === itemId);
-              if (!item) return null;
+      <div className="space-y-1.5">
+        {isConfirmed && (
+          <div className="flex items-center justify-between px-1 text-xs font-bold text-slate-500 dark:text-slate-400">
+            <span>あなたの回答：</span>
+            {isAllCorrect ? (
+              <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                <CheckCircle2 className="w-3.5 h-3.5" /> 正しい順番です！
+              </span>
+            ) : (
+              <span className="text-rose-600 dark:text-rose-400 flex items-center gap-1">
+                <XCircle className="w-3.5 h-3.5" /> 順番が違います
+              </span>
+            )}
+          </div>
+        )}
+        <div className={`bg-slate-50/70 dark:bg-slate-900/60 rounded-3xl p-4 sm:p-5 border-2 border-dashed ${theme.quiz.cardBorder} min-h-[120px] sm:min-h-[140px] flex flex-col justify-center transition-all shadow-inner`}>
+          {placedItemIds.length === 0 ? (
+            <p className="text-center text-xs sm:text-sm text-slate-400 dark:text-slate-500 font-bold py-6">
+              下の選択肢をタップして順番に並べてね
+            </p>
+          ) : (
+            <div className="space-y-2.5 w-full">
+              {placedItemIds.map((itemId, idx) => {
+                const item = items.find((i) => i.id === itemId);
+                if (!item) return null;
 
-              const isItemCorrect = isConfirmed ? correctOrder[idx] === itemId : true;
+                const isItemCorrect = isConfirmed ? correctOrder[idx] === itemId : true;
 
-              let cardStyle =
-                `bg-white dark:bg-slate-800 border-2 ${theme.quiz.cardBorder} shadow-sm text-slate-800 dark:text-slate-100 ${theme.quiz.optionHoverBorder}`;
-              let badgeStyle = theme.quiz.optionBadgeActive;
+                let cardStyle =
+                  `bg-white dark:bg-slate-800 border-2 ${theme.quiz.cardBorder} shadow-sm text-slate-800 dark:text-slate-100 ${theme.quiz.optionHoverBorder}`;
+                let badgeStyle = theme.quiz.optionBadgeActive;
 
-              if (isConfirmed) {
-                if (isItemCorrect) {
-                  cardStyle =
-                    'bg-emerald-50 dark:bg-emerald-950/70 border-2 border-emerald-500 shadow-sm text-emerald-950 dark:text-emerald-100';
-                  badgeStyle = 'bg-emerald-600 text-white';
-                } else {
-                  cardStyle =
-                    'bg-rose-50 dark:bg-rose-950/70 border-2 border-rose-500 shadow-sm text-rose-950 dark:text-rose-100';
-                  badgeStyle = 'bg-rose-600 text-white';
+                if (isConfirmed) {
+                  if (isItemCorrect) {
+                    cardStyle =
+                      'bg-emerald-50 dark:bg-emerald-950/70 border-2 border-emerald-500 shadow-sm text-emerald-950 dark:text-emerald-100';
+                    badgeStyle = 'bg-emerald-600 text-white';
+                  } else {
+                    cardStyle =
+                      'bg-rose-50 dark:bg-rose-950/70 border-2 border-rose-500 shadow-sm text-rose-950 dark:text-rose-100';
+                    badgeStyle = 'bg-rose-600 text-white';
+                  }
                 }
-              }
 
+                return (
+                  <button
+                    key={itemId}
+                    type="button"
+                    onClick={() => handleRemovePlacedItem(itemId)}
+                    disabled={isConfirmed}
+                    className={`w-full text-left p-3.5 sm:p-4 rounded-2xl flex items-center justify-between gap-3 transition-all cursor-pointer ${cardStyle} ${
+                      !isConfirmed ? 'active:scale-[0.99]' : 'cursor-default'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span
+                        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center shrink-0 shadow-xs ${badgeStyle}`}
+                      >
+                        {idx + 1}
+                      </span>
+                      <span className="text-[15px] sm:text-base font-bold leading-relaxed">
+                        {item.text}
+                      </span>
+                    </div>
+
+                    {!isConfirmed && (
+                      <span className="text-xs text-slate-400 hover:text-slate-600 shrink-0 ml-2 font-black">
+                        ✕
+                      </span>
+                    )}
+
+                    {isConfirmed && isItemCorrect && (
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    )}
+                    {isConfirmed && !isItemCorrect && (
+                      <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 1.5 正解の順番エリア（不正解時に正解順を明快に表示） */}
+      {isConfirmed && !isAllCorrect && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-emerald-50/90 dark:bg-emerald-950/40 border-2 border-emerald-500/40 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 space-y-3">
+          <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-200 font-bold text-sm sm:text-base">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 stroke-[2.5]" />
+            <span>【正解の順番】</span>
+          </div>
+          <div className="space-y-2.5">
+            {correctOrder.map((correctId, idx) => {
+              const item = items.find((i) => i.id === correctId);
+              if (!item) return null;
               return (
-                <button
-                  key={itemId}
-                  type="button"
-                  onClick={() => handleRemovePlacedItem(itemId)}
-                  disabled={isConfirmed}
-                  className={`w-full text-left p-3.5 sm:p-4 rounded-2xl flex items-center justify-between gap-3 transition-all cursor-pointer ${cardStyle} ${
-                    !isConfirmed ? 'active:scale-[0.99]' : 'cursor-default'
-                  }`}
+                <div
+                  key={correctId}
+                  className="p-3.5 sm:p-4 rounded-2xl bg-white dark:bg-slate-800 border-2 border-emerald-200 dark:border-emerald-800/80 shadow-xs flex items-center gap-3"
                 >
-                  <div className="flex items-center gap-3 min-w-0">
-                    <span
-                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl text-xs sm:text-sm font-black flex items-center justify-center shrink-0 shadow-xs ${badgeStyle}`}
-                    >
-                      {idx + 1}
-                    </span>
-                    <span className="text-[15px] sm:text-base font-bold leading-relaxed">
-                      {item.text}
-                    </span>
-                  </div>
-
-                  {!isConfirmed && (
-                    <span className="text-xs text-slate-400 hover:text-slate-600 shrink-0 ml-2 font-black">
-                      ✕
-                    </span>
-                  )}
-
-                  {isConfirmed && isItemCorrect && (
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
-                  )}
-                  {isConfirmed && !isItemCorrect && (
-                    <XCircle className="w-5 h-5 text-rose-600 shrink-0" />
-                  )}
-                </button>
+                  <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-600 text-white text-xs sm:text-sm font-black flex items-center justify-center shrink-0 shadow-xs">
+                    {idx + 1}
+                  </span>
+                  <span className="text-[15px] sm:text-base font-bold text-slate-800 dark:text-slate-100 leading-relaxed">
+                    {item.text}
+                  </span>
+                </div>
               );
             })}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* 2. Bottom Available Cards List (未配置カードリスト) */}
       {!isConfirmed && availableItems.length > 0 && (

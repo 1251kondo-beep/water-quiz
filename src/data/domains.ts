@@ -2,11 +2,20 @@ import { Domain } from '@/types/quiz';
 import { HANDA_VISION_COURSE } from '@/data/courses/handa_vision';
 import { WATER_FINANCE_COURSE } from '@/data/courses/water_finance';
 import { WATER_DESIGN_COURSE } from '@/data/courses/water_design';
+import { TECH_MANAGER_COURSES } from '@/data/courses/tech_manager_courses';
 
 export const DOMAINS: Domain[] = [
   {
+    id: 'water_technical_manager',
+    name: '水道技術管理者',
+    description: '水道法第19条に基づく必須職責・資格講習の全20分野を完全網羅するマスターポータル',
+    available: true,
+    isPortal: true,
+    courses: TECH_MANAGER_COURSES,
+  },
+  {
     id: 'water_supply',
-    name: '水道事業',
+    name: '水道事業実務',
     description: '半田市水道ビジョン、企業会計・投資財政計画、アセットマネジメント、関連法規、実務知識をマスターする',
     available: true,
     courses: [
