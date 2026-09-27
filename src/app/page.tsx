@@ -35,7 +35,7 @@ import {
   Activity,
 } from 'lucide-react';
 import { DOMAINS, getCourseById, getLessonById } from '@/data/domains';
-import { getUserStats } from '@/lib/storage';
+import { getUserStats, saveLastDomainId, getLastDomainId } from '@/lib/storage';
 import { UserStats, Course, TechFieldCategory } from '@/types/quiz';
 import { COURSE_PAGE_THEMES } from '@/data/themes';
 import { TECH_CATEGORIES } from '@/data/courses/tech_manager_courses';
@@ -76,8 +76,18 @@ export default function HomePage() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    setStats(getUserStats());
+    const loadedStats = getUserStats();
+    setStats(loadedStats);
+    const lastDomain = getLastDomainId();
+    if (lastDomain && DOMAINS.some((d) => d.id === lastDomain)) {
+      setSelectedDomainId(lastDomain);
+    }
   }, []);
+
+  const handleDomainChange = (domainId: string) => {
+    setSelectedDomainId(domainId);
+    saveLastDomainId(domainId);
+  };
 
   const selectedDomain = DOMAINS.find((d) => d.id === selectedDomainId) || DOMAINS[0];
   const isTechManagerPortal = selectedDomain.id === 'water_technical_manager';
@@ -220,7 +230,7 @@ export default function HomePage() {
               return (
                 <button
                   key={domain.id}
-                  onClick={() => setSelectedDomainId(domain.id)}
+                  onClick={() => handleDomainChange(domain.id)}
                   className={`px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                     isSelected
                       ? 'bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-600 text-white shadow-md shadow-blue-500/25'

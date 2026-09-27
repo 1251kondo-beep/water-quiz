@@ -173,5 +173,6 @@ export interface UserStats {
   theme: 'dark' | 'light';
   lastStudiedAt?: string;
   lastCourseId?: string; // 直近で学習・閲覧したコースID
+  lastDomainId?: string; // 前回選択したドメインID（タブ復元用）
 }
 

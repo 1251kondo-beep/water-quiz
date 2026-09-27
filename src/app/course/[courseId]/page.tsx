@@ -6,7 +6,7 @@ import { useParams } from 'next/navigation';
 import { ChevronLeft, BookOpen } from 'lucide-react';
 import { getCourseById, DOMAINS } from '@/data/domains';
 import WaterStreamMap from '@/components/WaterStreamMap';
-import { getUserStats, saveLastCourseId } from '@/lib/storage';
+import { getUserStats, saveLastCourseId, saveLastDomainId } from '@/lib/storage';
 import { UserStats } from '@/types/quiz';
 import { getCourseTheme } from '@/data/themes';
 
@@ -22,6 +22,9 @@ export default function CoursePage() {
     setStats(getUserStats());
     if (course) {
       saveLastCourseId(course.id);
+      if (course.domainId) {
+        saveLastDomainId(course.domainId);
+      }
     }
   }, [course]);
 

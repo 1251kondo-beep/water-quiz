@@ -38,6 +38,32 @@ export function saveLastCourseId(courseId: string): void {
   saveUserStats({ ...current, lastCourseId: courseId });
 }
 
+export function saveLastDomainId(domainId: string): void {
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('water_quiz_last_domain_id', domainId);
+    } catch {
+      // ignore
+    }
+  }
+  const current = getUserStats();
+  if (current.lastDomainId === domainId) return;
+  saveUserStats({ ...current, lastDomainId: domainId });
+}
+
+export function getLastDomainId(): string | null {
+  if (typeof window !== 'undefined') {
+    try {
+      const explicit = localStorage.getItem('water_quiz_last_domain_id');
+      if (explicit) return explicit;
+    } catch {
+      // ignore
+    }
+  }
+  const current = getUserStats();
+  return current.lastDomainId || null;
+}
+
 export function saveLessonResult(result: LessonResult, courseId?: string): UserStats {
   const current = getUserStats();
   const existing = current.completedLessons[result.lessonId];
