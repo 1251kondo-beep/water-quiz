@@ -212,24 +212,26 @@ export default function HomePage() {
 
       <div className="max-w-2xl mx-auto w-full px-4 py-5 space-y-6">
         
-        {/* 1. TOP Domain Switcher Tabs (水道事業実務 / 水道技術管理者 / 下水道事業) */}
-        <section className="space-y-2">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
+        {/* 1. PRIMARY: Top Domain Switcher (セグメントコントロール風のメインタブ) */}
+        <section>
+          <div className="bg-white/80 p-1.5 rounded-2xl border-2 border-sky-200/90 shadow-sm flex items-center gap-1.5 backdrop-blur-md overflow-x-auto scrollbar-none select-none">
             {DOMAINS.map((domain) => {
               const isSelected = selectedDomainId === domain.id;
               return (
                 <button
                   key={domain.id}
                   onClick={() => setSelectedDomainId(domain.id)}
-                  className={`px-4 py-2.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                  className={`px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                     isSelected
-                      ? 'bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-600 text-white shadow-md shadow-blue-500/25 border-2 border-transparent'
-                      : 'bg-white/90 text-slate-700 border-2 border-sky-200 hover:border-sky-300 hover:bg-white'
+                      ? 'bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-600 text-white shadow-md shadow-blue-500/25'
+                      : 'text-slate-600 hover:text-blue-700 hover:bg-sky-50/80 font-bold'
                   }`}
                 >
                   <span>{domain.name}</span>
                   {!domain.available && (
-                    <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full font-bold">
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold ${
+                      isSelected ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-600'
+                    }`}>
                       準備中
                     </span>
                   )}
@@ -239,43 +241,43 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 2. Top Status Bar (連続日数 / 完了コース / 完了レッスン / 要復習 / 用語辞書) */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
+        {/* 2. SECONDARY: Top Status Bar (控えめで機能的なサブインジケーター) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-0.5 scrollbar-none select-none text-xs">
           {/* Continuous Days Badge */}
-          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 shrink-0">
-            <Droplet className="w-4 h-4 fill-white text-white" />
-            <span className="text-sm font-black tracking-tight">{streakDays}</span>
-            <span className="text-xs font-bold opacity-90">連続日数</span>
+          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-sky-200/50 text-blue-900 border border-sky-300/40 shrink-0 font-bold">
+            <Droplet className="w-3.5 h-3.5 fill-blue-600 text-blue-600" />
+            <span className="font-black text-blue-800 text-sm">{streakDays}</span>
+            <span className="text-[11px] text-slate-600">日連続</span>
           </div>
 
           {/* Completed Courses Badge */}
-          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-slate-800 border-2 border-sky-200 shadow-sm shrink-0">
-            <span className="text-sm font-black text-blue-700">{completedCoursesCount}</span>
-            <span className="text-xs font-bold text-slate-600">完了コース</span>
+          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/70 text-slate-700 border border-sky-200/60 shrink-0 font-bold">
+            <span className="font-black text-blue-700 text-sm">{completedCoursesCount}</span>
+            <span className="text-[11px] text-slate-500">コース完了</span>
           </div>
 
           {/* Completed Lessons Badge */}
-          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-slate-800 border-2 border-sky-200 shadow-sm shrink-0">
-            <span className="text-sm font-black text-cyan-600">{completedCount}</span>
-            <span className="text-xs font-bold text-slate-600">完了レッスン</span>
+          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/70 text-slate-700 border border-sky-200/60 shrink-0 font-bold">
+            <span className="font-black text-cyan-600 text-sm">{completedCount}</span>
+            <span className="text-[11px] text-slate-500">レッスン完了</span>
           </div>
 
           {/* Review Mistake Badge */}
           {mistakeCount > 0 && (
             <Link
               href="/review"
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-50 text-amber-900 border-2 border-amber-300 shadow-sm shrink-0 hover:bg-amber-100 transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-100/80 text-amber-900 border border-amber-300/60 shrink-0 hover:bg-amber-200/80 transition-colors font-bold"
             >
-              <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
-              <span className="text-sm font-black text-amber-700">{mistakeCount}</span>
-              <span className="text-xs font-bold">要復習</span>
+              <RotateCcw className="w-3 h-3 text-amber-700" />
+              <span className="font-black text-amber-800 text-sm">{mistakeCount}</span>
+              <span className="text-[11px]">問要復習</span>
             </Link>
           )}
 
           {/* Glossary Link */}
           <Link
             href="/glossary"
-            className="ml-auto text-xs font-black text-blue-700 hover:text-blue-800 flex items-center gap-1 bg-white/80 border border-sky-200 px-3 py-1.5 rounded-full shadow-sm shrink-0"
+            className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-lg text-blue-700 hover:text-blue-900 bg-white/70 hover:bg-white border border-sky-200/70 text-xs font-bold shrink-0 transition-colors shadow-2xs"
           >
             <BookOpen className="w-3.5 h-3.5" />
             <span>用語辞書</span>
