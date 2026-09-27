@@ -33,7 +33,6 @@ import {
   Wrench,
   Building2,
   Activity,
-  ArrowRight,
 } from 'lucide-react';
 import { DOMAINS, getCourseById, getLessonById } from '@/data/domains';
 import { getUserStats } from '@/lib/storage';
@@ -71,7 +70,7 @@ function renderFieldIcon(iconName: string, className = 'w-5 h-5') {
 
 export default function HomePage() {
   const [stats, setStats] = useState<UserStats | null>(null);
-  const [selectedDomainId, setSelectedDomainId] = useState('water_technical_manager');
+  const [selectedDomainId, setSelectedDomainId] = useState('water_supply');
   const [selectedCategory, setSelectedCategory] = useState<TechFieldCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -89,10 +88,10 @@ export default function HomePage() {
   const totalStars = Object.values(completedLessonsMap).reduce((acc, curr) => acc + (curr.stars || 0), 0);
   const mistakeCount = stats?.mistakeHistory.length || 0;
 
-  // Playable courses across all domains
+  // Active courses across all domains
   const allPlayableCourses = DOMAINS.flatMap((d) => d.courses).filter((c) => c.units.length > 0);
 
-  // Active courses in available domain
+  // Active courses and lessons in available domain
   const availableCourses = selectedDomain.courses.filter((c) => c.units.length > 0);
   const completedCoursesCount = availableCourses.filter((course) => {
     const courseLessonIds = course.units.flatMap((u) => u.lessons.map((l) => l.id));
@@ -123,6 +122,15 @@ export default function HomePage() {
   }
 
   if (!continueCourse) {
+    const inProgress = allPlayableCourses.find((course) => {
+      const ids = course.units.flatMap((u) => u.lessons.map((l) => l.id));
+      const passed = ids.filter((id) => completedLessonsMap[id]?.passed).length;
+      return passed > 0 && passed < ids.length;
+    });
+    if (inProgress) continueCourse = inProgress;
+  }
+
+  if (!continueCourse) {
     continueCourse = availableCourses[0] || DOMAINS[0].courses[0];
   }
 
@@ -132,7 +140,10 @@ export default function HomePage() {
     ? Math.round((continueCompletedLessons / continueLessons.length) * 100)
     : 0;
   const continueIsAllPassed = continueLessons.length > 0 && continueCompletedLessons === continueLessons.length;
-  const continueTheme = (continueCourse && COURSE_THEMES[continueCourse.id]) || COURSE_THEMES.tech_admin || COURSE_THEMES.handa_vision;
+  const continueTheme = (continueCourse && COURSE_THEMES[continueCourse.id]) || COURSE_THEMES.handa_vision;
+
+  const continueDomain = DOMAINS.find((d) => d.courses.some((c) => c.id === continueCourse!.id));
+  const continueCourseIndex = continueDomain ? continueDomain.courses.findIndex((c) => c.id === continueCourse!.id) + 1 : 1;
 
   const streakDays = completedCount > 0 ? Math.max(1, Math.min(completedCount + 2, 15)) : 1;
 
@@ -169,176 +180,207 @@ export default function HomePage() {
   });
 
   const handleComingSoonClick = (courseTitle: string) => {
-    setToastMessage(`「${courseTitle}」は現在教材の準備中です。順次公開予定！💧`);
+    setToastMessage(`「${courseTitle}」は現在教材の準備中です。次回アップデートをお待ちください！💧`);
     setTimeout(() => {
       setToastMessage(null);
     }, 3000);
   };
 
   return (
-    <div className="flex-1 w-full flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950 text-slate-100 min-h-screen pb-20">
+    <div className="flex-1 w-full flex flex-col bg-gradient-to-b from-sky-100/70 via-blue-50/50 to-sky-100/60 pb-16 min-h-screen">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 text-cyan-300 text-xs sm:text-sm font-bold py-2.5 px-5 rounded-full shadow-2xl backdrop-blur-md border border-cyan-400/40 animate-in fade-in slide-in-from-top duration-300 max-w-[90%] text-center">
+        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-slate-900/90 text-white text-xs sm:text-sm font-bold py-2.5 px-5 rounded-full shadow-2xl backdrop-blur-md border border-cyan-400/40 animate-in fade-in slide-in-from-top duration-300 max-w-[90%] text-center">
           {toastMessage}
         </div>
       )}
 
-      {/* Hero Header Area (Deep Ocean Portal Style) */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-blue-950/80 via-slate-900/90 to-transparent border-b border-indigo-900/50 pt-5 pb-6 px-4">
-        {/* Ambient background glow */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-10 right-1/4 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-4xl mx-auto w-full space-y-4 relative z-10">
-          {/* Top Status Bar Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
-            {/* Continuous Days Badge */}
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 shrink-0 text-xs font-black">
-              <Droplet className="w-3.5 h-3.5 fill-white text-white" />
-              <span>{streakDays}日連続</span>
-            </div>
-
-            {/* Total Stars Badge */}
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800/90 text-amber-300 border border-amber-400/40 shadow-sm shrink-0 text-xs font-black">
-              <Award className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-              <span>{totalStars} スター</span>
-            </div>
-
-            {/* Completed Lessons Badge */}
-            <div className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-800/90 text-cyan-300 border border-cyan-400/40 shadow-sm shrink-0 text-xs font-black">
-              <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{completedCount} レッスン完了</span>
-            </div>
-
-            {/* Review Mistake Badge */}
-            {mistakeCount > 0 && (
-              <Link
-                href="/review"
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-rose-950/80 text-rose-300 border border-rose-400/40 shadow-sm shrink-0 hover:bg-rose-900/80 transition-colors text-xs font-black"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
-                <span>{mistakeCount}問 要復習</span>
-              </Link>
-            )}
-
-            {/* Glossary Link */}
-            <Link
-              href="/glossary"
-              className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-800/80 hover:bg-slate-700/80 text-blue-300 border border-blue-400/30 text-xs font-black shrink-0 transition-colors"
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>用語辞書</span>
-            </Link>
-          </div>
-
-          {/* Main Portal Title */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-            <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/40 text-cyan-300 text-[11px] font-black tracking-wider uppercase mb-1.5">
-                <GraduationCap className="w-3.5 h-3.5" />
-                <span>国家資格・実務必置資格</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight flex items-center gap-2">
-                <span>水道技術管理者</span>
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-400 text-lg sm:text-xl font-bold">
-                  マスターポータル
-                </span>
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl leading-relaxed">
-                水道法第19条の職責と試験範囲を完全網羅。全20分野のスナックラーニング＆記憶定着ドリル。
-              </p>
-            </div>
-
-            {/* Mode Actions */}
-            <div className="flex items-center gap-2 shrink-0">
-              <Link
-                href="/review"
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-orange-600 hover:from-rose-500 hover:to-orange-500 text-white font-black text-xs shadow-md shadow-rose-600/25 transition-all transform active:scale-95"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>弱点克服特訓</span>
-              </Link>
-            </div>
-          </div>
-
-          {/* Top Domain Switcher (水道技術管理者 / 水道事業実務 / 下水道事業) */}
-          <div className="flex items-center gap-2 pt-2 border-t border-slate-800/80 overflow-x-auto scrollbar-none">
-            {DOMAINS.map((domain) => (
-              <button
-                key={domain.id}
-                onClick={() => setSelectedDomainId(domain.id)}
-                className={`px-3.5 py-1.5 rounded-xl font-black text-xs whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
-                  selectedDomainId === domain.id
-                    ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/30 border border-cyan-400/40'
-                    : 'bg-slate-900/70 text-slate-400 border border-slate-800 hover:text-slate-200 hover:border-slate-700'
-                }`}
-              >
-                <span>{domain.name}</span>
-                {domain.id === 'water_technical_manager' && (
-                  <span className="text-[10px] bg-cyan-400/30 text-cyan-200 px-1.5 py-0.2 rounded-full font-bold">
-                    全20分野
-                  </span>
-                )}
-                {!domain.available && (
-                  <span className="text-[10px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded-full font-bold">
-                    準備中
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-4xl mx-auto w-full px-4 py-6 space-y-8">
+      <div className="max-w-2xl mx-auto w-full px-4 py-5 space-y-6">
         
-        {/* Continue Learning Banner */}
+        {/* 1. TOP Domain Switcher Tabs (水道事業実務 / 水道技術管理者 / 下水道事業) */}
+        <section className="space-y-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
+            {DOMAINS.map((domain) => {
+              const isSelected = selectedDomainId === domain.id;
+              return (
+                <button
+                  key={domain.id}
+                  onClick={() => setSelectedDomainId(domain.id)}
+                  className={`px-4 py-2.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-600 text-white shadow-md shadow-blue-500/25 border-2 border-transparent'
+                      : 'bg-white/90 text-slate-700 border-2 border-sky-200 hover:border-sky-300 hover:bg-white'
+                  }`}
+                >
+                  <span>{domain.name}</span>
+                  {domain.id === 'water_technical_manager' && (
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      isSelected ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      全20分野
+                    </span>
+                  )}
+                  {!domain.available && (
+                    <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full font-bold">
+                      準備中
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 2. Top Status Bar (連続日数 / 完了コース / 完了レッスン / 要復習 / 用語辞書) */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
+          {/* Continuous Days Badge */}
+          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-gradient-to-r from-blue-600 via-sky-600 to-cyan-500 text-white shadow-md shadow-blue-500/20 shrink-0">
+            <Droplet className="w-4 h-4 fill-white text-white" />
+            <span className="text-sm font-black tracking-tight">{streakDays}</span>
+            <span className="text-xs font-bold opacity-90">連続日数</span>
+          </div>
+
+          {/* Completed Courses Badge */}
+          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-slate-800 border-2 border-sky-200 shadow-sm shrink-0">
+            <span className="text-sm font-black text-blue-700">{completedCoursesCount}</span>
+            <span className="text-xs font-bold text-slate-600">完了コース</span>
+          </div>
+
+          {/* Completed Lessons Badge */}
+          <div className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white text-slate-800 border-2 border-sky-200 shadow-sm shrink-0">
+            <span className="text-sm font-black text-cyan-600">{completedCount}</span>
+            <span className="text-xs font-bold text-slate-600">完了レッスン</span>
+          </div>
+
+          {/* Review Mistake Badge */}
+          {mistakeCount > 0 && (
+            <Link
+              href="/review"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-amber-50 text-amber-900 border-2 border-amber-300 shadow-sm shrink-0 hover:bg-amber-100 transition-colors"
+            >
+              <RotateCcw className="w-3.5 h-3.5 text-amber-600" />
+              <span className="text-sm font-black text-amber-700">{mistakeCount}</span>
+              <span className="text-xs font-bold">要復習</span>
+            </Link>
+          )}
+
+          {/* Glossary Link */}
+          <Link
+            href="/glossary"
+            className="ml-auto text-xs font-black text-blue-700 hover:text-blue-800 flex items-center gap-1 bg-white/80 border border-sky-200 px-3 py-1.5 rounded-full shadow-sm shrink-0"
+          >
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>用語辞書</span>
+          </Link>
+        </div>
+
+        {/* 3. Section: "続きから学ぶ" */}
         {continueCourse && (
-          <section className="space-y-2">
-            <div className="flex items-center justify-between text-xs font-black text-slate-400">
-              <span className="flex items-center gap-1.5 text-cyan-400">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+          <section className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                 <span>続きから学ぶ</span>
-              </span>
-              <span>{continueCompletedLessons}/{continueLessons.length} レッスン</span>
+              </h2>
             </div>
 
             <Link
               href={`/course/${continueCourse.id}`}
-              className={`group block relative rounded-2xl overflow-hidden shadow-xl border border-indigo-700/60 bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-5 sm:p-6 transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-2xl hover:border-cyan-400/60 active:scale-[0.99] cursor-pointer`}
+              className={`group block relative rounded-3xl overflow-hidden shadow-lg border-2 ${continueTheme.border} ${continueTheme.gradient} text-white p-6 sm:p-7 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] cursor-pointer`}
             >
-              {/* Subtle ambient light */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/10 rounded-full blur-2xl pointer-events-none" />
+              {/* Background water ripples */}
+              <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  {continueTheme.waveType === 1 && (
+                    <>
+                      <path d="M0,45 Q25,25 50,45 T100,45 L100,100 L0,100 Z" fill="#ffffff" />
+                      <path d="M0,65 Q35,45 70,65 T100,65 L100,100 L0,100 Z" fill="#ffffff" opacity="0.4" />
+                    </>
+                  )}
+                  {continueTheme.waveType === 2 && (
+                    <>
+                      <circle cx="20" cy="30" r="18" fill="#ffffff" opacity="0.25" />
+                      <circle cx="85" cy="70" r="25" fill="#ffffff" opacity="0.2" />
+                      <path d="M0,60 Q50,30 100,60 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                    </>
+                  )}
+                  {continueTheme.waveType === 3 && (
+                    <>
+                      <path d="M0,30 Q30,60 60,30 T100,40 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                      <path d="M0,70 Q40,50 80,70 L100,70 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                    </>
+                  )}
+                  {continueTheme.waveType === 4 && (
+                    <>
+                      <ellipse cx="50" cy="50" rx="40" ry="20" fill="#ffffff" opacity="0.2" />
+                      <path d="M0,55 Q50,75 100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                    </>
+                  )}
+                  {continueTheme.waveType === 5 && (
+                    <>
+                      <path d="M0,35 Q25,55 55,35 T100,45 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                      <path d="M0,65 Q30,45 65,65 T100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.35" />
+                    </>
+                  )}
+                </svg>
+              </div>
 
-              <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1.5 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 text-[10px] font-black uppercase">
-                      分野 {continueCourse.fieldNumber || 1}
-                    </span>
-                    <span className="text-xs font-bold text-slate-300">
-                      {continueCourse.badge || '学習中'}
+              {/* Bubble decor */}
+              <div className="absolute top-4 right-6 w-8 h-8 rounded-full border border-white/40 bg-white/20 animate-float-slow pointer-events-none" />
+              <div className="absolute bottom-6 left-6 w-5 h-5 rounded-full border border-white/30 bg-white/10 animate-bounce-subtle pointer-events-none" />
+
+              {/* Content inside tile */}
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-black uppercase tracking-wide border border-white/30 text-white shadow-sm whitespace-nowrap shrink-0">
+                    <Droplet className="w-3.5 h-3.5 fill-current" />
+                    <span>
+                      {isTechManagerPortal && continueCourse.fieldNumber
+                        ? `分野 ${String(continueCourse.fieldNumber).padStart(2, '0')}`
+                        : `コース ${continueCourseIndex}`}
                     </span>
                   </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
-                    <span>{continueCourse.title}</span>
-                    <ChevronRight className="w-5 h-5 text-cyan-400 group-hover:translate-x-1 transition-transform" />
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {continueIsAllPassed ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap">
+                        <CheckCircle2 className="w-3 h-3" />
+                        完全習得
+                      </span>
+                    ) : continueProgressPct > 0 ? (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-sky-200 text-blue-950 px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap">
+                        <Sparkles className="w-3 h-3" />
+                        学習中
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-black bg-amber-300 text-amber-950 px-2.5 py-0.5 rounded-full shadow-sm whitespace-nowrap">
+                        <Sparkles className="w-3 h-3" />
+                        おすすめ
+                      </span>
+                    )}
+                    <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white whitespace-nowrap">
+                      {continueCompletedLessons}/{continueLessons.length}
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-white drop-shadow-md leading-tight tracking-tight">
+                    {continueCourse.title}
                   </h3>
-                  <p className="text-xs text-slate-300 line-clamp-1">
+                  <p className="text-xs sm:text-sm font-bold text-white/90 drop-shadow line-clamp-2 mt-1 leading-relaxed">
                     {continueCourse.subtitle || continueCourse.description}
                   </p>
                 </div>
 
-                {/* Progress Mini Box */}
-                <div className="sm:w-56 space-y-1.5 shrink-0 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
-                  <div className="flex items-center justify-between text-xs font-bold">
-                    <span className="text-slate-400">進捗度</span>
-                    <span className="text-cyan-400 font-black">{continueProgressPct}%</span>
+                {/* Progress Bar inside Tile */}
+                <div className="space-y-2 pt-1">
+                  <div className="flex items-center justify-between text-xs font-bold text-white/90">
+                    <span>進捗状況</span>
+                    <span className="font-black text-white">{continueProgressPct}% 完了</span>
                   </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden p-0.5">
+                  <div className="w-full h-3 bg-black/20 rounded-full overflow-hidden p-0.5 border border-white/30 backdrop-blur-sm">
                     <div
-                      className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-500"
+                      className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
                       style={{ width: `${continueProgressPct}%` }}
                     />
                   </div>
@@ -348,39 +390,42 @@ export default function HomePage() {
           </section>
         )}
 
-        {/* 20 Fields Portal Navigation (When in Tech Manager Domain) */}
+        {/* 4. Domain Content View */}
         {isTechManagerPortal ? (
-          <section className="space-y-5">
-            {/* Section Header with Category Tabs */}
-            <div className="space-y-3">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          /* ========================================================================= */
+          /* 水道技術管理者 マスターポータル (20分野グリッド & 4系統タブ) */
+          /* ========================================================================= */
+          <section className="space-y-4">
+            {/* Header info */}
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 border-2 border-sky-200 shadow-sm space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-lg sm:text-xl font-black text-white tracking-tight flex items-center gap-2">
-                    <Layers className="w-5 h-5 text-cyan-400" />
-                    <span>分野別ロードマップ</span>
-                    <span className="text-xs bg-blue-600/30 text-cyan-300 border border-blue-500/40 px-2 py-0.5 rounded-full font-bold">
-                      全20分野
-                    </span>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-black uppercase mb-1">
+                    <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
+                    <span>国家資格・実務必置資格</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                    水道技術管理者 全20分野
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    試験・講習の公式体系に準拠した4系統から選択して学習を進めます。
+                  <p className="text-xs text-slate-600 mt-0.5">
+                    水道法第19条の職責と試験範囲を網羅した系統別ドリル。
                   </p>
                 </div>
 
                 {/* Search Bar */}
-                <div className="relative w-full sm:w-64">
+                <div className="relative w-full sm:w-60">
                   <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="分野名・重要キーワード検索..."
-                    className="w-full bg-slate-900/90 border border-slate-800 focus:border-cyan-400 text-xs rounded-xl pl-9 pr-3 py-2 text-white placeholder-slate-500 focus:outline-none transition-colors"
+                    placeholder="分野名・タグ検索..."
+                    className="w-full bg-white border-2 border-sky-200 focus:border-blue-500 text-xs rounded-2xl pl-9 pr-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none transition-colors"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs"
                     >
                       ×
                     </button>
@@ -389,22 +434,22 @@ export default function HomePage() {
               </div>
 
               {/* 4 Category Filter Tabs */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-1">
                 {TECH_CATEGORIES.map((cat) => {
                   const isActive = selectedCategory === cat.id;
                   return (
                     <button
                       key={cat.id}
                       onClick={() => setSelectedCategory(cat.id)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
+                      className={`px-3 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
                         isActive
-                          ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md shadow-blue-500/25 border border-cyan-400/50'
-                          : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:text-slate-200 hover:border-slate-700'
+                          ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-sm'
+                          : 'bg-sky-50/70 text-slate-700 border border-sky-200 hover:bg-sky-100/70'
                       }`}
                     >
                       <span>{cat.shortName}</span>
                       <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-400'
+                        isActive ? 'bg-white/20 text-white' : 'bg-sky-200/80 text-blue-900'
                       }`}>
                         {cat.badge}
                       </span>
@@ -412,30 +457,30 @@ export default function HomePage() {
                   );
                 })}
               </div>
+
+              {/* Category Progress Bars */}
+              {selectedCategory === 'all' && !searchQuery && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-sky-100">
+                  {categoryStats.map((item) => (
+                    <div key={item.category.id} className="space-y-1">
+                      <div className="flex items-center justify-between text-[11px] font-bold">
+                        <span className="text-slate-600 truncate">{item.category.shortName}</span>
+                        <span className="text-blue-700 font-black">{item.pct}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-sky-100 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-blue-600 rounded-full"
+                          style={{ width: `${item.pct}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Category Progress Summary Bar */}
-            {selectedCategory === 'all' && !searchQuery && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800">
-                {categoryStats.map((item) => (
-                  <div key={item.category.id} className="space-y-1">
-                    <div className="flex items-center justify-between text-[11px] font-bold">
-                      <span className="text-slate-400 truncate">{item.category.shortName}</span>
-                      <span className="text-cyan-400 font-black">{item.pct}%</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-cyan-400 rounded-full"
-                        style={{ width: `${item.pct}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* 2-Column Grid of 20 Field Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3.5">
+            {/* 20 Fields Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {filteredCourses.map((course) => {
                 const courseLessons = course.units.flatMap((u) => u.lessons);
                 const totalCourseLessons = courseLessons.length;
@@ -449,59 +494,52 @@ export default function HomePage() {
                     <Link
                       key={course.id}
                       href={`/course/${course.id}`}
-                      className="group relative rounded-2xl overflow-hidden shadow-lg border border-indigo-700/60 bg-gradient-to-br from-slate-900 via-slate-900/90 to-blue-950/80 p-4 sm:p-5 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:border-cyan-400/70 active:scale-[0.99] cursor-pointer flex flex-col justify-between"
+                      className="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-md border-2 border-sky-300 hover:border-blue-500 bg-white p-5 transition-all duration-300 transform hover:-translate-y-1 active:scale-[0.99] cursor-pointer flex flex-col justify-between"
                     >
-                      {/* Ambient hover light */}
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-xl group-hover:bg-cyan-500/20 transition-all pointer-events-none" />
-
-                      <div className="space-y-3 relative z-10">
-                        {/* Top Meta Line */}
+                      <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5">
-                            <span className="px-2 py-0.5 rounded-full bg-blue-500/20 text-cyan-300 text-[10px] font-black border border-blue-400/30">
+                            <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black">
                               分野 {course.fieldNumber ? String(course.fieldNumber).padStart(2, '0') : '01'}
                             </span>
                             {course.badge && (
-                              <span className="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 text-[10px] font-black border border-amber-400/40">
+                              <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black">
                                 {course.badge}
                               </span>
                             )}
                           </div>
 
-                          <div className="flex items-center gap-1 text-[11px] font-bold text-cyan-300">
+                          <span className="text-xs font-black text-blue-700 bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-full">
                             {isAllPassed ? (
-                              <span className="flex items-center gap-1 text-emerald-400 bg-emerald-950/70 px-2 py-0.5 rounded-full border border-emerald-500/30">
-                                <CheckCircle2 className="w-3 h-3" />
-                                完全習得
+                              <span className="text-emerald-700 flex items-center gap-1">
+                                <CheckCircle2 className="w-3 h-3" /> 完全習得
                               </span>
                             ) : (
-                              <span>{completedCourseLessons}/{totalCourseLessons} 済</span>
+                              `${completedCourseLessons}/${totalCourseLessons} 済`
                             )}
-                          </div>
+                          </span>
                         </div>
 
-                        {/* Title & Icon */}
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-600 via-sky-600 to-cyan-500 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
                             {renderFieldIcon(course.iconName)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-base sm:text-lg font-black text-white group-hover:text-cyan-300 transition-colors leading-snug">
+                            <h3 className="text-base sm:text-lg font-black text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
                               {course.title}
                             </h3>
-                            <p className="text-[11px] text-slate-300 line-clamp-2 mt-0.5 leading-relaxed">
+                            <p className="text-xs font-bold text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">
                               {course.subtitle}
                             </p>
                           </div>
                         </div>
 
-                        {/* Keywords Pills */}
                         {course.keywords && course.keywords.length > 0 && (
                           <div className="flex items-center gap-1 overflow-hidden flex-wrap pt-0.5">
                             {course.keywords.slice(0, 3).map((kw, i) => (
                               <span
                                 key={i}
-                                className="text-[10px] bg-slate-800/80 text-slate-400 px-1.5 py-0.2 rounded border border-slate-700/60"
+                                className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200"
                               >
                                 #{kw}
                               </span>
@@ -510,15 +548,15 @@ export default function HomePage() {
                         )}
                       </div>
 
-                      {/* Bottom Progress Bar */}
-                      <div className="pt-3 mt-3 border-t border-slate-800/80 space-y-1.5 relative z-10">
-                        <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                      {/* Progress bar */}
+                      <div className="pt-3 mt-3 border-t border-sky-100 space-y-1.5">
+                        <div className="flex items-center justify-between text-xs font-bold text-slate-600">
                           <span>進捗状況</span>
-                          <span className="text-cyan-400 font-black">{pct}% 完了</span>
+                          <span className="text-blue-700 font-black">{pct}% 完了</span>
                         </div>
-                        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div className="w-full h-2 bg-sky-100 rounded-full overflow-hidden p-0.5">
                           <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-500"
+                            className="h-full bg-gradient-to-r from-blue-600 to-cyan-500 rounded-full transition-all duration-500"
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -527,55 +565,51 @@ export default function HomePage() {
                   );
                 }
 
-                // Locked / Coming Soon Course Card
+                // Coming Soon Field Card
                 return (
                   <div
                     key={course.id}
                     onClick={() => handleComingSoonClick(course.title)}
-                    className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/40 p-4 sm:p-5 opacity-75 hover:opacity-90 transition-all cursor-pointer flex flex-col justify-between"
+                    className="relative rounded-3xl overflow-hidden border-2 border-sky-200 bg-white/70 p-5 opacity-85 hover:opacity-95 transition-all cursor-pointer flex flex-col justify-between"
                   >
                     <div className="space-y-3">
-                      {/* Top Meta */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-black">
+                          <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black">
                             分野 {course.fieldNumber ? String(course.fieldNumber).padStart(2, '0') : '00'}
                           </span>
                           {course.badge && (
-                            <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">
                               {course.badge}
                             </span>
                           )}
                         </div>
 
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-400 bg-slate-800/70 px-2 py-0.5 rounded-full">
-                          <Lock className="w-3 h-3 text-slate-400" />
-                          準備中
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-slate-500 bg-white px-2.5 py-0.5 rounded-full border border-sky-100">
+                          <Lock className="w-3 h-3" /> 準備中
                         </span>
                       </div>
 
-                      {/* Title & Icon */}
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 flex items-center justify-center shrink-0">
+                        <div className="w-10 h-10 rounded-2xl bg-sky-100 text-slate-500 flex items-center justify-center shrink-0">
                           {renderFieldIcon(course.iconName)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base sm:text-lg font-black text-slate-300 leading-snug">
+                          <h3 className="text-base sm:text-lg font-black text-slate-800 leading-snug">
                             {course.title}
                           </h3>
-                          <p className="text-[11px] text-slate-400 line-clamp-2 mt-0.5 leading-relaxed">
+                          <p className="text-xs font-bold text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">
                             {course.subtitle}
                           </p>
                         </div>
                       </div>
 
-                      {/* Keywords */}
                       {course.keywords && course.keywords.length > 0 && (
                         <div className="flex items-center gap-1 overflow-hidden flex-wrap pt-0.5">
                           {course.keywords.slice(0, 3).map((kw, i) => (
                             <span
                               key={i}
-                              className="text-[10px] bg-slate-800/50 text-slate-400 px-1.5 py-0.2 rounded border border-slate-700/40"
+                              className="text-[10px] bg-slate-100/70 text-slate-500 px-1.5 py-0.2 rounded border border-slate-200"
                             >
                               #{kw}
                             </span>
@@ -584,9 +618,9 @@ export default function HomePage() {
                       )}
                     </div>
 
-                    <div className="pt-3 mt-3 border-t border-slate-800/50 flex items-center justify-between text-[11px] text-slate-400 font-bold">
-                      <span>予定問題数: 約{course.estimatedQuestions || 150}問</span>
-                      <span className="text-cyan-400/80">順次追加予定 →</span>
+                    <div className="pt-3 mt-3 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-500 font-bold">
+                      <span>予定: 約{course.estimatedQuestions || 150}問</span>
+                      <span className="text-blue-600">順次追加予定 →</span>
                     </div>
                   </div>
                 );
@@ -594,14 +628,16 @@ export default function HomePage() {
             </div>
           </section>
         ) : (
-          /* Standard Domain Courses List (for 水道事業実務 / 下水道事業) */
+          /* ========================================================================= */
+          /* 水道事業実務 / 下水道事業 コース一覧 (従来の縦並びリッチカード) */
+          /* ========================================================================= */
           <section className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-black text-white tracking-tight">
+            <div className="flex items-center gap-2">
+              <h2 className="text-xl font-black text-slate-900 tracking-tight">
                 {selectedDomain.name}
               </h2>
-              <span className="text-xs bg-slate-800 text-cyan-300 px-2.5 py-1 rounded-full font-bold border border-slate-700">
-                {selectedDomain.courses.length}コース
+              <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-xs font-black flex items-center justify-center">
+                {selectedDomain.courses.length}
               </span>
             </div>
 
@@ -620,35 +656,87 @@ export default function HomePage() {
                     <Link
                       key={course.id}
                       href={`/course/${course.id}`}
-                      className={`group block relative rounded-2xl overflow-hidden shadow-lg border border-indigo-700/60 bg-gradient-to-r from-slate-900 via-slate-900/90 to-blue-950/80 text-white p-6 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:border-cyan-400/70 active:scale-[0.99] cursor-pointer`}
+                      className={`group block relative rounded-3xl overflow-hidden shadow-lg border-2 ${theme.border} ${theme.gradient} text-white p-6 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl active:scale-[0.99] cursor-pointer`}
                     >
-                      <div className="relative z-10 space-y-3">
+                      {/* Background ripples & light reflections */}
+                      <div className="absolute inset-0 opacity-20 pointer-events-none">
+                        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                          {theme.waveType === 1 && (
+                            <>
+                              <path d="M0,45 Q25,25 50,45 T100,45 L100,100 L0,100 Z" fill="#ffffff" />
+                              <path d="M0,65 Q35,45 70,65 T100,65 L100,100 L0,100 Z" fill="#ffffff" opacity="0.4" />
+                            </>
+                          )}
+                          {theme.waveType === 2 && (
+                            <>
+                              <circle cx="20" cy="30" r="18" fill="#ffffff" opacity="0.25" />
+                              <circle cx="85" cy="70" r="25" fill="#ffffff" opacity="0.2" />
+                              <path d="M0,60 Q50,30 100,60 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                            </>
+                          )}
+                          {theme.waveType === 3 && (
+                            <>
+                              <path d="M0,30 Q30,60 60,30 T100,40 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                              <path d="M0,70 Q40,50 80,70 L100,70 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                            </>
+                          )}
+                          {theme.waveType === 4 && (
+                            <>
+                              <ellipse cx="50" cy="50" rx="40" ry="20" fill="#ffffff" opacity="0.2" />
+                              <path d="M0,55 Q50,75 100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.3" />
+                            </>
+                          )}
+                          {theme.waveType === 5 && (
+                            <>
+                              <path d="M0,35 Q25,55 55,35 T100,45 L100,100 L0,100 Z" fill="#ffffff" opacity="0.25" />
+                              <path d="M0,65 Q30,45 65,65 T100,55 L100,100 L0,100 Z" fill="#ffffff" opacity="0.35" />
+                            </>
+                          )}
+                        </svg>
+                      </div>
+
+                      {/* Floating Bubbles */}
+                      <div className="absolute top-3 right-6 w-6 h-6 rounded-full border border-white/40 bg-white/20 animate-float-slow pointer-events-none" />
+                      <div className="absolute bottom-4 right-16 w-4 h-4 rounded-full border border-white/30 bg-white/10 animate-bounce-subtle pointer-events-none" />
+
+                      {/* Tile Content */}
+                      <div className="relative z-10 space-y-3.5">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="px-3 py-1 rounded-full bg-blue-500/20 text-cyan-300 text-xs font-black border border-blue-400/30">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/25 backdrop-blur-md text-xs font-black uppercase tracking-wide border border-white/30 text-white shadow-sm">
+                            <Droplet className="w-3.5 h-3.5 fill-current" />
                             コース {cIdx + 1}
-                          </span>
-                          <span className="text-xs font-black text-cyan-300 bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
-                            {completedCourseLessons}/{totalCourseLessons} 完了
-                          </span>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {isAllPassed && (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-black bg-emerald-400 text-emerald-950 px-2.5 py-0.5 rounded-full shadow-sm">
+                                <CheckCircle2 className="w-3 h-3" />
+                                完全習得
+                              </span>
+                            )}
+                            <span className="text-xs font-black bg-white/25 backdrop-blur-md px-3 py-1 rounded-full border border-white/30 text-white">
+                              {completedCourseLessons}/{totalCourseLessons}
+                            </span>
+                          </div>
                         </div>
 
                         <div>
-                          <h3 className="text-xl sm:text-2xl font-black text-white group-hover:text-cyan-300 transition-colors">
+                          <h3 className="text-xl sm:text-2xl font-black text-white drop-shadow-md leading-tight tracking-tight">
                             {course.title}
                           </h3>
-                          <p className="text-xs sm:text-sm text-slate-300 mt-1 line-clamp-2">
+                          <p className="text-xs sm:text-sm font-bold text-white/90 drop-shadow line-clamp-2 mt-1 leading-relaxed">
                             {course.subtitle || course.description}
                           </p>
                         </div>
 
-                        <div className="space-y-1.5 pt-1">
-                          <div className="flex items-center justify-between text-xs font-bold text-slate-400">
+                        <div className="space-y-2 pt-1">
+                          <div className="flex items-center justify-between text-xs font-bold text-white/90">
                             <span>進捗状況</span>
-                            <span className="text-cyan-400 font-black">{pct}%</span>
+                            <span className="font-black text-white">{pct}% 完了</span>
                           </div>
-                          <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden p-0.5">
+                          <div className="w-full h-2.5 bg-black/20 rounded-full overflow-hidden p-0.5 border border-white/30 backdrop-blur-sm">
                             <div
-                              className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
+                              className="h-full bg-white rounded-full transition-all duration-500 shadow-sm"
                               style={{ width: `${pct}%` }}
                             />
                           </div>
@@ -658,22 +746,35 @@ export default function HomePage() {
                   );
                 }
 
+                // Locked / Coming Soon Course
                 return (
                   <div
                     key={course.id}
-                    className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/40 p-6 opacity-75"
+                    className="relative rounded-3xl overflow-hidden shadow-md border-2 border-sky-200 bg-gradient-to-br from-sky-100/90 via-blue-50/80 to-cyan-100/90 p-6 opacity-85"
                   >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-xs font-black">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-200/80 text-blue-900 text-xs font-black border border-sky-300/80">
                           コース {cIdx + 1}
                         </span>
-                        <span className="text-xs text-slate-400 flex items-center gap-1">
-                          <Lock className="w-3.5 h-3.5" /> 準備中
+                        <span className="inline-flex items-center gap-1 text-xs font-black text-slate-600 bg-white/80 px-3 py-1 rounded-full border border-sky-200">
+                          <Lock className="w-3 h-3 text-slate-500" />
+                          準備中
                         </span>
                       </div>
-                      <h3 className="text-lg font-black text-slate-300">{course.title}</h3>
-                      <p className="text-xs text-slate-400">{course.description}</p>
+
+                      <div>
+                        <h3 className="text-lg sm:text-xl font-black text-slate-800 leading-tight">
+                          {course.title}
+                        </h3>
+                        <p className="text-xs sm:text-sm font-bold text-slate-600 mt-1 leading-relaxed">
+                          {course.description}
+                        </p>
+                      </div>
+
+                      <div className="pt-2 flex items-center justify-between text-xs text-slate-500 font-bold border-t border-sky-200/60">
+                        <span>次回アップデートで公開予定</span>
+                      </div>
                     </div>
                   </div>
                 );
