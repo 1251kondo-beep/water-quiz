@@ -1,5 +1,6 @@
 import { Course, TechCategoryMeta, TechFieldCategory } from '@/types/quiz';
 import { TECH_ADMIN_COURSE } from './tech_admin';
+import { TECH_HYGIENE_COURSE } from './tech_hygiene';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -112,22 +113,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
 
   // ----------------------------------------------------
   // Ⅱ. 衛生・計画・水源系 (5分野)
-  // ----------------------------------------------------
-  {
-    id: 'tech_hygiene',
-    domainId: 'water_technical_manager',
-    title: '公衆衛生・衛生管理',
-    subtitle: '水系感染症の歴史・コレラ対策・塩素消毒原則・病原微生物の基礎科学',
-    description: '水道の本質的使命である公衆衛生の向上と、病原微生物（細菌・ウイルス・原虫）に対する消毒理論を学びます。',
-    iconName: 'HeartPulse',
-    themeColor: 'from-teal-600 to-emerald-700',
-    category: 'hygiene_planning',
-    fieldNumber: 6,
-    badge: '衛生根幹',
-    estimatedQuestions: 150,
-    keywords: ['水系感染症', '塩素消毒', '遊離残留塩素', '公衆衛生', '健康被害防止'],
-    units: [],
-  },
+  TECH_HYGIENE_COURSE,
   {
     id: 'tech_planning',
     domainId: 'water_technical_manager',
