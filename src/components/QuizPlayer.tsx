@@ -47,6 +47,7 @@ interface QuizPlayerProps {
   unitTitle: string;
   courseId: string;
   nextLesson?: Lesson | null;
+  onScreenStateChange?: (state: 'playing' | 'retry_prompt' | 'completed') => void;
 }
 
 function calculateLessonStars(score: number, total: number): number {
@@ -273,7 +274,13 @@ function renderFormattedInlineText(text: string, isHeading = false) {
 }
 
 
-export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: QuizPlayerProps) {
+export default function QuizPlayer({
+  lesson,
+  unitTitle,
+  courseId,
+  nextLesson,
+  onScreenStateChange,
+}: QuizPlayerProps) {
   const theme = getCourseTheme(courseId);
   const totalOriginalQuestions = lesson.questions.length;
 
@@ -302,6 +309,16 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
   const [bookmarks, setBookmarks] = useState<string[]>([]);
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
+
+  useEffect(() => {
+    if (isQuizCompleted) {
+      onScreenStateChange?.('completed');
+    } else if (isRetryPrompt) {
+      onScreenStateChange?.('retry_prompt');
+    } else {
+      onScreenStateChange?.('playing');
+    }
+  }, [isQuizCompleted, isRetryPrompt, onScreenStateChange]);
 
   const [isMatchFullyConnected, setIsMatchFullyConnected] = useState(false);
   const [isMatchAllCorrect, setIsMatchAllCorrect] = useState(false);
@@ -577,27 +594,27 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
 
   if (isRetryPrompt) {
     return (
-      <div className="max-w-xl mx-auto pt-1 sm:pt-2 pb-8 px-4 animate-in fade-in zoom-in-95 duration-300">
-        <div className={`glass-card rounded-3xl p-6 md:p-8 text-center border ${theme.quiz.cardBorder} shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95`}>
-          <div className={`absolute top-0 left-0 right-0 h-2 bg-gradient-to-r ${theme.progressBarGradient}`} />
+      <div className="max-w-xl mx-auto pt-0 sm:pt-1 pb-6 px-3 sm:px-4 animate-in fade-in zoom-in-95 duration-300">
+        <div className={`glass-card rounded-3xl p-5 sm:p-7 text-center border ${theme.quiz.cardBorder} shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95`}>
+          <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${theme.progressBarGradient}`} />
           
-          <div className={`w-16 h-16 mx-auto mb-3.5 rounded-2xl border ${theme.quiz.cardBorder} flex items-center justify-center shadow-lg ${theme.shadow} bg-white/80 dark:bg-slate-800/80`}>
-            <RotateCcw className={`w-8 h-8 ${theme.quiz.accentText}`} />
+          <div className={`w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-2.5 sm:mb-3 rounded-2xl border ${theme.quiz.cardBorder} flex items-center justify-center shadow-lg ${theme.shadow} bg-white/80 dark:bg-slate-800/80`}>
+            <RotateCcw className={`w-7 h-7 sm:w-8 sm:h-8 ${theme.quiz.accentText}`} />
           </div>
 
-          <h2 className="text-2xl font-black text-slate-800 dark:text-slate-100 mb-1">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-800 dark:text-slate-100 mb-0.5">
             {firstAttemptScore} / {totalOriginalQuestions}問 正解
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-5 font-bold">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-3 sm:mb-4 font-bold">
             {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
           </p>
 
           {/* Stars Only */}
-          <div className={`border ${theme.quiz.cardBorder} bg-white/60 dark:bg-slate-800/40 rounded-2xl py-3 px-4 mb-4 flex items-center justify-center gap-2 shadow-sm`}>
+          <div className={`border ${theme.quiz.cardBorder} bg-white/60 dark:bg-slate-800/40 rounded-2xl py-2 sm:py-2.5 px-4 mb-3 flex items-center justify-center gap-2 shadow-sm`}>
             {[1, 2, 3].map((starIdx) => (
               <Star
                 key={starIdx}
-                className={`w-8 h-8 transition-all ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 transition-all ${
                   starIdx <= firstAttemptStars
                     ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] scale-110'
                     : 'text-slate-300 dark:text-slate-700 fill-slate-200 dark:fill-slate-800'
@@ -607,27 +624,27 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
           </div>
 
           {/* Retry Target Card */}
-          <div className={`border ${theme.quiz.cardBorder} bg-slate-50/80 dark:bg-slate-800/60 rounded-2xl p-4 mb-6`}>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1 font-bold">解き直し対象</p>
-            <p className={`text-2xl font-black ${theme.quiz.accentText}`}>
+          <div className={`border ${theme.quiz.cardBorder} bg-slate-50/80 dark:bg-slate-800/60 rounded-2xl p-3 sm:p-4 mb-4 sm:mb-5`}>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5 font-bold">解き直し対象</p>
+            <p className={`text-xl sm:text-2xl font-black ${theme.quiz.accentText}`}>
               残り {roundWrongQuestionIds.length} 問
             </p>
-            <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 font-medium leading-relaxed">
               すべて正解するまで繰り返し出題されます。
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
             <button
               onClick={handleStartRetryRound}
-              className={`w-full sm:w-auto px-6 py-3.5 rounded-xl ${theme.quiz.confirmBtnGradient} text-white font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer active:scale-95`}
+              className={`w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl ${theme.quiz.confirmBtnGradient} text-white font-black text-sm transition-all flex items-center justify-center gap-2 shadow-lg cursor-pointer active:scale-95`}
             >
               <RotateCcw className="w-4 h-4 stroke-[2.5]" />
               <span>間違えた問題を解き直す ({roundWrongQuestionIds.length}問)</span>
             </button>
             <Link
               href={`/course/${courseId}`}
-              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              className="w-full sm:w-auto px-4 sm:px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
             >
               <List className="w-4 h-4" />
               <span>レッスン一覧へ戻る</span>
@@ -642,31 +659,31 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
     const pct = Math.round((firstAttemptScore / totalOriginalQuestions) * 100);
 
     return (
-      <div className="max-w-xl mx-auto py-8 px-4 animate-in fade-in zoom-in-95 duration-300">
-        <div className="glass-card rounded-3xl p-6 md:p-8 text-center border border-cyan-500/30 shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95">
-          <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
+      <div className="max-w-xl mx-auto pt-0 sm:pt-1 pb-6 px-3 sm:px-4 animate-in fade-in zoom-in-95 duration-300">
+        <div className={`glass-card rounded-3xl p-5 sm:p-7 text-center border ${theme.quiz.cardBorder} shadow-2xl relative overflow-hidden bg-white/95 dark:bg-slate-900/95`}>
+          <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${theme.progressBarGradient}`} />
           
-          <div className="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-cyan-500/20 to-blue-600/30 border border-cyan-400/30 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+          <div className={`w-14 h-14 sm:w-16 sm:h-16 mx-auto mb-2.5 sm:mb-3 rounded-2xl border ${theme.quiz.cardBorder} flex items-center justify-center shadow-lg ${theme.shadow} bg-white/80 dark:bg-slate-800/80`}>
             {firstAttemptStars === 3 ? (
-              <Award className="w-10 h-10 text-amber-500 fill-amber-400/20" />
+              <Award className="w-7 h-7 sm:w-8 sm:h-8 text-amber-500 fill-amber-400/20" />
             ) : (
-              <CheckCircle2 className="w-10 h-10 text-cyan-600 fill-cyan-400/20" />
+              <CheckCircle2 className={`w-7 h-7 sm:w-8 sm:h-8 ${theme.quiz.accentText}`} />
             )}
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-1">
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-100 mb-0.5">
             レッスンクリア！ 🎉
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-bold">
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mb-3 sm:mb-4 font-bold">
             {lesson.title.replace(/^Lesson\s*\d+[-_]\d+:\s*/i, '')}
           </p>
 
           {/* Stars display */}
-          <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="flex items-center justify-center gap-2 mb-1.5">
             {[1, 2, 3].map((starIdx) => (
               <Star
                 key={starIdx}
-                className={`w-8 h-8 transition-all ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 transition-all ${
                   starIdx <= firstAttemptStars
                     ? 'text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] scale-110'
                     : 'text-slate-300 dark:text-slate-700 fill-slate-200 dark:fill-slate-800'
@@ -675,29 +692,29 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
             ))}
           </div>
 
-          <p className="text-xs font-bold mb-6 text-slate-600 dark:text-slate-300">
+          <p className="text-xs font-bold mb-3 sm:mb-4 text-slate-600 dark:text-slate-300">
             {firstAttemptStars === 3 && '獲得星数: ★★★（全問一発正解！）'}
             {firstAttemptStars === 2 && '獲得星数: ★★☆（初回8〜9問正解）'}
             {firstAttemptStars === 1 && '獲得星数: ★☆☆（初回5〜7問正解）'}
             {firstAttemptStars === 0 && '獲得星数: ☆☆☆（初回4問以下正解）'}
           </p>
 
-          <div className="bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mb-6 grid grid-cols-2 gap-4">
+          <div className="bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 sm:p-4 mb-3 sm:mb-4 grid grid-cols-2 gap-4">
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">初回スコア</p>
-              <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5 font-bold">初回スコア</p>
+              <p className={`text-xl sm:text-2xl font-black ${theme.quiz.accentText}`}>
                 {firstAttemptScore} / {totalOriginalQuestions} 問
               </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">初回正解率</p>
-              <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-0.5 font-bold">初回正解率</p>
+              <p className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
                 {pct}%
               </p>
             </div>
           </div>
 
-          <div className="text-xs text-slate-700 dark:text-slate-300 bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-500/20 rounded-xl p-3 mb-6 font-medium leading-relaxed">
+          <div className="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 rounded-xl p-2.5 sm:p-3 mb-4 sm:mb-5 font-medium leading-relaxed">
             {firstAttemptStars === 3 ? (
               '素晴らしい理解度です！1回で全問正解し、星3つを獲得しました。次のレッスンへ進みましょう！'
             ) : (
@@ -705,11 +722,11 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3">
             {nextLesson ? (
               <Link
                 href={`/quiz/${nextLesson.id}`}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 active:scale-95 cursor-pointer"
+                className={`w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl ${theme.quiz.confirmBtnGradient} text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 cursor-pointer`}
               >
                 <span>次のレッスンへ進む</span>
                 <ArrowRight className="w-4 h-4 stroke-[2.5]" />
@@ -717,7 +734,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
             ) : (
               <Link
                 href={`/course/${courseId}`}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 active:scale-95 cursor-pointer"
+                className={`w-full sm:w-auto px-5 sm:px-6 py-3 rounded-xl ${theme.quiz.confirmBtnGradient} text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 cursor-pointer`}
               >
                 <List className="w-4 h-4" />
                 <span>コース一覧へ戻る</span>
@@ -726,7 +743,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
 
             <button
               onClick={handleRestartQuiz}
-              className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              className="w-full sm:w-auto px-4 sm:px-5 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
             >
               <RotateCcw className="w-4 h-4" />
               <span>もう一度挑戦</span>
@@ -735,7 +752,7 @@ export default function QuizPlayer({ lesson, unitTitle, courseId, nextLesson }: 
             {nextLesson && (
               <Link
                 href={`/course/${courseId}`}
-                className="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+                className="w-full sm:w-auto px-4 sm:px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
               >
                 <List className="w-4 h-4" />
                 <span>レッスン一覧</span>
