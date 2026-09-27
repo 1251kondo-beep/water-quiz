@@ -213,13 +213,6 @@ export default function HomePage() {
                   }`}
                 >
                   <span>{domain.name}</span>
-                  {domain.id === 'water_technical_manager' && (
-                    <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      isSelected ? 'bg-white/25 text-white' : 'bg-blue-100 text-blue-700'
-                    }`}>
-                      全20分野
-                    </span>
-                  )}
                   {!domain.available && (
                     <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.2 rounded-full font-bold">
                       準備中
@@ -405,7 +398,7 @@ export default function HomePage() {
                     <span>国家資格・実務必置資格</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    水道技術管理者 全20分野
+                    水道技術管理者
                   </h2>
                   <p className="text-xs text-slate-600 mt-0.5">
                     水道法第19条の職責と試験範囲を網羅した系統別ドリル。
