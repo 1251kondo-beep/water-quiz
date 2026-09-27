@@ -1,6 +1,7 @@
 import { Course } from '@/types/quiz';
 import { TECH_ADMIN_UNIT_1 } from './unit_1';
 import { TECH_ADMIN_UNIT_2 } from './unit_2';
+import { TECH_ADMIN_UNIT_3 } from './unit_3';
 
 export const TECH_ADMIN_COURSE: Course = {
   id: 'tech_admin',
@@ -18,51 +19,7 @@ export const TECH_ADMIN_COURSE: Course = {
   units: [
     TECH_ADMIN_UNIT_1,
     TECH_ADMIN_UNIT_2,
-    {
-      id: 'tech_admin_u3',
-      unitNumber: 3,
-      title: '震災対応・官民連携（PPP）・水質管理',
-      description: '水道事業カルテ、日水協手引き（能登教訓）、広域化類型、ウォーターPPPレベル3.5、水質基準51項目、給水継続判断',
-      badgeText: 'Unit 3: 危機管理・官民・水質',
-      lessons: [
-        {
-          id: 'tech_admin_l3_1',
-          unitId: 'tech_admin_u3',
-          lessonNumber: 1,
-          title: '水道事業カルテと震災相互応援体制',
-          subtitle: '料金回収率×耐震3指標（グループ1-3）、日水協手引き改定（被害なしでも一報徹底）',
-          description: '小規模事業体の経営耐震実態と、地震発災時の情報伝達・先遣隊派遣の鉄則を学びます。',
-          questions: [],
-        },
-        {
-          id: 'tech_admin_l3_2',
-          unitId: 'tech_admin_u3',
-          lessonNumber: 2,
-          title: '広域連携と官民連携（ウォーターPPP）',
-          subtitle: '広域化4類型、コンセッション方式、管理・更新一体マネジメント（レベル3.5）4要件',
-          description: '施設の共同化から事業統合までのピラミッド、および国が推進するレベル3.5の制度要件をマスターします。',
-          questions: [],
-        },
-        {
-          id: 'tech_admin_l3_3',
-          unitId: 'tech_admin_u3',
-          lessonNumber: 3,
-          title: '水質基準体系とクリプトスポリジウム対策',
-          subtitle: '水質基準51項目（健康31+生活20）、水道GLP、ろ過出口濁度0.1度以下・紫外線処理',
-          description: '法令上の水質項目体系と品質保証、耐塩素性病原原虫に対する確実な防護ラインを学びます。',
-          questions: [],
-        },
-        {
-          id: 'tech_admin_l3_4',
-          unitId: 'tech_admin_u3',
-          lessonNumber: 4,
-          title: '水質異常時における給水停止・継続判断',
-          subtitle: '原則（飲用制限周知で生活用水供給継続）と直ちに停止すべき「4物質（細菌・大腸菌・シアン・水銀）」',
-          description: '技術管理者が最も問われる緊急時の給水判断と、社会的影響を考慮した実践的な意思決定基準を確立します。',
-          questions: [],
-        },
-      ],
-    },
+    TECH_ADMIN_UNIT_3,
     {
       id: 'tech_admin_u4',
       unitNumber: 4,
