@@ -34,11 +34,13 @@ export default function FillInTheBlankWidget({
   // Selected values for each blank slot: { 1: "メモリ", 2: "ストレージ" }
   const [filledSlots, setFilledSlots] = useState<Record<number, string>>({});
   const [activeSlotId, setActiveSlotId] = useState<number>(1);
+  const [isAllCorrectState, setIsAllCorrectState] = useState<boolean>(false);
 
   // Reset state when blankText or options change
   useEffect(() => {
     setFilledSlots({});
     setActiveSlotId(1);
+    setIsAllCorrectState(false);
   }, [blankText, options]);
 
   // Split text by blank placeholders
@@ -77,6 +79,7 @@ export default function FillInTheBlankWidget({
       isAllCorrect = true;
     }
 
+    setIsAllCorrectState(isAllCorrect);
     onSelectionChange(isFullyFilled, isAllCorrect);
   }, [filledSlots, blankCount, blanks, onSelectionChange]);
 
@@ -168,18 +171,37 @@ export default function FillInTheBlankWidget({
                   !isConfirmed ? `cursor-pointer ${theme.quiz.optionHoverBorder}` : 'cursor-default'
                 }`}
               >
-                {filledVal ? (
-                  <span className="inline-flex items-center gap-1 leading-none">
-                    <span>{filledVal}</span>
-                    {!isConfirmed && (
+                {!isConfirmed ? (
+                  filledVal ? (
+                    <span className="inline-flex items-center gap-1 leading-none">
+                      <span>{filledVal}</span>
                       <span className="text-[11px] text-slate-400 hover:text-rose-500 transition-colors ml-0.5">
                         ✕
                       </span>
-                    )}
+                    </span>
+                  ) : (
+                    <span className="text-xs sm:text-sm font-black opacity-70 px-0.5 leading-none">
+                      {slotId}
+                    </span>
+                  )
+                ) : isCorrect ? (
+                  <span className="inline-flex items-center gap-1 leading-none">
+                    <span>{filledVal}</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 stroke-[2.5]" />
                   </span>
                 ) : (
-                  <span className="text-xs sm:text-sm font-black opacity-70 px-0.5 leading-none">
-                    {slotId}
+                  <span className="inline-flex items-center gap-1.5 leading-none py-0.5">
+                    {filledVal ? (
+                      <span className="line-through text-rose-500/80 dark:text-rose-400/80 text-sm">
+                        {filledVal}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-rose-500 font-bold">（未入力）</span>
+                    )}
+                    <span className="inline-flex items-center gap-0.5 text-emerald-800 dark:text-emerald-200 font-black bg-emerald-100/90 dark:bg-emerald-900/70 px-1.5 py-0.5 rounded text-sm sm:text-base border border-emerald-300 dark:border-emerald-700 shadow-2xs">
+                      <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mr-0.5">正解:</span>
+                      {targetBlank?.answer || '—'}
+                    </span>
                   </span>
                 )}
               </button>
@@ -187,6 +209,72 @@ export default function FillInTheBlankWidget({
           })}
         </div>
       </div>
+
+      {/* 1.5 正解の組み合わせエリア（不正解時に正答と完成文を明快に表示） */}
+      {isConfirmed && !isAllCorrectState && blanks.length > 0 && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-emerald-50/90 dark:bg-emerald-950/40 border-2 border-emerald-500/40 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 space-y-3.5">
+          <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-200 font-bold text-sm sm:text-base">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 stroke-[2.5]" />
+            <span>【正解の組み合わせ】</span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            {blanks.map((b) => {
+              const userVal = filledSlots[b.id];
+              const isSlotCorrect = userVal === b.answer;
+
+              return (
+                <div
+                  key={b.id}
+                  className="p-3 sm:p-3.5 rounded-2xl bg-white dark:bg-slate-800 border-2 border-emerald-200 dark:border-emerald-800/80 shadow-xs flex items-center justify-between gap-3"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-600 text-white text-xs sm:text-sm font-black flex items-center justify-center shrink-0 shadow-xs">
+                      空欄{b.id}
+                    </span>
+                    <span className="font-black text-slate-800 dark:text-slate-100 text-sm sm:text-base truncate">
+                      {b.answer}
+                    </span>
+                  </div>
+
+                  {isSlotCorrect ? (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-900/50 px-2 py-0.5 rounded-lg shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                      正解
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-rose-700 dark:text-rose-300 bg-rose-100/80 dark:bg-rose-900/50 px-2 py-0.5 rounded-lg shrink-0">
+                      <XCircle className="w-3.5 h-3.5 text-rose-500" />
+                      あなたの回答: {userVal || '未入力'}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 正しい言葉で埋めた完成文 */}
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-white/90 dark:bg-slate-850/90 border border-emerald-200 dark:border-emerald-800/80 text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed shadow-2xs">
+            <div className="font-bold text-emerald-800 dark:text-emerald-300 mb-1 flex items-center gap-1.5">
+              <span>📖 完成文で確認：</span>
+            </div>
+            <div className="leading-[2.0]">
+              {parts.map((p, idx) => {
+                if (!p.isBlank) return <span key={idx}>{p.text}</span>;
+                const targetB = blanks.find((b) => b.id === p.slotId);
+                return (
+                  <span
+                    key={idx}
+                    className="inline-block font-black text-emerald-800 dark:text-emerald-300 bg-emerald-100/90 dark:bg-emerald-900/70 border border-emerald-300 dark:border-emerald-600 px-2 py-0.5 rounded mx-1 shadow-2xs"
+                  >
+                    {targetB?.answer || `空欄${p.slotId}`}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 2. Options Chips Area (選択肢ピルエリア) */}
       <div className="bg-white dark:bg-slate-850 rounded-3xl p-4 sm:p-5 border-2 border-slate-200/90 dark:border-slate-700 shadow-sm space-y-3">
@@ -213,6 +301,25 @@ export default function FillInTheBlankWidget({
         <div className="flex flex-wrap gap-2.5 sm:gap-3 pt-1">
           {options.map((opt, i) => {
             const isUsed = usedOptions.includes(opt);
+            const isTargetCorrect = isConfirmed && blanks.some((b) => b.answer === opt);
+
+            let chipStyle = `bg-white dark:bg-slate-800 border-2 ${theme.quiz.cardBorder} text-slate-800 dark:text-slate-100 ${theme.quiz.optionHoverBorder} hover:${theme.quiz.optionSelectedBg} shadow-sm hover:shadow active:scale-95 cursor-pointer`;
+
+            if (isConfirmed) {
+              if (isTargetCorrect) {
+                chipStyle =
+                  'bg-emerald-50 dark:bg-emerald-950/70 border-2 border-emerald-500 text-emerald-950 dark:text-emerald-100 font-bold shadow-sm';
+              } else if (isUsed) {
+                chipStyle =
+                  'bg-rose-50/80 dark:bg-rose-950/50 border-2 border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-200 opacity-60';
+              } else {
+                chipStyle =
+                  'bg-slate-100/50 dark:bg-slate-800/30 border-2 border-slate-200/50 dark:border-slate-800 text-slate-400 opacity-40';
+              }
+            } else if (isUsed) {
+              chipStyle =
+                'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-600 opacity-40 cursor-not-allowed';
+            }
 
             return (
               <button
@@ -220,13 +327,12 @@ export default function FillInTheBlankWidget({
                 type="button"
                 onClick={() => handleSelectOption(opt)}
                 disabled={isConfirmed || isUsed}
-                className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-black transition-all border-2 flex items-center gap-1.5 ${
-                  isUsed
-                    ? 'bg-slate-100 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-600 opacity-40 cursor-not-allowed'
-                    : `bg-white dark:bg-slate-800 border-2 ${theme.quiz.cardBorder} text-slate-800 dark:text-slate-100 ${theme.quiz.optionHoverBorder} hover:${theme.quiz.optionSelectedBg} shadow-sm hover:shadow active:scale-95 cursor-pointer`
-                }`}
+                className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-black transition-all border-2 flex items-center gap-1.5 ${chipStyle}`}
               >
                 <span>{opt}</span>
+                {isConfirmed && isTargetCorrect && (
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                )}
               </button>
             );
           })}
