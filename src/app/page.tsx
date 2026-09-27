@@ -98,15 +98,18 @@ export default function HomePage() {
     return courseLessonIds.length > 0 && courseLessonIds.every((id) => completedLessonsMap[id]?.passed);
   }).length;
 
-  // Determine continueCourse dynamically
+  // Determine continueCourse dynamically within the SELECTED DOMAIN
   let continueCourse: Course | null = null;
+
+  // 1. Last accessed course if it belongs to the selected domain
   if (stats?.lastCourseId) {
-    const found = getCourseById(stats.lastCourseId);
-    if (found && found.units.length > 0) {
+    const found = availableCourses.find((c) => c.id === stats.lastCourseId);
+    if (found) {
       continueCourse = found;
     }
   }
 
+  // 2. Course from the most recently completed lesson within selected domain
   if (!continueCourse && stats?.completedLessons) {
     const sortedCompleted = Object.values(stats.completedLessons)
       .filter((l) => l.completedAt)
@@ -114,15 +117,16 @@ export default function HomePage() {
 
     for (const res of sortedCompleted) {
       const match = getLessonById(res.lessonId);
-      if (match?.course && match.course.units.length > 0) {
+      if (match?.course && availableCourses.some((c) => c.id === match.course.id)) {
         continueCourse = match.course;
         break;
       }
     }
   }
 
+  // 3. In-progress course within selected domain (0% < progress < 100%)
   if (!continueCourse) {
-    const inProgress = allPlayableCourses.find((course) => {
+    const inProgress = availableCourses.find((course) => {
       const ids = course.units.flatMap((u) => u.lessons.map((l) => l.id));
       const passed = ids.filter((id) => completedLessonsMap[id]?.passed).length;
       return passed > 0 && passed < ids.length;
@@ -130,8 +134,19 @@ export default function HomePage() {
     if (inProgress) continueCourse = inProgress;
   }
 
+  // 4. First uncompleted course within selected domain
   if (!continueCourse) {
-    continueCourse = availableCourses[0] || DOMAINS[0].courses[0];
+    const uncompleted = availableCourses.find((course) => {
+      const ids = course.units.flatMap((u) => u.lessons.map((l) => l.id));
+      const passed = ids.filter((id) => completedLessonsMap[id]?.passed).length;
+      return passed < ids.length;
+    });
+    if (uncompleted) continueCourse = uncompleted;
+  }
+
+  // 5. Fallback to first available course in selected domain
+  if (!continueCourse && availableCourses.length > 0) {
+    continueCourse = availableCourses[0];
   }
 
   const continueLessons = continueCourse?.units.flatMap((u) => u.lessons) || [];
