@@ -1,5 +1,6 @@
 import { Course } from '@/types/quiz';
 import { TECH_ADMIN_UNIT_1 } from './unit_1';
+import { TECH_ADMIN_UNIT_2 } from './unit_2';
 
 export const TECH_ADMIN_COURSE: Course = {
   id: 'tech_admin',
@@ -16,51 +17,7 @@ export const TECH_ADMIN_COURSE: Course = {
   keywords: ['水道法第1条', '技術管理者責務', '国交省移管', 'アセットマネジメント', 'ウォーターPPP', '水質基準51項目', 'PFAS', '給水装置'],
   units: [
     TECH_ADMIN_UNIT_1,
-    {
-      id: 'tech_admin_u2',
-      unitNumber: 2,
-      title: '技術管理者の職務・経営課題・施設管理',
-      description: '法第19条の職務範囲、立入検査指摘、第三者委託、有収水量減少と料金改定、アセットマネジメント、耐震性能基準',
-      badgeText: 'Unit 2: 職務実務・アセット',
-      lessons: [
-        {
-          id: 'tech_admin_l2_1',
-          unitId: 'tech_admin_u2',
-          lessonNumber: 1,
-          title: '技術管理者の職務範囲と法的責任',
-          subtitle: '法第19条第2項の職務、立入検査の指摘傾向（危機管理・水質検査）、両罰規定',
-          description: '技術管理者が負う実務職務と、外部委託時の受託技術管理者、違反時の制裁規定を深く理解します。',
-          questions: [],
-        },
-        {
-          id: 'tech_admin_l2_2',
-          unitId: 'tech_admin_u2',
-          lessonNumber: 2,
-          title: '水道事業の経営環境と料金改定',
-          subtitle: '人口減少・有収水量低下、投資不足、料金改定の傾向（平均18%、月数百円提示）',
-          description: '全国的な水需要減少と老朽化更新のジレンマ、住民合意形成に向けた料金提示の実務を学びます。',
-          questions: [],
-        },
-        {
-          id: 'tech_admin_l2_3',
-          unitId: 'tech_admin_u2',
-          lessonNumber: 3,
-          title: '水源状況・浄水方式動向と施設老朽化',
-          subtitle: '地表水75%依存、膜ろ過方式の増加、管路法定耐用年数40年・経年化率25%超',
-          description: '水源特性と浄水処理の変遷、更新率0.7%に伴う「全国140年問題」の実態を押さえます。',
-          questions: [],
-        },
-        {
-          id: 'tech_admin_l2_4',
-          unitId: 'tech_admin_u2',
-          lessonNumber: 4,
-          title: 'アセットマネジメントと自然災害・耐震基準',
-          subtitle: '台帳法定化・水管橋近接目視点検、レベル1・レベル2地震動性能基準、耐震化計画',
-          description: '投資の平準化手法、特定鋼構造物の点検義務化、地震動に応じた要求性能の違いを整理します。',
-          questions: [],
-        },
-      ],
-    },
+    TECH_ADMIN_UNIT_2,
     {
       id: 'tech_admin_u3',
       unitNumber: 3,
