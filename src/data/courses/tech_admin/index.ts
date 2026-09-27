@@ -15,7 +15,7 @@ export const TECH_ADMIN_COURSE: Course = {
   category: 'legal_management',
   fieldNumber: 1,
   badge: '★最重要・必修',
-  estimatedQuestions: 144,
+  estimatedQuestions: 146,
   keywords: ['水道法第1条', '技術管理者責務', '国交省移管', 'アセットマネジメント', 'ウォーターPPP', '水質基準51項目', 'PFAS', '給水装置'],
   units: [
     TECH_ADMIN_UNIT_1,
