@@ -2,6 +2,7 @@ import { Course, TechCategoryMeta, TechFieldCategory } from '@/types/quiz';
 import { TECH_ADMIN_COURSE } from './tech_admin';
 import { TECH_MANAGEMENT_COURSE } from './tech_management';
 import { TECH_HYGIENE_COURSE } from './tech_hygiene';
+import { TECH_PLANNING_COURSE } from './tech_planning';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -101,21 +102,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   // ----------------------------------------------------
   // Ⅱ. 衛生・計画・水源系 (5分野)
   TECH_HYGIENE_COURSE,
-  {
-    id: 'tech_planning',
-    domainId: 'water_technical_manager',
-    title: '水道計画・需要予測',
-    subtitle: '計画給水人口・一日最大給水量・負荷率・施設規模設定・縮退計画',
-    description: '人口減少社会における水需要予測の算出手法、設計基準諸元、施設の最適規模（ダウンサイジング）を学びます。',
-    iconName: 'TrendingUp',
-    themeColor: 'from-emerald-600 to-teal-800',
-    category: 'hygiene_planning',
-    fieldNumber: 7,
-    badge: '計画必須',
-    estimatedQuestions: 160,
-    keywords: ['計画給水人口', '一日最大給水量', '一日平均給水量', 'ピーク係数', '施設計画'],
-    units: [],
-  },
+  TECH_PLANNING_COURSE,
   {
     id: 'tech_water_resource',
     domainId: 'water_technical_manager',
