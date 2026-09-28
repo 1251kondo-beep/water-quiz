@@ -2,6 +2,7 @@ import { Course } from '@/types/quiz';
 import { TECH_MGMT_UNIT_1 } from './unit_1';
 import { TECH_MGMT_UNIT_2 } from './unit_2';
 import { TECH_MGMT_UNIT_3 } from './unit_3';
+import { TECH_MGMT_UNIT_4 } from './unit_4';
 
 export const TECH_MANAGEMENT_COURSE: Course = {
   id: 'tech_management',
@@ -20,5 +21,6 @@ export const TECH_MANAGEMENT_COURSE: Course = {
     TECH_MGMT_UNIT_1,
     TECH_MGMT_UNIT_2,
     TECH_MGMT_UNIT_3,
+    TECH_MGMT_UNIT_4,
   ],
 };
