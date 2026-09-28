@@ -1,5 +1,6 @@
 import { Course, TechCategoryMeta, TechFieldCategory } from '@/types/quiz';
 import { TECH_ADMIN_COURSE } from './tech_admin';
+import { TECH_MANAGEMENT_COURSE } from './tech_management';
 import { TECH_HYGIENE_COURSE } from './tech_hygiene';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
@@ -65,21 +66,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
     keywords: ['水道法規', '公企法', '水濁法', '環境基本法', '供給規程'],
     units: [],
   },
-  {
-    id: 'tech_management',
-    domainId: 'water_technical_manager',
-    title: '水道経営・公営企業会計',
-    subtitle: '独立採算制・3条4条収支・減価償却・料金算定原価・投資財政計画',
-    description: '水道事業の健全な継続に必要な公営企業会計の複式簿記構造、料金回収率、長期収支見通しを網羅します。',
-    iconName: 'PieChart',
-    themeColor: 'from-indigo-700 to-blue-800',
-    category: 'legal_management',
-    fieldNumber: 3,
-    badge: '経営必須',
-    estimatedQuestions: 180,
-    keywords: ['独立採算', '収益的収支', '資本的収支', '総括原価方式', '料金改定'],
-    units: [],
-  },
+  TECH_MANAGEMENT_COURSE,
   {
     id: 'tech_ppp',
     domainId: 'water_technical_manager',
