@@ -103,10 +103,6 @@ export default function HomePage() {
 
   // Active courses and lessons in available domain
   const availableCourses = selectedDomain.courses.filter((c) => c.units.length > 0);
-  const completedCoursesCount = availableCourses.filter((course) => {
-    const courseLessonIds = course.units.flatMap((u) => u.lessons.map((l) => l.id));
-    return courseLessonIds.length > 0 && courseLessonIds.every((id) => completedLessonsMap[id]?.passed);
-  }).length;
 
   // Determine continueCourse dynamically within the SELECTED DOMAIN
   let continueCourse: Course | null = null;
@@ -260,29 +256,26 @@ export default function HomePage() {
             <span className="text-[11px] text-slate-600">日連続</span>
           </div>
 
-          {/* Completed Courses Badge */}
-          <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/70 text-slate-700 border border-sky-200/60 shrink-0 font-bold">
-            <span className="font-black text-blue-700 text-sm">{completedCoursesCount}</span>
-            <span className="text-[11px] text-slate-500">コース完了</span>
-          </div>
-
           {/* Completed Lessons Badge */}
           <div className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/70 text-slate-700 border border-sky-200/60 shrink-0 font-bold">
+            <CheckCircle2 className="w-3.5 h-3.5 text-cyan-600" />
             <span className="font-black text-cyan-600 text-sm">{completedCount}</span>
-            <span className="text-[11px] text-slate-500">レッスン完了</span>
+            <span className="text-[11px] text-slate-600">レッスン完了</span>
           </div>
 
           {/* Review Mistake Badge */}
-          {mistakeCount > 0 && (
-            <Link
-              href="/review"
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-amber-100/80 text-amber-900 border border-amber-300/60 shrink-0 hover:bg-amber-200/80 transition-colors font-bold"
-            >
-              <RotateCcw className="w-3 h-3 text-amber-700" />
-              <span className="font-black text-amber-800 text-sm">{mistakeCount}</span>
-              <span className="text-[11px]">問要復習</span>
-            </Link>
-          )}
+          <Link
+            href="/review"
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border shrink-0 transition-colors font-bold ${
+              mistakeCount > 0
+                ? 'bg-amber-100/80 text-amber-900 border-amber-300/60 hover:bg-amber-200/80 shadow-2xs'
+                : 'bg-white/70 text-slate-700 border-sky-200/60 hover:bg-white'
+            }`}
+          >
+            <RotateCcw className={`w-3.5 h-3.5 ${mistakeCount > 0 ? 'text-amber-700' : 'text-slate-400'}`} />
+            <span className={`font-black text-sm ${mistakeCount > 0 ? 'text-amber-800' : 'text-slate-700'}`}>{mistakeCount}</span>
+            <span className={`text-[11px] ${mistakeCount > 0 ? 'text-amber-900' : 'text-slate-600'}`}>復習数</span>
+          </Link>
 
           {/* Glossary Link */}
           <Link
