@@ -1,5 +1,6 @@
 import { Course } from '@/types/quiz';
 import { TECH_MGMT_UNIT_1 } from './unit_1';
+import { TECH_MGMT_UNIT_2 } from './unit_2';
 
 export const TECH_MANAGEMENT_COURSE: Course = {
   id: 'tech_management',
@@ -16,5 +17,6 @@ export const TECH_MANAGEMENT_COURSE: Course = {
   keywords: ['独立採算', '市町村主義', '供給規程', '発生主義', '減価償却', '総括原価方式', '二部料金制', '資産維持費', '経営分析', '支払督促'],
   units: [
     TECH_MGMT_UNIT_1,
+    TECH_MGMT_UNIT_2,
   ],
 };

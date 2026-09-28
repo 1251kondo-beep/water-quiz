@@ -71,6 +71,7 @@
 * **水道経営（tech_management）**:
   * コース定義: `src/data/courses/tech_management/index.ts`
   * Unit 1 問題データ: `src/data/courses/tech_management/unit_1.ts`（全35問実装完了）
-  * Unit 2〜4 問題データ: 今後順次実装予定。
+  * Unit 2 問題データ: `src/data/courses/tech_management/unit_2.ts`（全35問実装完了）
+  * Unit 3〜4 問題データ: 今後順次実装予定。
 * **公衆衛生（tech_hygiene / 準備中）**:
   * 今後、本フォルダ内の `公衆衛生1.md`、`公衆衛生2.md` をベースにユニット問題データを順次実装予定。
