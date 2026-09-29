@@ -11,7 +11,6 @@ import {
   Lock,
   Waves,
   CheckCircle2,
-  GraduationCap,
   Award,
   Layers,
   Search,
@@ -36,9 +35,8 @@ import {
 } from 'lucide-react';
 import { DOMAINS, getCourseById, getLessonById } from '@/data/domains';
 import { getUserStats, saveLastDomainId, getLastDomainId } from '@/lib/storage';
-import { UserStats, Course, TechFieldCategory } from '@/types/quiz';
+import { UserStats, Course } from '@/types/quiz';
 import { COURSE_PAGE_THEMES } from '@/data/themes';
-import { TECH_CATEGORIES } from '@/data/courses/tech_manager_courses';
 
 const COURSE_THEMES = COURSE_PAGE_THEMES;
 
@@ -73,7 +71,6 @@ function renderFieldIcon(iconName: string, className = 'w-5 h-5') {
 export default function HomePage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [selectedDomainId, setSelectedDomainId] = useState('water_supply');
-  const [selectedCategory, setSelectedCategory] = useState<TechFieldCategory>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -173,9 +170,6 @@ export default function HomePage() {
   // Filter courses for Tech Manager
   const filteredCourses = selectedDomain.courses.filter((course) => {
     if (isTechManagerPortal) {
-      if (selectedCategory !== 'all' && course.category !== selectedCategory) {
-        return false;
-      }
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
         const matchTitle = course.title.toLowerCase().includes(q);
@@ -190,21 +184,6 @@ export default function HomePage() {
       }
     }
     return true;
-  });
-
-  // Calculate Tech Manager Category Progress
-  const categoryStats = TECH_CATEGORIES.filter((c) => c.id !== 'all').map((cat) => {
-    const catCourses = selectedDomain.courses.filter((c) => c.category === cat.id);
-    const catLessons = catCourses.flatMap((c) => c.units.flatMap((u) => u.lessons));
-    const passedLessons = catLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
-    const pct = catLessons.length > 0 ? Math.round((passedLessons / catLessons.length) * 100) : 0;
-    return {
-      category: cat,
-      courseCount: catCourses.length,
-      lessonCount: catLessons.length,
-      passedCount: passedLessons,
-      pct,
-    };
   });
 
   const handleComingSoonClick = (course: Course) => {
@@ -414,22 +393,18 @@ export default function HomePage() {
         {/* 4. Domain Content View */}
         {isTechManagerPortal ? (
           /* ========================================================================= */
-          /* 水道技術管理者 マスターポータル (体系別4分野 & クイックセレクター) */
+          /* 水道技術管理者 マスターポータル (全21講義 縦並び一覧) */
           /* ========================================================================= */
           <section className="space-y-4">
             {/* Header info */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 border-2 border-sky-200 shadow-sm space-y-3">
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 border-2 border-sky-200 shadow-sm">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-black uppercase mb-1">
-                    <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
-                    <span>国家資格・実務必置資格</span>
-                  </div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                     水道技術管理者
                   </h2>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    水道法第19条の職責と全21講義を体系別に網羅した総合学習ドリル。
+                    全21講義を網羅した総合学習ドリル。
                   </p>
                 </div>
 
@@ -453,87 +428,26 @@ export default function HomePage() {
                   )}
                 </div>
               </div>
-
-              {/* Systematic Category Filter Tabs */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-1">
-                {TECH_CATEGORIES.map((cat) => {
-                  const isActive = selectedCategory === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={`px-3 py-2 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer ${
-                        isActive
-                          ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white shadow-md shadow-blue-500/20'
-                          : 'bg-sky-50/70 text-slate-700 border border-sky-200 hover:bg-sky-100/70'
-                      }`}
-                    >
-                      <span>{cat.shortName}</span>
-                      <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                        isActive ? 'bg-white/20 text-white' : 'bg-sky-200/80 text-blue-900'
-                      }`}>
-                        {cat.badge}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Systematic Category Quick Cards (4分野へのダイレクト切り替え) */}
-              {!searchQuery && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-sky-100">
-                  {TECH_CATEGORIES.filter((c) => c.id !== 'all').map((cat) => {
-                    const isSelected = selectedCategory === cat.id;
-                    const catCourses = selectedDomain.courses.filter((c) => c.category === cat.id);
-                    const catLessons = catCourses.flatMap((c) => c.units.flatMap((u) => u.lessons));
-                    const passedLessons = catLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
-                    const pct = catLessons.length > 0 ? Math.round((passedLessons / catLessons.length) * 100) : 0;
-                    const readyCount = catCourses.filter((c) => c.units.length > 0).length;
-
-                    return (
-                      <button
-                        key={cat.id}
-                        onClick={() => setSelectedCategory(isSelected ? 'all' : cat.id)}
-                        className={`text-left p-2.5 rounded-2xl border transition-all cursor-pointer shadow-2xs ${
-                          isSelected
-                            ? 'bg-blue-600 text-white border-blue-600 ring-2 ring-blue-400/40 shadow-sm'
-                            : 'bg-gradient-to-br from-sky-50/90 to-blue-50/60 hover:from-blue-50 hover:to-sky-100/80 border-sky-200/80 text-slate-800'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between text-[11px] font-black">
-                          <span className="truncate">{cat.shortName}</span>
-                          <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-bold shrink-0 ${
-                            isSelected ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800'
-                          }`}>
-                            {cat.badge}
-                          </span>
-                        </div>
-                        <div className={`mt-1.5 flex items-center justify-between text-[10px] ${
-                          isSelected ? 'text-white/80' : 'text-slate-500'
-                        }`}>
-                          <span>{readyCount > 0 ? `${readyCount}講義公開中` : '準備中'}</span>
-                          <span className={`font-black ${isSelected ? 'text-white' : 'text-blue-600'}`}>{pct}%</span>
-                        </div>
-                        <div className={`w-full h-1.5 rounded-full overflow-hidden mt-1 ${
-                          isSelected ? 'bg-black/20' : 'bg-sky-200/50'
-                        }`}>
-                          <div
-                            className={`h-full rounded-full transition-all duration-500 ${
-                              isSelected ? 'bg-white' : 'bg-blue-600'
-                            }`}
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
             </div>
 
-            {/* Course Card Render Helper */}
-            {(() => {
-              const renderCard = (course: Course) => {
+            {/* Search active indicator */}
+            {searchQuery && (
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-bold text-slate-700">
+                  「{searchQuery}」の検索結果 ({filteredCourses.length}講義)
+                </span>
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="text-xs font-bold text-blue-600 hover:text-blue-800 cursor-pointer"
+                >
+                  検索を解除
+                </button>
+              </div>
+            )}
+
+            {/* Course Cards: 純粋に縦にならべる */}
+            <div className="grid grid-cols-1 gap-3.5">
+              {filteredCourses.map((course) => {
                 const courseLessons = course.units.flatMap((u) => u.lessons);
                 const totalCourseLessons = courseLessons.length;
                 const completedCourseLessons = courseLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
@@ -546,7 +460,7 @@ export default function HomePage() {
                     <Link
                       key={course.id}
                       href={`/course/${course.id}`}
-                      className="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-md border-2 border-sky-300 hover:border-blue-500 bg-white p-5 transition-all duration-300 transform hover:-translate-y-1 active:scale-[0.99] cursor-pointer flex flex-col justify-between"
+                      className="group relative rounded-3xl overflow-hidden shadow-sm hover:shadow-md border-2 border-sky-300 hover:border-blue-500 bg-white p-5 transition-all duration-300 transform hover:-translate-y-0.5 active:scale-[0.99] cursor-pointer flex flex-col justify-between"
                     >
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
@@ -585,19 +499,6 @@ export default function HomePage() {
                             </p>
                           </div>
                         </div>
-
-                        {course.keywords && course.keywords.length > 0 && (
-                          <div className="flex items-center gap-1 overflow-hidden flex-wrap pt-0.5">
-                            {course.keywords.slice(0, 3).map((kw, i) => (
-                              <span
-                                key={i}
-                                className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded border border-slate-200"
-                              >
-                                #{kw}
-                              </span>
-                            ))}
-                          </div>
-                        )}
                       </div>
 
                       {/* Progress bar */}
@@ -655,19 +556,6 @@ export default function HomePage() {
                           </p>
                         </div>
                       </div>
-
-                      {course.keywords && course.keywords.length > 0 && (
-                        <div className="flex items-center gap-1 overflow-hidden flex-wrap pt-0.5">
-                          {course.keywords.slice(0, 3).map((kw, i) => (
-                            <span
-                              key={i}
-                              className="text-[10px] bg-slate-100/70 text-slate-500 px-1.5 py-0.2 rounded border border-slate-200"
-                            >
-                              #{kw}
-                            </span>
-                          ))}
-                        </div>
-                      )}
                     </div>
 
                     <div className="pt-3 mt-3 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-500 font-bold">
@@ -676,86 +564,20 @@ export default function HomePage() {
                     </div>
                   </div>
                 );
-              };
+              })}
+            </div>
 
-              // Mode 1: ALL categories and no search query -> Render by 4 systematic sections
-              if (selectedCategory === 'all' && !searchQuery) {
-                return (
-                  <div className="space-y-8">
-                    {TECH_CATEGORIES.filter((c) => c.id !== 'all').map((cat) => {
-                      const sectionCourses = filteredCourses.filter((c) => c.category === cat.id);
-                      if (sectionCourses.length === 0) return null;
-                      const readyCount = sectionCourses.filter((c) => c.units.length > 0).length;
-
-                      return (
-                        <div key={cat.id} className="space-y-3.5">
-                          {/* Section Header */}
-                          <div className="flex items-center justify-between px-1">
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                                {cat.name}
-                              </h3>
-                              <span className="text-xs font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">
-                                {cat.badge}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {readyCount > 0 ? (
-                                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                                  {readyCount}講義 公開中
-                                </span>
-                              ) : (
-                                <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">
-                                  準備中
-                                </span>
-                              )}
-                              <button
-                                onClick={() => setSelectedCategory(cat.id)}
-                                className="text-xs font-bold text-blue-600 hover:text-blue-800 cursor-pointer hidden sm:inline-block"
-                              >
-                                この分野のみ表示 →
-                              </button>
-                            </div>
-                          </div>
-
-                          {/* Cards Grid */}
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                            {sectionCourses.map((course) => renderCard(course))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              }
-
-              // Mode 2: Specific category selected or active search -> Flat grid with header
-              return (
-                <div className="space-y-3.5">
-                  <div className="flex items-center justify-between px-1">
-                    <h3 className="text-base sm:text-lg font-black text-slate-900">
-                      {searchQuery
-                        ? `「${searchQuery}」の検索結果 (${filteredCourses.length}講義)`
-                        : TECH_CATEGORIES.find((c) => c.id === selectedCategory)?.name}
-                    </h3>
-                    {(selectedCategory !== 'all' || searchQuery) && (
-                      <button
-                        onClick={() => {
-                          setSelectedCategory('all');
-                          setSearchQuery('');
-                        }}
-                        className="text-xs font-bold text-blue-600 hover:text-blue-800 cursor-pointer"
-                      >
-                        ← 全講義一覧に戻る
-                      </button>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    {filteredCourses.map((course) => renderCard(course))}
-                  </div>
-                </div>
-              );
-            })()}
+            {filteredCourses.length === 0 && (
+              <div className="text-center py-12 bg-white/60 rounded-3xl border border-sky-200">
+                <p className="text-sm font-bold text-slate-600">該当する講義が見つかりませんでした</p>
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="mt-2 text-xs font-bold text-blue-600 hover:underline cursor-pointer"
+                >
+                  検索をクリア
+                </button>
+              </div>
+            )}
           </section>
         ) : (
           /* ========================================================================= */
