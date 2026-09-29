@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Droplet,
-  BookOpen,
   RotateCcw,
   Sparkles,
   ChevronRight,
@@ -243,15 +242,6 @@ export default function HomePage() {
             <RotateCcw className={`w-3.5 h-3.5 ${mistakeCount > 0 ? 'text-amber-700' : 'text-slate-400'}`} />
             <span className={`font-black text-sm ${mistakeCount > 0 ? 'text-amber-800' : 'text-slate-700'}`}>{mistakeCount}</span>
             <span className={`text-[11px] ${mistakeCount > 0 ? 'text-amber-900' : 'text-slate-600'}`}>復習数</span>
-          </Link>
-
-          {/* Glossary Link */}
-          <Link
-            href="/glossary"
-            className="ml-auto flex items-center gap-1 px-3 py-1.5 rounded-lg text-blue-700 hover:text-blue-900 bg-white/70 hover:bg-white border border-sky-200/70 text-xs font-bold shrink-0 transition-colors shadow-2xs"
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>用語辞書</span>
           </Link>
         </div>
 

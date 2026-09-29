@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Droplet, Volume2, VolumeX, Moon, Sun, BookOpen, RotateCcw, Home, Menu, X, Sparkles } from 'lucide-react';
-import { getUserStats, toggleSoundSetting, setThemeSetting } from '@/lib/storage';
+import { Droplet, Volume2, VolumeX, BookOpen, RotateCcw, Home, Menu, X, Sparkles } from 'lucide-react';
+import { getUserStats, toggleSoundSetting } from '@/lib/storage';
 import { soundFx } from '@/lib/audio';
 
 export default function Header() {
   const [soundEnabled, setSoundEnabled] = useState(true);
-  const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const [mistakeCount, setMistakeCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -15,14 +14,8 @@ export default function Header() {
   useEffect(() => {
     const stats = getUserStats();
     setSoundEnabled(stats.soundEnabled);
-    setTheme(stats.theme);
     setMistakeCount(stats.mistakeHistory.length);
-
-    if (stats.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
+    document.documentElement.classList.remove('dark');
   }, []);
 
   // Close menu when clicking outside
@@ -44,17 +37,7 @@ export default function Header() {
     }
   };
 
-  const handleToggleTheme = () => {
-    const nextTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(nextTheme);
-    setThemeSetting(nextTheme);
-    if (nextTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    soundFx.playClick(soundEnabled);
-  };
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-sky-200/80 dark:border-slate-800 px-4 py-2.5 shadow-sm bg-white/85 dark:bg-slate-900/90 backdrop-blur-md">
@@ -156,26 +139,6 @@ export default function Header() {
                   </div>
                   <span className="text-[11px] text-slate-500 font-semibold">
                     {soundEnabled ? 'ON' : 'OFF'}
-                  </span>
-                </button>
-
-                {/* Theme Toggle */}
-                <button
-                  onClick={() => {
-                    handleToggleTheme();
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-2xl hover:bg-sky-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer text-left"
-                >
-                  <div className="flex items-center gap-3">
-                    {theme === 'dark' ? (
-                      <Sun className="w-4 h-4 text-amber-400" />
-                    ) : (
-                      <Moon className="w-4 h-4 text-indigo-600" />
-                    )}
-                    <span>テーマ設定</span>
-                  </div>
-                  <span className="text-[11px] text-slate-500 font-semibold">
-                    {theme === 'dark' ? 'ダーク' : 'ライト'}
                   </span>
                 </button>
               </div>
