@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   Award,
   Layers,
-  Search,
   ShieldCheck,
   ScrollText,
   PieChart,
@@ -71,7 +70,6 @@ function renderFieldIcon(iconName: string, className = 'w-5 h-5') {
 export default function HomePage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [selectedDomainId, setSelectedDomainId] = useState('water_supply');
-  const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -167,24 +165,7 @@ export default function HomePage() {
 
   const streakDays = completedCount > 0 ? Math.max(1, Math.min(completedCount + 2, 15)) : 1;
 
-  // Filter courses for Tech Manager
-  const filteredCourses = selectedDomain.courses.filter((course) => {
-    if (isTechManagerPortal) {
-      if (searchQuery.trim()) {
-        const q = searchQuery.toLowerCase();
-        const matchTitle = course.title.toLowerCase().includes(q);
-        const matchSub = course.subtitle?.toLowerCase().includes(q) || false;
-        const matchKw = course.keywords?.some((k) => k.toLowerCase().includes(q)) || false;
-        const matchNum = course.fieldNumber
-          ? `第${String(course.fieldNumber).padStart(2, '0')}講`.includes(q) ||
-            `第${course.fieldNumber}講`.includes(q) ||
-            `${course.fieldNumber}` === q
-          : false;
-        return matchTitle || matchSub || matchKw || matchNum;
-      }
-    }
-    return true;
-  });
+
 
   const handleComingSoonClick = (course: Course) => {
     const lectureLabel = course.fieldNumber ? `第${String(course.fieldNumber).padStart(2, '0')}講 ` : '';
@@ -397,57 +378,23 @@ export default function HomePage() {
           /* ========================================================================= */
           <section className="space-y-4">
             {/* Header info */}
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 border-2 border-sky-200 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    水道技術管理者
-                  </h2>
-                  <p className="text-xs text-slate-600 mt-0.5">
-                    全21講義を網羅した総合学習ドリル。
-                  </p>
-                </div>
-
-                {/* Search Bar */}
-                <div className="relative w-full sm:w-60">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="講義名・キーワード検索..."
-                    className="w-full bg-white border-2 border-sky-200 focus:border-blue-500 text-xs rounded-2xl pl-9 pr-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none transition-colors"
-                  />
-                  {searchQuery && (
-                    <button
-                      onClick={() => setSearchQuery('')}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-5 border-2 border-sky-200 shadow-sm flex items-center justify-between">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  水道技術管理者
+                </h2>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  全21講義を網羅した総合学習ドリル。
+                </p>
               </div>
+              <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-xs font-black flex items-center justify-center shrink-0">
+                {selectedDomain.courses.length}
+              </span>
             </div>
-
-            {/* Search active indicator */}
-            {searchQuery && (
-              <div className="flex items-center justify-between px-1">
-                <span className="text-xs font-bold text-slate-700">
-                  「{searchQuery}」の検索結果 ({filteredCourses.length}講義)
-                </span>
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="text-xs font-bold text-blue-600 hover:text-blue-800 cursor-pointer"
-                >
-                  検索を解除
-                </button>
-              </div>
-            )}
 
             {/* Course Cards: 純粋に縦にならべる */}
             <div className="grid grid-cols-1 gap-3.5">
-              {filteredCourses.map((course) => {
+              {selectedDomain.courses.map((course) => {
                 const courseLessons = course.units.flatMap((u) => u.lessons);
                 const totalCourseLessons = courseLessons.length;
                 const completedCourseLessons = courseLessons.filter((l) => completedLessonsMap[l.id]?.passed).length;
@@ -566,18 +513,6 @@ export default function HomePage() {
                 );
               })}
             </div>
-
-            {filteredCourses.length === 0 && (
-              <div className="text-center py-12 bg-white/60 rounded-3xl border border-sky-200">
-                <p className="text-sm font-bold text-slate-600">該当する講義が見つかりませんでした</p>
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="mt-2 text-xs font-bold text-blue-600 hover:underline cursor-pointer"
-                >
-                  検索をクリア
-                </button>
-              </div>
-            )}
           </section>
         ) : (
           /* ========================================================================= */
