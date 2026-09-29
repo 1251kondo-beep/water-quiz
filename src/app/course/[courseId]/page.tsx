@@ -81,11 +81,8 @@ export default function CoursePage() {
 
           {/* Center Course Info */}
           <div className="text-center px-2 flex-1">
-            <div className={`inline-flex items-center gap-1 px-3 py-0.5 rounded-full ${theme.courseBadgeBg} text-[11px] font-black tracking-wider uppercase shadow-sm mb-0.5`}>
+            <div className={`inline-block px-3 py-0.5 rounded-full ${theme.courseBadgeBg} text-[11px] font-black tracking-wider uppercase shadow-sm mb-0.5`}>
               <span>{course.fieldNumber ? `第${String(course.fieldNumber).padStart(2, '0')}講` : `コース ${courseIndex}`}</span>
-              {course.scheduleDate && (
-                <span className="opacity-90 font-medium text-[10px]">({course.scheduleDate})</span>
-              )}
             </div>
             <h1 className="text-base sm:text-lg font-black text-slate-900 truncate tracking-tight">
               {course.title}

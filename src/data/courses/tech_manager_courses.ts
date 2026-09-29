@@ -7,75 +7,73 @@ import { TECH_PLANNING_COURSE } from './tech_planning';
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
     id: 'all',
-    name: '全講義一覧 (時間割順)',
+    name: '全講義一覧',
     shortName: '全21講義',
     badge: '全21講義',
-    description: '日本水道協会 川口研修所 カリキュラム時間割に準拠した全21講義のロードマップ',
+    description: '水道技術管理者に求められる全21分野を体系別に網羅した総合ロードマップ',
     color: 'from-blue-600 to-cyan-600',
   },
   {
-    id: 'week1',
-    name: '第1週：行政・計画・施設基礎 (9/25〜10/2)',
-    shortName: '第1週 (9/25〜10/2)',
-    badge: '10講義',
-    description: '水道行政、衛生管理、水道経営、水道計画、水理学、水源貯水、導送配水(Ⅰ)(Ⅱ)、土木資材、施設仕組み',
+    id: 'legal_planning',
+    name: 'Ⅰ. 法規・衛生・経営・計画',
+    shortName: '法規・経営・計画',
+    badge: '4講義',
+    description: '水道行政、公衆衛生、公営企業会計・財務経営、水需要予測と施設計画',
     color: 'from-blue-700 via-indigo-700 to-blue-900',
   },
   {
-    id: 'week2',
-    name: '第2週：浄水・機電・管資材 (10/5〜10/9)',
-    shortName: '第2週 (10/5〜10/9)',
+    id: 'facility_hydraulics',
+    name: 'Ⅱ. 水理・構造・施設・管路',
+    shortName: '水理・施設・管路',
     badge: '6講義',
-    description: '浄水施設(Ⅰ)(Ⅱ)、機械・電気設備、計装設備、水道用ダクタイル鉄管、水道用バルブ',
+    description: '水道水理学・構造力学、水源・取水・貯水、導送配水施設、漏水防止、土木材料施工、施設仕組み',
+    color: 'from-sky-600 via-blue-600 to-indigo-800',
+  },
+  {
+    id: 'purification_machinery',
+    name: 'Ⅲ. 浄水処理・機電・管資材',
+    shortName: '浄水・機電・資材',
+    badge: '6講義',
+    description: '浄水施設(Ⅰ)(Ⅱ)、機械・電気設備、監視計装SCADA、ダクタイル鉄管、バルブ特性と維持管理',
     color: 'from-indigo-600 via-violet-600 to-purple-800',
   },
   {
-    id: 'week3',
-    name: '第3週：給水・水質管理・生物 (10/13〜10/15)',
-    shortName: '第3週 (10/13〜10/15)',
+    id: 'water_quality_service',
+    name: 'Ⅳ. 給水装置・水質・生物',
+    shortName: '給水・水質・生物',
     badge: '5講義',
-    description: '給水装置、水質概論、水源原水浄水水質、送配水給水水質（異常時対応含む）、微生物・生物概論',
-    color: 'from-cyan-600 via-teal-600 to-emerald-700',
+    description: '給水装置、水質概論・基準、水源原水浄水水質、送配給水水質（異常時対応）、微生物・生物概論',
+    color: 'from-teal-600 via-cyan-600 to-emerald-700',
   },
 ];
 
 export const TECH_MANAGER_COURSES: Course[] = [
   // =========================================================================
-  // 第1週 (9/25〜10/2) ： 行政・計画・施設基礎 (10講義)
+  // Ⅰ. 法規・衛生・経営・計画 (4講義)
   // =========================================================================
-
-  // 第01講: 9/25(金) 午前
   TECH_ADMIN_COURSE,
-
-  // 第02講: 9/25(金) 午後
   TECH_HYGIENE_COURSE,
-
-  // 第03講: 9/28(月) 午前
   TECH_MANAGEMENT_COURSE,
-
-  // 第04講: 9/28(月) 午後
   TECH_PLANNING_COURSE,
 
-  // 第05講: 9/29(火) 午前
+  // =========================================================================
+  // Ⅱ. 水理・構造・施設・管路 (6講義)
+  // =========================================================================
   {
     id: 'tech_hydraulics',
     domainId: 'water_technical_manager',
     title: '水道水理学・構造力学',
-    subtitle: '静水圧・動水勾配・ベルヌーイ定理・管路摩擦損失・水撃圧・構造設計',
+    subtitle: '静水圧・動水勾配・ベルヌーイ定理・管路摩擦損失・水撃圧・構造力学',
     description: '管水路・開水路の流れ、ヘーゼン・ウィリアムス公式、管網水理解析、サージタンク・調圧水槽、水管橋や耐震構造計算の基本を学びます。',
     iconName: 'Network',
     themeColor: 'from-sky-700 to-blue-900',
-    category: 'week1',
+    category: 'facility_hydraulics',
     fieldNumber: 5,
-    scheduleDate: '9/29(火) 午前',
-    scheduleTime: '9:30〜12:30',
     badge: '力学計算',
     estimatedQuestions: 140,
     keywords: ['ベルヌーイ定理', '動水勾配線', 'ヘーゼン公式', '水撃圧（ウォーターハンマー）', '構造力学'],
     units: [],
   },
-
-  // 第06講: 9/29(火) 午後
   {
     id: 'tech_intake_storage',
     domainId: 'water_technical_manager',
@@ -84,17 +82,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '表流水・伏流水・浅井戸・深井戸の特性と取水構造、ダム堆砂対策、原水調整池、渇水対策、水利権と水源保護対策を体系的に学びます。',
     iconName: 'Waves',
     themeColor: 'from-cyan-600 to-blue-700',
-    category: 'week1',
+    category: 'facility_hydraulics',
     fieldNumber: 6,
-    scheduleDate: '9/29(火) 午後',
-    scheduleTime: '13:30〜16:30',
     badge: '水源施設',
     estimatedQuestions: 130,
     keywords: ['取水堰', '取水塔', '沈砂池', '深井戸・浅井戸', '水利権', 'ダム貯水池'],
     units: [],
   },
-
-  // 第07講: 9/30(水) 終日
   {
     id: 'tech_conveyance_distribution_1',
     domainId: 'water_technical_manager',
@@ -103,17 +97,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '導水・送水・配水システムの全体構成、配水池の有効容量（時間最大12時間標準）、適正水圧（150〜740kPa）、ブロック化管網設計を学びます。',
     iconName: 'Layers',
     themeColor: 'from-blue-600 to-sky-700',
-    category: 'week1',
+    category: 'facility_hydraulics',
     fieldNumber: 7,
-    scheduleDate: '9/30(水) 終日',
-    scheduleTime: '9:30〜16:30',
     badge: '管路中核',
     estimatedQuestions: 160,
     keywords: ['導水施設', '送水施設', '配水池容量', '適正水圧', '管網ブロック化'],
     units: [],
   },
-
-  // 第08講: 10/1(木) 午前
   {
     id: 'tech_conveyance_distribution_2',
     domainId: 'water_technical_manager',
@@ -122,17 +112,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '計画的漏水調査手順、戸別音聴・路面音聴・相関式漏水探知器の実務、有収率向上対策、配水圧の減圧制御、不断水分岐・不断水バルブ設置を習得します。',
     iconName: 'Activity',
     themeColor: 'from-sky-600 to-teal-800',
-    category: 'week1',
+    category: 'facility_hydraulics',
     fieldNumber: 8,
-    scheduleDate: '10/1(木) 午前',
-    scheduleTime: '9:30〜12:30',
     badge: '漏水防止',
     estimatedQuestions: 120,
     keywords: ['音聴調査', '相関式探知器', '有収率向上', '配水圧制御', '不断水工法'],
     units: [],
   },
-
-  // 第09講: 10/1(木) 午後
   {
     id: 'tech_civil_materials',
     domainId: 'water_technical_manager',
@@ -141,17 +127,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '水道土木工事の施工管理、コンクリート配合・養生、開削工法と非開削推進工法、覆工、水道資材のJWWA規格・認証制度を学びます。',
     iconName: 'HardHat',
     themeColor: 'from-amber-700 to-slate-800',
-    category: 'week1',
+    category: 'facility_hydraulics',
     fieldNumber: 9,
-    scheduleDate: '10/1(木) 午後',
-    scheduleTime: '13:30〜16:30',
     badge: '土木施工',
     estimatedQuestions: 130,
     keywords: ['コンクリート示方書', '推進工法', '土留め工', 'JWWA規格', '施工管理'],
     units: [],
   },
-
-  // 第10講: 10/2(金) 終日
   {
     id: 'tech_facility_mechanism',
     domainId: 'water_technical_manager',
@@ -160,10 +142,8 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '水源から給水栓に至る水道施設全体の相互連携メカニズム、水理解析と流量調整、非常時バックアップライン、施設総合運用の全体像を総点検します。',
     iconName: 'Building2',
     themeColor: 'from-indigo-700 to-cyan-800',
-    category: 'week1',
+    category: 'facility_hydraulics',
     fieldNumber: 10,
-    scheduleDate: '10/2(金) 終日',
-    scheduleTime: '9:30〜16:30',
     badge: '総合仕組み',
     estimatedQuestions: 140,
     keywords: ['施設連携', '水運用', '予備能力', '送配水系統', '総合システム'],
@@ -171,10 +151,8 @@ export const TECH_MANAGER_COURSES: Course[] = [
   },
 
   // =========================================================================
-  // 第2週 (10/5〜10/9) ： 浄水・機電・管資材 (6講義)
+  // Ⅲ. 浄水処理・機電・管資材 (6講義)
   // =========================================================================
-
-  // 第11講: 10/5(月) 終日
   {
     id: 'tech_purification_1',
     domainId: 'water_technical_manager',
@@ -183,17 +161,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '凝集理論、PAC・次亜混和、フロック形成池、傾斜板沈殿池、急速砂ろ過池のろ過速度・逆流洗浄理論、緩速ろ過の生物浄化作用を徹底解説します。',
     iconName: 'Filter',
     themeColor: 'from-indigo-600 to-blue-700',
-    category: 'week2',
+    category: 'purification_machinery',
     fieldNumber: 11,
-    scheduleDate: '10/5(月) 終日',
-    scheduleTime: '9:30〜16:30',
     badge: '★浄水根幹',
     estimatedQuestions: 180,
     keywords: ['凝集沈殿', '急速ろ過', '緩速ろ過', 'フロック形成', '逆流洗浄', '濁度0.1度'],
     units: [],
   },
-
-  // 第12講: 10/6(火) 終日
   {
     id: 'tech_purification_2',
     domainId: 'water_technical_manager',
@@ -202,17 +176,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '精密ろ過（MF）・限外ろ過（UF）膜の完全性試験、オゾン接触池と生物活性炭（BAC）、紫外線照射による耐塩素性原虫不活化、浄水スラッジ脱水処理を学びます。',
     iconName: 'FlaskConical',
     themeColor: 'from-violet-700 to-indigo-800',
-    category: 'week2',
+    category: 'purification_machinery',
     fieldNumber: 12,
-    scheduleDate: '10/6(火) 終日',
-    scheduleTime: '9:30〜16:30',
     badge: '高度浄水',
     estimatedQuestions: 170,
     keywords: ['膜ろ過（MF/UF）', 'オゾン接触', '生物活性炭（BAC）', '紫外線処理', 'クリプト対策', '排泥脱水'],
     units: [],
   },
-
-  // 第13講: 10/7(水) 終日
   {
     id: 'tech_machinery_electrical',
     domainId: 'water_technical_manager',
@@ -221,17 +191,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '遠心ポンプ・立軸斜流ポンプの選定と揚程・軸動力計算、キャビテーション防止、高圧・特高受変電設備、非常用自家発電機と燃料備蓄基準を押さえます。',
     iconName: 'Zap',
     themeColor: 'from-amber-600 to-blue-800',
-    category: 'week2',
+    category: 'purification_machinery',
     fieldNumber: 13,
-    scheduleDate: '10/7(水) 終日',
-    scheduleTime: '9:30〜16:30',
     badge: '機電設備',
     estimatedQuestions: 160,
     keywords: ['渦巻ポンプ', '全揚程・軸動力', 'キャビテーション', '受変電設備', '自家用発電設備'],
     units: [],
   },
-
-  // 第14講: 10/8(木) 終日
   {
     id: 'tech_instrumentation',
     domainId: 'water_technical_manager',
@@ -240,17 +206,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '超音波流量計・電磁流量計、残留塩素計・濁度計などのオンライン水質計器、SCADA遠隔制御、計装通信回線、経済安全保障推進法に基づく基幹インフラ防護を学びます。',
     iconName: 'MonitorCheck',
     themeColor: 'from-indigo-700 to-slate-800',
-    category: 'week2',
+    category: 'purification_machinery',
     fieldNumber: 14,
-    scheduleDate: '10/8(木) 終日',
-    scheduleTime: '9:30〜16:30',
     badge: '監視計装',
     estimatedQuestions: 140,
     keywords: ['SCADA', '電磁流量計', 'オンライン水質計', 'テレメータ', '経済安保事前審査'],
     units: [],
   },
-
-  // 第15講: 10/9(金) 午前
   {
     id: 'tech_ductile_iron_pipe',
     domainId: 'water_technical_manager',
@@ -259,17 +221,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '球状黒鉛鋳鉄の材質特性、耐震継手の屈曲・離脱防止機能（S-1/S-2/A級）、内面エポキシ・外面耐食塗装、埋設施工時の許容曲げ角度と押角管理を習得します。',
     iconName: 'Cog',
     themeColor: 'from-slate-700 to-blue-900',
-    category: 'week2',
+    category: 'purification_machinery',
     fieldNumber: 15,
-    scheduleDate: '10/9(金) 午前',
-    scheduleTime: '9:30〜12:30',
     badge: '鉄管耐震',
     estimatedQuestions: 130,
     keywords: ['ダクタイル鉄管', 'NS形/GX形継手', '耐震適合管', '離脱防止', 'モルタルライニング'],
     units: [],
   },
-
-  // 第16講: 10/9(金) 午後
   {
     id: 'tech_valves',
     domainId: 'water_technical_manager',
@@ -278,10 +236,8 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '各種バルブの流体特性と閉止トルク、急速空気弁の吸排気機能、水撃防止逆止弁、減圧弁による圧力制御、弁室構造と定期点検・操作不良対策を整理します。',
     iconName: 'Wrench',
     themeColor: 'from-blue-700 to-slate-800',
-    category: 'week2',
+    category: 'purification_machinery',
     fieldNumber: 16,
-    scheduleDate: '10/9(金) 午後',
-    scheduleTime: '13:30〜16:30',
     badge: '弁類実務',
     estimatedQuestions: 120,
     keywords: ['仕切弁（ゲート弁）', 'バタフライ弁', '急速空気弁', '減圧弁', '水撃圧逆止弁'],
@@ -289,10 +245,8 @@ export const TECH_MANAGER_COURSES: Course[] = [
   },
 
   // =========================================================================
-  // 第3週 (10/13〜10/15) ： 給水・水質管理・生物 (5講義)
+  // Ⅳ. 給水装置・水質・生物 (5講義)
   // =========================================================================
-
-  // 第17講: 10/13(火) 終日
   {
     id: 'tech_service_pipes',
     domainId: 'water_technical_manager',
@@ -301,17 +255,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '水道法第16条・17条の需要者管理原則、指定給水装置工事事業者制度（5年更新制）、直結増圧給水の設計基準、逆流防止装置、メーター検定満了（8年）管理を網羅します。',
     iconName: 'Wrench',
     themeColor: 'from-blue-600 to-cyan-700',
-    category: 'week3',
+    category: 'water_quality_service',
     fieldNumber: 17,
-    scheduleDate: '10/13(火) 終日',
-    scheduleTime: '9:30〜16:30',
     badge: '給水装置',
     estimatedQuestions: 170,
     keywords: ['指定給水装置工事事業者', 'クロスコネクション', '直結増圧式', '逆流防止器', 'メーター8年検定'],
     units: [],
   },
-
-  // 第18講: 10/14(水) 午前
   {
     id: 'tech_water_quality_intro',
     domainId: 'water_technical_manager',
@@ -320,17 +270,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '健康影響項目（31項目）と性状項目（20項目）の基準値設定根拠、TDI算出法、PFASの暫定目標値（合算50ng/L）、水質検査計画の策定指針と水道GLPを学びます。',
     iconName: 'TestTube',
     themeColor: 'from-teal-700 to-cyan-800',
-    category: 'week3',
+    category: 'water_quality_service',
     fieldNumber: 18,
-    scheduleDate: '10/14(水) 午前',
-    scheduleTime: '9:30〜12:30',
     badge: '★水質基礎',
     estimatedQuestions: 180,
     keywords: ['水質基準51項目', 'PFOS/PFOA', 'TDI（耐容一日摂取量）', '水質検査計画', '水道GLP'],
     units: [],
   },
-
-  // 第19講: 10/14(水) 午後
   {
     id: 'tech_water_quality_purification',
     domainId: 'water_technical_manager',
@@ -339,17 +285,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: 'ダム湖・河川水の藻類増殖（かび臭・毒素）、塩素処理副生成物（総トリハロメタン・ハロ酢酸）の低減策、水安全計画（WSP）による危害要因管理を徹底習得します。',
     iconName: 'Sparkles',
     themeColor: 'from-cyan-700 to-teal-800',
-    category: 'week3',
+    category: 'water_quality_service',
     fieldNumber: 19,
-    scheduleDate: '10/14(水) 午後',
-    scheduleTime: '13:30〜16:30',
     badge: '浄水水質',
     estimatedQuestions: 150,
     keywords: ['かび臭物質（2-MIB/ジェオスミン）', '総トリハロメタン', '水安全計画（WSP）', 'ジャーテスト', '凝集阻害'],
     units: [],
   },
-
-  // 第20講: 10/15(木) 午前
   {
     id: 'tech_water_quality_distribution',
     domainId: 'water_technical_manager',
@@ -358,17 +300,13 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '給水栓における遊離残留塩素0.1mg/L（結合0.4mg/L）の保持、配水管末端の残留塩素低下対策、停電・断水後の赤水フラッシング手順、油流入・毒劇物混入時の緊急給水停止を学びます。',
     iconName: 'ShieldAlert',
     themeColor: 'from-red-600 to-blue-800',
-    category: 'week3',
+    category: 'water_quality_service',
     fieldNumber: 20,
-    scheduleDate: '10/15(木) 午前',
-    scheduleTime: '9:30〜12:30',
     badge: '異常時対応',
     estimatedQuestions: 160,
     keywords: ['残留塩素0.1mg/L', '赤水・黒水', '管網滞留時間', '水質異常時マニュアル', '給水停止判断'],
     units: [],
   },
-
-  // 第21講: 10/15(木) 午後
   {
     id: 'tech_microbiology',
     domainId: 'water_technical_manager',
@@ -377,10 +315,8 @@ export const TECH_MANAGER_COURSES: Course[] = [
     description: '一般細菌・大腸菌の検査意義、耐塩素性病原原虫（クリプトスポリジウム・ジアルジア）のオーシスト特性、ユスリカ等の生物障害対策、生物相観察実務をマスターします。',
     iconName: 'HeartPulse',
     themeColor: 'from-emerald-700 to-teal-900',
-    category: 'week3',
+    category: 'water_quality_service',
     fieldNumber: 21,
-    scheduleDate: '10/15(木) 午後',
-    scheduleTime: '13:30〜16:30',
     badge: '生物試験',
     estimatedQuestions: 140,
     keywords: ['一般細菌', '大腸菌群', 'クリプトスポリジウム', 'オーシスト', '生物障害', '顕微鏡検査'],
