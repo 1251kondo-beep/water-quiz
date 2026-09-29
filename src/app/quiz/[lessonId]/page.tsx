@@ -55,6 +55,7 @@ export default function LessonQuizPage() {
 
       <div className="flex-1 w-full">
         <QuizPlayer
+          key={lesson.id}
           lesson={lesson}
           unitTitle={unit.title}
           courseId={course.id}

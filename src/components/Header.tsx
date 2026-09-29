@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Droplet, Volume2, VolumeX, BookOpen, RotateCcw, Home, Menu, X, Sparkles } from 'lucide-react';
-import { getUserStats, toggleSoundSetting } from '@/lib/storage';
+import { getUserStats, toggleSoundSetting, SOUND_CHANGE_EVENT } from '@/lib/storage';
 import { soundFx } from '@/lib/audio';
 
 export default function Header() {
@@ -16,6 +16,22 @@ export default function Header() {
     setSoundEnabled(stats.soundEnabled);
     setMistakeCount(stats.mistakeHistory.length);
     document.documentElement.classList.remove('dark');
+
+    const handleSoundChange = (e: Event) => {
+      const customEvent = e as CustomEvent<boolean>;
+      if (typeof customEvent.detail === 'boolean') {
+        setSoundEnabled(customEvent.detail);
+      } else {
+        setSoundEnabled(getUserStats().soundEnabled);
+      }
+    };
+
+    window.addEventListener(SOUND_CHANGE_EVENT, handleSoundChange);
+    window.addEventListener('storage', handleSoundChange);
+    return () => {
+      window.removeEventListener(SOUND_CHANGE_EVENT, handleSoundChange);
+      window.removeEventListener('storage', handleSoundChange);
+    };
   }, []);
 
   // Close menu when clicking outside

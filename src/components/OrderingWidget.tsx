@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import { ArrowUpDown, RotateCcw, CheckCircle2, XCircle } from 'lucide-react';
 import { OrderItem } from '@/types/quiz';
 import { getCourseTheme } from '@/data/themes';
+import { soundFx } from '@/lib/audio';
 
 interface OrderingWidgetProps {
   items: OrderItem[];
   correctOrder: string[];
   isConfirmed: boolean;
   courseId?: string;
+  soundEnabled?: boolean;
   onSelectionChange: (isFullyOrdered: boolean, isAllCorrect: boolean) => void;
 }
 
@@ -18,6 +20,7 @@ export default function OrderingWidget({
   correctOrder,
   isConfirmed,
   courseId,
+  soundEnabled = true,
   onSelectionChange,
 }: OrderingWidgetProps) {
   const theme = getCourseTheme(courseId);
@@ -64,16 +67,19 @@ export default function OrderingWidget({
 
   const handlePlaceItem = (itemId: string) => {
     if (isConfirmed) return;
+    soundFx.playClick(soundEnabled);
     setPlacedItemIds((prev) => [...prev, itemId]);
   };
 
   const handleRemovePlacedItem = (itemId: string) => {
     if (isConfirmed) return;
+    soundFx.playClick(soundEnabled);
     setPlacedItemIds((prev) => prev.filter((id) => id !== itemId));
   };
 
   const handleReset = () => {
     if (isConfirmed) return;
+    soundFx.playClick(soundEnabled);
     setPlacedItemIds([]);
   };
 

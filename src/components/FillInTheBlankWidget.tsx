@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle2, RotateCcw, ListOrdered } from 'lucide-react';
 import { getCourseTheme } from '@/data/themes';
+import { soundFx } from '@/lib/audio';
 
 interface BlankDef {
   id: number;
@@ -15,6 +16,7 @@ interface FillInTheBlankWidgetProps {
   options: string[];
   isConfirmed: boolean;
   courseId?: string;
+  soundEnabled?: boolean;
   onSelectionChange: (isFullyFilled: boolean, isAllCorrect: boolean) => void;
 }
 
@@ -24,6 +26,7 @@ export default function FillInTheBlankWidget({
   options,
   isConfirmed,
   courseId,
+  soundEnabled = true,
   onSelectionChange,
 }: FillInTheBlankWidgetProps) {
   const theme = getCourseTheme(courseId);
@@ -85,6 +88,7 @@ export default function FillInTheBlankWidget({
 
   const handleSelectOption = (option: string) => {
     if (isConfirmed) return;
+    soundFx.playClick(soundEnabled);
 
     // If activeSlotId is empty or needs to be set
     const nextSlotId = activeSlotId <= blankCount ? activeSlotId : 1;
@@ -114,6 +118,7 @@ export default function FillInTheBlankWidget({
 
   const handleClearSlot = (slotId: number) => {
     if (isConfirmed) return;
+    soundFx.playClick(soundEnabled);
     setFilledSlots((prev) => {
       const next = { ...prev };
       delete next[slotId];
@@ -246,6 +251,7 @@ export default function FillInTheBlankWidget({
             <button
               type="button"
               onClick={() => {
+                soundFx.playClick(soundEnabled);
                 setFilledSlots({});
                 setActiveSlotId(1);
               }}

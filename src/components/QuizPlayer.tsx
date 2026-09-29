@@ -26,6 +26,7 @@ import {
   toggleBookmark,
   recordMistakes,
   saveLastCourseId,
+  SOUND_CHANGE_EVENT,
 } from '@/lib/storage';
 import {
   syncLessonResultToSupabase,
@@ -350,7 +351,10 @@ export default function QuizPlayer({
     }, 60);
   };
 
-  const handleRestartQuiz = () => {
+  const handleRestartQuiz = (playAudio = false) => {
+    if (playAudio) {
+      soundFx.playClick(soundEnabled);
+    }
     wrongIdsInCurrentRoundRef.current = [];
     setCurrentQuestions(shuffleOptionsForQuestions(lesson.questions));
     setCurrentIndex(0);
@@ -375,7 +379,7 @@ export default function QuizPlayer({
   };
 
   useEffect(() => {
-    handleRestartQuiz();
+    handleRestartQuiz(false);
   }, [lesson.id, lesson.questions]);
 
   useEffect(() => {
@@ -394,7 +398,23 @@ export default function QuizPlayer({
     const stats = getUserStats();
     setBookmarks(stats.bookmarks);
     setSoundEnabled(stats.soundEnabled);
-  }, []);
+
+    const handleSoundChange = (e: Event) => {
+      const customEvent = e as CustomEvent<boolean>;
+      if (typeof customEvent.detail === 'boolean') {
+        setSoundEnabled(customEvent.detail);
+      } else {
+        setSoundEnabled(getUserStats().soundEnabled);
+      }
+    };
+
+    window.addEventListener(SOUND_CHANGE_EVENT, handleSoundChange);
+    window.addEventListener('storage', handleSoundChange);
+    return () => {
+      window.removeEventListener(SOUND_CHANGE_EVENT, handleSoundChange);
+      window.removeEventListener('storage', handleSoundChange);
+    };
+  }, [lesson.id]);
 
   useEffect(() => {
     if (isAnswerConfirmed && explanationRef.current) {
@@ -742,7 +762,7 @@ export default function QuizPlayer({
             )}
 
             <button
-              onClick={handleRestartQuiz}
+              onClick={() => handleRestartQuiz(true)}
               className="w-full sm:w-auto px-4 sm:px-5 py-3 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-95"
             >
               <RotateCcw className="w-4 h-4" />
@@ -851,6 +871,7 @@ export default function QuizPlayer({
             rightTitle={currentQ.rightTitle}
             isConfirmed={isAnswerConfirmed}
             courseId={courseId}
+            soundEnabled={soundEnabled}
             onSelectionChange={(full, correct) => {
               setIsMatchFullyConnected(full);
               setIsMatchAllCorrect(correct);
@@ -866,6 +887,7 @@ export default function QuizPlayer({
             correctOrder={currentQ.correctOrder || []}
             isConfirmed={isAnswerConfirmed}
             courseId={courseId}
+            soundEnabled={soundEnabled}
             onSelectionChange={(full, correct) => {
               setIsOrderFullyPlaced(full);
               setIsOrderAllCorrect(correct);
@@ -882,6 +904,7 @@ export default function QuizPlayer({
             options={currentQ.options}
             isConfirmed={isAnswerConfirmed}
             courseId={courseId}
+            soundEnabled={soundEnabled}
             onSelectionChange={(full, correct) => {
               setIsFillFullyCompleted(full);
               setIsFillAllCorrect(correct);

@@ -5,6 +5,7 @@ import { MatchPair } from '@/types/quiz';
 import { CheckCircle2, XCircle, RotateCcw, Link2 } from 'lucide-react';
 
 import { getCourseTheme } from '@/data/themes';
+import { soundFx } from '@/lib/audio';
 
 interface PairMatchingWidgetProps {
   pairs: MatchPair[];
@@ -13,6 +14,7 @@ interface PairMatchingWidgetProps {
   rightTitle?: string;
   isConfirmed: boolean;
   courseId?: string;
+  soundEnabled?: boolean;
   onSelectionChange: (isFullyMatched: boolean, isAllCorrect: boolean) => void;
 }
 
@@ -28,6 +30,7 @@ export default function PairMatchingWidget({
   rightTitle = '【送水系統】',
   isConfirmed,
   courseId,
+  soundEnabled = true,
   onSelectionChange,
 }: PairMatchingWidgetProps) {
   const theme = getCourseTheme(courseId);
@@ -87,6 +90,7 @@ export default function PairMatchingWidget({
 
   const handleLeftClick = (leftId: string) => {
     if (isConfirmed) return;
+    soundFx.playClick(soundEnabled);
     setSelectedLeftId((prev) => (prev === leftId ? null : leftId));
   };
 
@@ -94,6 +98,7 @@ export default function PairMatchingWidget({
     if (isConfirmed) return;
     if (!selectedLeftId) return;
 
+    soundFx.playClick(soundEnabled);
     setUserConnections((prev) => {
       const next = { ...prev };
       // Remove any existing left connection pointing to this rightId
@@ -111,6 +116,7 @@ export default function PairMatchingWidget({
 
   const handleResetConnections = () => {
     if (isConfirmed) return;
+    soundFx.playClick(soundEnabled);
     setUserConnections({});
     setSelectedLeftId(null);
   };

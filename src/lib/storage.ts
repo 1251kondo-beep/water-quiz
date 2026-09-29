@@ -123,10 +123,15 @@ export function clearMistakes(): void {
   saveUserStats({ ...current, mistakeHistory: [] });
 }
 
+export const SOUND_CHANGE_EVENT = 'water_quiz_sound_changed';
+
 export function toggleSoundSetting(): boolean {
   const current = getUserStats();
   const newValue = !current.soundEnabled;
   saveUserStats({ ...current, soundEnabled: newValue });
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent(SOUND_CHANGE_EVENT, { detail: newValue }));
+  }
   return newValue;
 }
 
