@@ -105,6 +105,9 @@ export interface Unit {
 
 export type TechFieldCategory =
   | 'all'
+  | 'week1'
+  | 'week2'
+  | 'week3'
   | 'legal_management'
   | 'hygiene_planning'
   | 'purification_facility'
@@ -128,8 +131,10 @@ export interface Course {
   iconName: string;
   themeColor: string;
   units: Unit[];
-  category?: 'legal_management' | 'hygiene_planning' | 'purification_facility' | 'pipeline_earthquake';
-  fieldNumber?: number; // 1〜20
+  category?: TechFieldCategory;
+  fieldNumber?: number; // 講義番号 1〜21
+  scheduleDate?: string; // 例: '9/25(金) 午前'
+  scheduleTime?: string; // 例: '9:50〜14:50'
   badge?: string; // 例: '★最重要', '頻出', '基礎必須'
   estimatedQuestions?: number; // 予定問題数 (100〜300問)
   keywords?: string[]; // 重要キーワードタグ

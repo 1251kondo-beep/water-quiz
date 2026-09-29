@@ -33,6 +33,8 @@ import {
   Wrench,
   Building2,
   Activity,
+  Calendar,
+  Clock,
 } from 'lucide-react';
 import { DOMAINS, getCourseById, getLessonById } from '@/data/domains';
 import { getUserStats, saveLastDomainId, getLastDomainId } from '@/lib/storage';
@@ -64,6 +66,8 @@ function renderFieldIcon(iconName: string, className = 'w-5 h-5') {
     case 'Wrench': return <Wrench className={className} />;
     case 'Building2': return <Building2 className={className} />;
     case 'Activity': return <Activity className={className} />;
+    case 'Layers': return <Layers className={className} />;
+    case 'Sparkles': return <Sparkles className={className} />;
     default: return <Droplet className={className} />;
   }
 }
@@ -179,7 +183,14 @@ export default function HomePage() {
         const matchTitle = course.title.toLowerCase().includes(q);
         const matchSub = course.subtitle?.toLowerCase().includes(q) || false;
         const matchKw = course.keywords?.some((k) => k.toLowerCase().includes(q)) || false;
-        return matchTitle || matchSub || matchKw;
+        const matchDate = course.scheduleDate?.toLowerCase().includes(q) || false;
+        const matchTime = course.scheduleTime?.toLowerCase().includes(q) || false;
+        const matchNum = course.fieldNumber
+          ? `第${String(course.fieldNumber).padStart(2, '0')}講`.includes(q) ||
+            `第${course.fieldNumber}講`.includes(q) ||
+            `${course.fieldNumber}` === q
+          : false;
+        return matchTitle || matchSub || matchKw || matchDate || matchTime || matchNum;
       }
     }
     return true;
@@ -200,11 +211,13 @@ export default function HomePage() {
     };
   });
 
-  const handleComingSoonClick = (courseTitle: string) => {
-    setToastMessage(`「${courseTitle}」は現在教材の準備中です。次回アップデートをお待ちください！💧`);
+  const handleComingSoonClick = (course: Course) => {
+    const lectureLabel = course.fieldNumber ? `第${String(course.fieldNumber).padStart(2, '0')}講 ` : '';
+    const dateLabel = course.scheduleDate ? `【${course.scheduleDate}】` : '';
+    setToastMessage(`${lectureLabel}「${course.title}」${dateLabel}は現在教材を作成中です。次回アップデートをお待ちください！💧`);
     setTimeout(() => {
       setToastMessage(null);
-    }, 3000);
+    }, 3500);
   };
 
   return (
@@ -348,7 +361,7 @@ export default function HomePage() {
                     <Droplet className="w-3.5 h-3.5 fill-current" />
                     <span>
                       {isTechManagerPortal && continueCourse.fieldNumber
-                        ? `分野 ${String(continueCourse.fieldNumber).padStart(2, '0')}`
+                        ? `第${String(continueCourse.fieldNumber).padStart(2, '0')}講`
                         : `コース ${continueCourseIndex}`}
                     </span>
                   </div>
@@ -415,13 +428,13 @@ export default function HomePage() {
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[11px] font-black uppercase mb-1">
                     <GraduationCap className="w-3.5 h-3.5 text-blue-700" />
-                    <span>国家資格・実務必置資格</span>
+                    <span>日本水道協会 川口研修所 講習準拠</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                    水道技術管理者
+                    水道技術管理者 講習カリキュラム
                   </h2>
                   <p className="text-xs text-slate-600 mt-0.5">
-                    水道法第19条の職責と試験範囲を網羅した系統別ドリル。
+                    研修所の日程・講義時間割（全21講義）に沿って展開する体系的ドリル。
                   </p>
                 </div>
 
@@ -432,7 +445,7 @@ export default function HomePage() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="分野名・タグ検索..."
+                    placeholder="講義名・日程・キーワード..."
                     className="w-full bg-white border-2 border-sky-200 focus:border-blue-500 text-xs rounded-2xl pl-9 pr-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none transition-colors"
                   />
                   {searchQuery && (
@@ -446,7 +459,7 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* 4 Category Filter Tabs */}
+              {/* 3 Week / All Category Filter Tabs */}
               <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none pt-1">
                 {TECH_CATEGORIES.map((cat) => {
                   const isActive = selectedCategory === cat.id;
@@ -473,14 +486,16 @@ export default function HomePage() {
 
               {/* Category Progress Bars */}
               {selectedCategory === 'all' && !searchQuery && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-sky-100">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2 border-t border-sky-100">
                   {categoryStats.map((item) => (
-                    <div key={item.category.id} className="space-y-1">
+                    <div key={item.category.id} className="space-y-1 bg-sky-50/50 p-2.5 rounded-xl border border-sky-100">
                       <div className="flex items-center justify-between text-[11px] font-bold">
-                        <span className="text-slate-600 truncate">{item.category.shortName}</span>
-                        <span className="text-blue-700 font-black">{item.pct}%</span>
+                        <span className="text-slate-700 truncate">{item.category.shortName}</span>
+                        <span className="text-blue-700 font-black">
+                          {item.passedCount > 0 ? `${item.passedCount}問習得` : `${item.courseCount}講義`}
+                        </span>
                       </div>
-                      <div className="w-full h-1.5 bg-sky-100 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-sky-200/60 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-blue-600 rounded-full"
                           style={{ width: `${item.pct}%` }}
@@ -492,7 +507,7 @@ export default function HomePage() {
               )}
             </div>
 
-            {/* 20 Fields Grid */}
+            {/* 21 Lectures Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {filteredCourses.map((course) => {
                 const courseLessons = course.units.flatMap((u) => u.lessons);
@@ -511,10 +526,16 @@ export default function HomePage() {
                     >
                       <div className="space-y-3">
                         <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center gap-1.5">
-                            <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black">
-                              分野 {course.fieldNumber ? String(course.fieldNumber).padStart(2, '0') : '01'}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-900 text-[10px] font-black">
+                              第{course.fieldNumber ? String(course.fieldNumber).padStart(2, '0') : '01'}講
                             </span>
+                            {course.scheduleDate && (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-100 text-sky-900 text-[10px] font-bold">
+                                <Calendar className="w-2.5 h-2.5 text-sky-700" />
+                                {course.scheduleDate}
+                              </span>
+                            )}
                             {course.badge && (
                               <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black">
                                 {course.badge}
@@ -522,7 +543,7 @@ export default function HomePage() {
                             )}
                           </div>
 
-                          <span className="text-xs font-black text-blue-700 bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-full">
+                          <span className="text-xs font-black text-blue-700 bg-sky-50 border border-sky-200 px-2.5 py-0.5 rounded-full shrink-0">
                             {isAllPassed ? (
                               <span className="text-emerald-700 flex items-center gap-1">
                                 <CheckCircle2 className="w-3 h-3" /> 完全習得
@@ -582,15 +603,21 @@ export default function HomePage() {
                 return (
                   <div
                     key={course.id}
-                    onClick={() => handleComingSoonClick(course.title)}
-                    className="relative rounded-3xl overflow-hidden border-2 border-sky-200 bg-white/70 p-5 opacity-85 hover:opacity-95 transition-all cursor-pointer flex flex-col justify-between"
+                    onClick={() => handleComingSoonClick(course)}
+                    className="relative rounded-3xl overflow-hidden border-2 border-sky-200 bg-white/70 p-5 opacity-90 hover:opacity-100 hover:border-sky-300 transition-all cursor-pointer flex flex-col justify-between group"
                   >
                     <div className="space-y-3">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-black">
-                            分野 {course.fieldNumber ? String(course.fieldNumber).padStart(2, '0') : '00'}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-black">
+                            第{course.fieldNumber ? String(course.fieldNumber).padStart(2, '0') : '00'}講
                           </span>
+                          {course.scheduleDate && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sky-50 text-slate-600 text-[10px] font-bold border border-sky-100">
+                              <Calendar className="w-2.5 h-2.5 text-slate-400" />
+                              {course.scheduleDate}
+                            </span>
+                          )}
                           {course.badge && (
                             <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 text-[10px] font-bold">
                               {course.badge}
@@ -608,7 +635,7 @@ export default function HomePage() {
                           {renderFieldIcon(course.iconName)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-base sm:text-lg font-black text-slate-800 leading-snug">
+                          <h3 className="text-base sm:text-lg font-black text-slate-800 leading-snug group-hover:text-blue-800 transition-colors">
                             {course.title}
                           </h3>
                           <p className="text-xs font-bold text-slate-600 line-clamp-2 mt-0.5 leading-relaxed">
@@ -632,8 +659,15 @@ export default function HomePage() {
                     </div>
 
                     <div className="pt-3 mt-3 border-t border-sky-100/80 flex items-center justify-between text-xs text-slate-500 font-bold">
-                      <span>予定: 約{course.estimatedQuestions || 150}問</span>
-                      <span className="text-blue-600">順次追加予定 →</span>
+                      <span className="flex items-center gap-1 text-slate-500">
+                        {course.scheduleTime && (
+                          <>
+                            <Clock className="w-3 h-3 text-slate-400" />
+                            {course.scheduleTime}
+                          </>
+                        )}
+                      </span>
+                      <span className="text-blue-600 font-bold">教材準備中 →</span>
                     </div>
                   </div>
                 );
