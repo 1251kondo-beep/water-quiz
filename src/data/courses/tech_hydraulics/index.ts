@@ -1,6 +1,7 @@
 import { Course } from '@/types/quiz';
 import { TECH_HYDRAULICS_UNIT_1 } from './unit_1';
 import { TECH_HYDRAULICS_UNIT_2 } from './unit_2';
+import { TECH_HYDRAULICS_UNIT_3 } from './unit_3';
 
 export const TECH_HYDRAULICS_COURSE: Course = {
   id: 'tech_hydraulics',
@@ -13,10 +14,11 @@ export const TECH_HYDRAULICS_COURSE: Course = {
   category: 'facility_hydraulics',
   fieldNumber: 5,
   badge: '力学計算',
-  estimatedQuestions: 140,
-  keywords: ['ベルヌーイ定理', '動水勾配線', 'ヘーゼン公式', '水撃圧（ウォーターハンマー）', '構造力学'],
+  estimatedQuestions: 72,
+  keywords: ['ベルヌーイ定理', '動水勾配線', 'ヘーゼン公式', '水撃圧（ウォーターハンマー）', '構造力学', '耐震設計'],
   units: [
     TECH_HYDRAULICS_UNIT_1,
     TECH_HYDRAULICS_UNIT_2,
+    TECH_HYDRAULICS_UNIT_3,
   ],
 };
