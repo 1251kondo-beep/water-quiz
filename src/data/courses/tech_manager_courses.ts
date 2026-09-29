@@ -3,6 +3,7 @@ import { TECH_ADMIN_COURSE } from './tech_admin';
 import { TECH_HYGIENE_COURSE } from './tech_hygiene';
 import { TECH_MANAGEMENT_COURSE } from './tech_management';
 import { TECH_PLANNING_COURSE } from './tech_planning';
+import { TECH_HYDRAULICS_COURSE } from './tech_hydraulics';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -59,21 +60,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   // =========================================================================
   // Ⅱ. 水理・構造・施設・管路 (6講義)
   // =========================================================================
-  {
-    id: 'tech_hydraulics',
-    domainId: 'water_technical_manager',
-    title: '水道水理学・構造力学',
-    subtitle: '静水圧・動水勾配・ベルヌーイ定理・管路摩擦損失・水撃圧・構造力学',
-    description: '管水路・開水路の流れ、ヘーゼン・ウィリアムス公式、管網水理解析、サージタンク・調圧水槽、水管橋や耐震構造計算の基本を学びます。',
-    iconName: 'Network',
-    themeColor: 'from-sky-700 to-blue-900',
-    category: 'facility_hydraulics',
-    fieldNumber: 5,
-    badge: '力学計算',
-    estimatedQuestions: 140,
-    keywords: ['ベルヌーイ定理', '動水勾配線', 'ヘーゼン公式', '水撃圧（ウォーターハンマー）', '構造力学'],
-    units: [],
-  },
+  TECH_HYDRAULICS_COURSE,
   {
     id: 'tech_intake_storage',
     domainId: 'water_technical_manager',
