@@ -1,6 +1,7 @@
 import { Course } from '@/types/quiz';
 import { TECH_INTAKE_UNIT_1 } from './unit_1';
 import { TECH_INTAKE_UNIT_2 } from './unit_2';
+import { TECH_INTAKE_UNIT_3 } from './unit_3';
 
 export const TECH_INTAKE_STORAGE_COURSE: Course = {
   id: 'tech_intake_storage',
@@ -13,10 +14,11 @@ export const TECH_INTAKE_STORAGE_COURSE: Course = {
   category: 'facility_hydraulics',
   fieldNumber: 6,
   badge: '水源施設',
-  estimatedQuestions: 130,
+  estimatedQuestions: 72,
   keywords: ['取水堰', '取水塔', '沈砂池', '深井戸・浅井戸', '水利権', 'ダム貯水池'],
   units: [
     TECH_INTAKE_UNIT_1,
     TECH_INTAKE_UNIT_2,
+    TECH_INTAKE_UNIT_3,
   ],
 };
