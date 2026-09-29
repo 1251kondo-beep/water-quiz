@@ -4,6 +4,7 @@ import { TECH_HYGIENE_COURSE } from './tech_hygiene';
 import { TECH_MANAGEMENT_COURSE } from './tech_management';
 import { TECH_PLANNING_COURSE } from './tech_planning';
 import { TECH_HYDRAULICS_COURSE } from './tech_hydraulics';
+import { TECH_INTAKE_STORAGE_COURSE } from './tech_intake_storage';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -61,21 +62,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   // Ⅱ. 水理・構造・施設・管路 (6講義)
   // =========================================================================
   TECH_HYDRAULICS_COURSE,
-  {
-    id: 'tech_intake_storage',
-    domainId: 'water_technical_manager',
-    title: '水源・取水施設・貯水施設',
-    subtitle: '表流水・地下水・ダム貯水池・取水堰・取水塔・沈砂池・水源保全',
-    description: '表流水・伏流水・浅井戸・深井戸の特性と取水構造、ダム堆砂対策、原水調整池、渇水対策、水利権と水源保護対策を体系的に学びます。',
-    iconName: 'Waves',
-    themeColor: 'from-cyan-600 to-blue-700',
-    category: 'facility_hydraulics',
-    fieldNumber: 6,
-    badge: '水源施設',
-    estimatedQuestions: 130,
-    keywords: ['取水堰', '取水塔', '沈砂池', '深井戸・浅井戸', '水利権', 'ダム貯水池'],
-    units: [],
-  },
+  TECH_INTAKE_STORAGE_COURSE,
   {
     id: 'tech_conveyance_distribution_1',
     domainId: 'water_technical_manager',
