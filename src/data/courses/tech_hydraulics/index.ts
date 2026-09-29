@@ -1,5 +1,6 @@
 import { Course } from '@/types/quiz';
 import { TECH_HYDRAULICS_UNIT_1 } from './unit_1';
+import { TECH_HYDRAULICS_UNIT_2 } from './unit_2';
 
 export const TECH_HYDRAULICS_COURSE: Course = {
   id: 'tech_hydraulics',
@@ -16,5 +17,6 @@ export const TECH_HYDRAULICS_COURSE: Course = {
   keywords: ['ベルヌーイ定理', '動水勾配線', 'ヘーゼン公式', '水撃圧（ウォーターハンマー）', '構造力学'],
   units: [
     TECH_HYDRAULICS_UNIT_1,
+    TECH_HYDRAULICS_UNIT_2,
   ],
 };
