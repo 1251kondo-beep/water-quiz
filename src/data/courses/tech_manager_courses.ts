@@ -5,6 +5,7 @@ import { TECH_MANAGEMENT_COURSE } from './tech_management';
 import { TECH_PLANNING_COURSE } from './tech_planning';
 import { TECH_HYDRAULICS_COURSE } from './tech_hydraulics';
 import { TECH_INTAKE_STORAGE_COURSE } from './tech_intake_storage';
+import { TECH_CONVEYANCE_DISTRIBUTION_COURSE } from './tech_conveyance_distribution';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -63,36 +64,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   // =========================================================================
   TECH_HYDRAULICS_COURSE,
   TECH_INTAKE_STORAGE_COURSE,
-  {
-    id: 'tech_conveyance_distribution_1',
-    domainId: 'water_technical_manager',
-    title: '導・送・配水施設及び漏水防止(Ⅰ)',
-    subtitle: '導水管・送水管・配水池容量・自然流下とポンプ圧送・配水幹線網設計',
-    description: '導水・送水・配水システムの全体構成、配水池の有効容量（時間最大12時間標準）、適正水圧（150〜740kPa）、ブロック化管網設計を学びます。',
-    iconName: 'Layers',
-    themeColor: 'from-blue-600 to-sky-700',
-    category: 'facility_hydraulics',
-    fieldNumber: 7,
-    badge: '管路中核',
-    estimatedQuestions: 160,
-    keywords: ['導水施設', '送水施設', '配水池容量', '適正水圧', '管網ブロック化'],
-    units: [],
-  },
-  {
-    id: 'tech_conveyance_distribution_2',
-    domainId: 'water_technical_manager',
-    title: '導・送・配水施設及び漏水防止(Ⅱ)',
-    subtitle: '漏水調査手法・音聴調査・相関式・有収率向上・管網水圧制御・不断水工法',
-    description: '計画的漏水調査手順、戸別音聴・路面音聴・相関式漏水探知器の実務、有収率向上対策、配水圧の減圧制御、不断水分岐・不断水バルブ設置を習得します。',
-    iconName: 'Activity',
-    themeColor: 'from-sky-600 to-teal-800',
-    category: 'facility_hydraulics',
-    fieldNumber: 8,
-    badge: '漏水防止',
-    estimatedQuestions: 120,
-    keywords: ['音聴調査', '相関式探知器', '有収率向上', '配水圧制御', '不断水工法'],
-    units: [],
-  },
+  TECH_CONVEYANCE_DISTRIBUTION_COURSE,
   {
     id: 'tech_civil_materials',
     domainId: 'water_technical_manager',
