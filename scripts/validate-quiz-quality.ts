@@ -44,7 +44,8 @@ for (const domain of DOMAINS) {
           // 2. 否定形問題の太字チェック
           const negativeWords = ['含まれない', '該当しない', '誤っている', '適切でない', '正しくない'];
           for (const neg of negativeWords) {
-            if (q.question.includes(neg) && !q.question.includes(`**${neg}**`)) {
+            const isBolded = new RegExp(`\\*\\*[^*]*${neg}[^*]*\\*\\*`).test(q.question);
+            if (q.question.includes(neg) && !isBolded) {
               console.warn(
                 `⚠️  [太字推奨] ${course.id} > ${lesson.id} > ${q.id}: 「${neg}」が太字（**${neg}**）になっていません`
               );
