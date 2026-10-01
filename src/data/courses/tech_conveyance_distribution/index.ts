@@ -1,5 +1,6 @@
 import { Course } from '@/types/quiz';
 import { TECH_CONVEYANCE_DISTRIBUTION_UNIT_1 } from './unit_1';
+import { TECH_CONVEYANCE_DISTRIBUTION_UNIT_2 } from './unit_2';
 
 export const TECH_CONVEYANCE_DISTRIBUTION_COURSE: Course = {
   id: 'tech_conveyance_distribution',
@@ -28,5 +29,6 @@ export const TECH_CONVEYANCE_DISTRIBUTION_COURSE: Course = {
   ],
   units: [
     TECH_CONVEYANCE_DISTRIBUTION_UNIT_1,
+    TECH_CONVEYANCE_DISTRIBUTION_UNIT_2,
   ],
 };
