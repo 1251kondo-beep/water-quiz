@@ -116,5 +116,13 @@
   * Unit 3 問題データ: `src/data/courses/tech_planning/unit_3.ts`（施設計画・基準水量、全35問）
   * Unit 4 問題データ: `src/data/courses/tech_planning/unit_4.ts`（維持管理・官民連携・AM、全35問）
   * **全4ユニット（全140問）実装完了・包括的自律監査ループ完全合格**
+* **導・送・配水施設及び漏水防止（tech_conveyance_distribution）**:
+  * コース定義: `src/data/courses/tech_conveyance_distribution/index.ts`（Ⅰ・Ⅱを一本化）
+  * Unit 1 問題データ: `src/data/courses/tech_conveyance_distribution/unit_1.ts`（基礎体系・計画水量・管材耐震・動水圧、全35問）
+  * Unit 2 問題データ: `src/data/courses/tech_conveyance_distribution/unit_2.ts`（付属設備・アセットマネジメント・特殊工法・水管橋、全35問）
+  * Unit 3 問題データ: `src/data/courses/tech_conveyance_distribution/unit_3.ts`（事故対応・緊急断水・配水池構造・応急給水、全35問）
+  * Unit 4 問題データ: `src/data/courses/tech_conveyance_distribution/unit_4.ts`（漏水防止体系・地下探査技術・最重要総復習、全35問）
+  * **全4ユニット（全140問）実装完了・クイズ品質自動監査完全クリア・本番デプロイ完了**
 * **公衆衛生（tech_hygiene / 準備中）**:
   * 今後、本フォルダ内の `公衆衛生1.md`、`公衆衛生2.md` をベースにユニット問題データを順次実装予定。
+
