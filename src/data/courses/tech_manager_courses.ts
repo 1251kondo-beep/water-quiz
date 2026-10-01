@@ -6,6 +6,7 @@ import { TECH_PLANNING_COURSE } from './tech_planning';
 import { TECH_HYDRAULICS_COURSE } from './tech_hydraulics';
 import { TECH_INTAKE_STORAGE_COURSE } from './tech_intake_storage';
 import { TECH_CONVEYANCE_DISTRIBUTION_COURSE } from './tech_conveyance_distribution';
+import { TECH_CIVIL_MATERIALS_COURSE } from './tech_civil_materials';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -65,21 +66,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   TECH_HYDRAULICS_COURSE,
   TECH_INTAKE_STORAGE_COURSE,
   TECH_CONVEYANCE_DISTRIBUTION_COURSE,
-  {
-    id: 'tech_civil_materials',
-    domainId: 'water_technical_manager',
-    title: '土木材料及び施工法・水道資材',
-    subtitle: 'コンクリート示方書・土工・土留め・推進工法・シールド・JWWA資機材規格',
-    description: '水道土木工事の施工管理、コンクリート配合・養生、開削工法と非開削推進工法、覆工、水道資材のJWWA規格・認証制度を学びます。',
-    iconName: 'HardHat',
-    themeColor: 'from-amber-700 to-slate-800',
-    category: 'facility_hydraulics',
-    fieldNumber: 9,
-    badge: '土木施工',
-    estimatedQuestions: 130,
-    keywords: ['コンクリート示方書', '推進工法', '土留め工', 'JWWA規格', '施工管理'],
-    units: [],
-  },
+  TECH_CIVIL_MATERIALS_COURSE,
   {
     id: 'tech_facility_mechanism',
     domainId: 'water_technical_manager',
