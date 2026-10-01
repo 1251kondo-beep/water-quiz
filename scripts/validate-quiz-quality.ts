@@ -51,6 +51,35 @@ for (const domain of DOMAINS) {
               );
             }
           }
+
+          // 3. 穴埋め問題（fill_in_the_blank）のプレースホルダー検証
+          if (q.type === 'fill_in_the_blank' || q.blankText) {
+            if (!q.blankText) {
+              console.error(`❌ [穴埋め不備] ${course.id} > ${lesson.id} > ${q.id}: blankText が未定義です`);
+              errorsCount++;
+            } else {
+              const blanks = q.blanks || [];
+              if (blanks.length === 0) {
+                console.error(`❌ [穴埋め不備] ${course.id} > ${lesson.id} > ${q.id}: blanks 定義が空です`);
+                errorsCount++;
+              }
+              for (const b of blanks) {
+                const placeholder = `【空欄${b.id}】`;
+                if (!q.blankText.includes(placeholder)) {
+                  console.error(
+                    `❌ [穴埋め不備] ${course.id} > ${lesson.id} > ${q.id}: blankText に "${placeholder}" が見つかりません (blankText: "${q.blankText}")`
+                  );
+                  errorsCount++;
+                }
+                if (!options.includes(b.answer)) {
+                  console.error(
+                    `❌ [穴埋め不備] ${course.id} > ${lesson.id} > ${q.id}: blanks の正解 "${b.answer}" が options に含まれていません`
+                  );
+                  errorsCount++;
+                }
+              }
+            }
+          }
         }
       }
     }

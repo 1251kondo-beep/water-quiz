@@ -68,7 +68,7 @@ const lesson_4_1: Lesson = {
     },
     {
       id: 'tm_4_1_04',
-      type: 'fill_in_the_blank',
+      type: 'choice',
       question: '給水収益の増減原因を究明する積の分解式：給水収益 ＝ 平均単価 × [ 空欄 ] × 給水栓数。空欄に入る語句を選択してください。',
       options: [
         '1栓あたり使用水量',
@@ -237,7 +237,7 @@ const lesson_4_2: Lesson = {
     },
     {
       id: 'tm_4_2_06',
-      type: 'fill_in_the_blank',
+      type: 'choice',
       question: '施設効率を示す三者関係式：施設利用率 ＝ [ 空欄 ] × 最大稼働率。空欄に入る指標を選択してください。',
       options: [
         '負荷率',
@@ -376,7 +376,7 @@ const lesson_4_3: Lesson = {
     },
     {
       id: 'tm_4_3_05',
-      type: 'fill_in_the_blank',
+      type: 'choice',
       question: '令和2年4月民法改正以降の現行法において、水道料金債権の消滅時効期間は権利を行使できると知った時から [ 空欄 ] 年である。空欄に入る年数を選択してください。',
       options: [
         '5',
@@ -475,7 +475,7 @@ const lesson_4_4: Lesson = {
     },
     {
       id: 'tm_4_4_03',
-      type: 'fill_in_the_blank',
+      type: 'choice',
       question: '支払督促の送達を受けた滞納者が送達から [ 空欄 ] 週間以内に異議申立てを行わない場合、管理者は仮執行宣言の申立てを行うことができる。空欄に入る数字を選択してください。',
       options: [
         '2',

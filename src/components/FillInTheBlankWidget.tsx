@@ -32,7 +32,7 @@ export default function FillInTheBlankWidget({
   const theme = getCourseTheme(courseId);
   // blanks definitions: e.g. [{ id: 1, answer: "..." }, { id: 2, answer: "..." }]
   // If not explicitly provided, detect 【空欄1】, 【空欄2】 or [____] patterns from blankText
-  const blankCount = blanks.length > 0 ? blanks.length : (blankText.match(/【空欄\d+】|\[_{2,}\]|_{3,}/g) || []).length || 2;
+  const blankCount = blanks.length > 0 ? blanks.length : (blankText.match(/【空欄\d+】|\[_{2,}\]|_{3,}|\[\d+\]/g) || []).length || 2;
 
   // Selected values for each blank slot: { 1: "メモリ", 2: "ストレージ" }
   const [filledSlots, setFilledSlots] = useState<Record<number, string>>({});
@@ -47,9 +47,9 @@ export default function FillInTheBlankWidget({
   }, [blankText, options]);
 
   // Split text by blank placeholders
-  // Supports 【空欄1】, 【空欄2】, [____], [____1], etc.
+  // Supports 【空欄1】, 【空欄2】, [____], [____1], [1], [2], etc.
   const parts = React.useMemo(() => {
-    const regex = /(【空欄\d+】|\[_{2,}\d*\]|_{3,})/g;
+    const regex = /(【空欄\d+】|\[_{2,}\d*\]|_{3,}|\[\d+\])/g;
     const splitArr = blankText.split(regex);
     let blankIndex = 1;
 
