@@ -2,6 +2,7 @@ import { Course } from '@/types/quiz';
 import { TECH_CIVIL_MATERIALS_UNIT_1 } from './unit_1';
 import { TECH_CIVIL_MATERIALS_UNIT_2 } from './unit_2';
 import { TECH_CIVIL_MATERIALS_UNIT_3 } from './unit_3';
+import { TECH_CIVIL_MATERIALS_UNIT_4 } from './unit_4';
 
 export const TECH_CIVIL_MATERIALS_COURSE: Course = {
   id: 'tech_civil_materials',
@@ -32,5 +33,6 @@ export const TECH_CIVIL_MATERIALS_COURSE: Course = {
     TECH_CIVIL_MATERIALS_UNIT_1,
     TECH_CIVIL_MATERIALS_UNIT_2,
     TECH_CIVIL_MATERIALS_UNIT_3,
+    TECH_CIVIL_MATERIALS_UNIT_4,
   ],
 };
