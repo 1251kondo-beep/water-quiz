@@ -13,7 +13,7 @@ export const TECH_CIVIL_MATERIALS_COURSE: Course = {
   iconName: 'HardHat',
   themeColor: 'from-amber-700 to-slate-800',
   category: 'facility_hydraulics',
-  fieldNumber: 9,
+  fieldNumber: 8,
   badge: '土木施工',
   estimatedQuestions: 140,
   keywords: [

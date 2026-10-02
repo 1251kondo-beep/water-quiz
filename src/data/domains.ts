@@ -19,7 +19,7 @@ export const DOMAINS: Domain[] = [
   {
     id: 'water_technical_manager',
     name: '水道技術管理者',
-    description: '水道法第19条に基づく必須職責・全21講義を体系別に網羅した総合学習ドリル',
+    description: '水道法第19条に基づく必須職責・全18講義を体系別に網羅した総合学習ドリル',
     available: true,
     isPortal: true,
     courses: TECH_MANAGER_COURSES,

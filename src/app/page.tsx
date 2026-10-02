@@ -364,7 +364,7 @@ export default function HomePage() {
         {/* 4. Domain Content View */}
         {isTechManagerPortal ? (
           /* ========================================================================= */
-          /* 水道技術管理者 マスターポータル (全21講義 縦並び一覧) */
+          /* 水道技術管理者 マスターポータル (全18講義 縦並び一覧) */
           /* ========================================================================= */
           <section className="space-y-4">
             {/* Header info */}
@@ -374,7 +374,7 @@ export default function HomePage() {
                   水道技術管理者
                 </h2>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  全21講義を網羅した総合学習ドリル。
+                  全18講義を網羅した総合学習ドリル。
                 </p>
               </div>
               <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-800 text-xs font-black flex items-center justify-center shrink-0">

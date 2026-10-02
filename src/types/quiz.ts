@@ -129,7 +129,7 @@ export interface Course {
   themeColor: string;
   units: Unit[];
   category?: TechFieldCategory;
-  fieldNumber?: number; // 講義番号 1〜21
+  fieldNumber?: number; // 講義番号 1〜18
   badge?: string; // 例: '★最重要', '頻出', '基礎必須'
   estimatedQuestions?: number; // 予定問題数 (100〜300問)
   keywords?: string[]; // 重要キーワードタグ
