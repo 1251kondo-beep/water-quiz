@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MatchPair } from '@/types/quiz';
-import { CheckCircle2, XCircle, RotateCcw, Link2 } from 'lucide-react';
+import { CheckCircle2, XCircle, RotateCcw, Link2, ArrowRight } from 'lucide-react';
 
 import { getCourseTheme } from '@/data/themes';
 import { soundFx } from '@/lib/audio';
@@ -73,20 +73,22 @@ export default function PairMatchingWidget({
     setSelectedLeftId(null);
   }, [pairs, extraRightItems]);
 
-  // Check if fully matched & notify parent
+  // Check if fully matched & all correct
+  const isFullyMatched = Object.keys(userConnections).length === pairs.length;
+  const isAllCorrect =
+    isFullyMatched &&
+    pairs.length > 0 &&
+    pairs.every((p) => {
+      const userConnectedRightId = userConnections[p.leftId];
+      if (!userConnectedRightId) return false;
+      const connectedRight = rightItems.find((r) => r.rightId === userConnectedRightId);
+      return connectedRight?.rightText === p.rightText;
+    });
+
+  // Notify parent on change
   useEffect(() => {
-    const isFullyMatched = Object.keys(userConnections).length === pairs.length;
-    let isAllCorrect = false;
-    if (isFullyMatched) {
-      isAllCorrect = pairs.every((p) => {
-        const userConnectedRightId = userConnections[p.leftId];
-        if (!userConnectedRightId) return false;
-        const connectedRight = rightItems.find((r) => r.rightId === userConnectedRightId);
-        return connectedRight?.rightText === p.rightText;
-      });
-    }
     onSelectionChange(isFullyMatched, isAllCorrect);
-  }, [userConnections, pairs, rightItems, onSelectionChange]);
+  }, [isFullyMatched, isAllCorrect, onSelectionChange]);
 
   const handleLeftClick = (leftId: string) => {
     if (isConfirmed) return;
@@ -410,6 +412,78 @@ export default function PairMatchingWidget({
           })}
         </div>
       </div>
+
+      {/* 正解の組み合わせエリア（間違えた場合に正解ペアを明快に表示） */}
+      {isConfirmed && !isAllCorrect && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-emerald-50/90 dark:bg-emerald-950/40 border-2 border-emerald-500/40 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300 space-y-3">
+          <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-200 font-bold text-sm sm:text-base">
+            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 shrink-0 stroke-[2.5]" />
+            <span>【正解の組み合わせ】</span>
+          </div>
+
+          <div className="space-y-2.5">
+            {pairs.map((pair, idx) => {
+              const userConnectedRightId = userConnections[pair.leftId];
+              const connectedRight = rightItems.find((r) => r.rightId === userConnectedRightId);
+              const isPairCorrect = connectedRight?.rightText === pair.rightText;
+
+              return (
+                <div
+                  key={pair.leftId || idx}
+                  className={`p-3.5 sm:p-4 rounded-2xl border-2 shadow-xs transition-all ${
+                    isPairCorrect
+                      ? 'bg-white dark:bg-slate-800 border-emerald-200 dark:border-emerald-800/80'
+                      : 'bg-white dark:bg-slate-800 border-rose-200 dark:border-rose-900/60'
+                  }`}
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
+                    {/* 左側の項目 */}
+                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                      <span
+                        className={`w-6 h-6 rounded-lg text-white text-xs font-black flex items-center justify-center shrink-0 ${
+                          isPairCorrect ? 'bg-emerald-600' : 'bg-rose-500'
+                        }`}
+                      >
+                        {idx + 1}
+                      </span>
+                      <span className="font-bold text-sm sm:text-base text-slate-800 dark:text-slate-100 break-words leading-relaxed">
+                        {pair.leftText}
+                      </span>
+                    </div>
+
+                    {/* 矢印と正解の右側項目 */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 shrink-0 pl-8 sm:pl-0">
+                      <div className="flex items-center gap-2">
+                        <ArrowRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 hidden sm:block" />
+                        <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 sm:hidden">↳ 正解:</span>
+                        <span className="font-black text-sm sm:text-base text-emerald-800 dark:text-emerald-200 bg-emerald-100/90 dark:bg-emerald-900/60 px-3 py-1 rounded-xl border border-emerald-300 dark:border-emerald-700/80 break-words shadow-2xs">
+                          {pair.rightText}
+                        </span>
+                        {isPairCorrect ? (
+                          <span className="inline-flex items-center gap-0.5 text-xs text-emerald-600 dark:text-emerald-400 font-bold ml-0.5">
+                            <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+                            <span className="hidden sm:inline">正解</span>
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-0.5 text-xs text-rose-600 dark:text-rose-400 font-bold ml-0.5">
+                            <XCircle className="w-4 h-4 stroke-[2.5]" />
+                            <span className="hidden sm:inline">不正解</span>
+                          </span>
+                        )}
+                      </div>
+                      {!isPairCorrect && connectedRight && (
+                        <div className="text-[11px] text-slate-500 dark:text-slate-400 sm:text-right">
+                          あなたの選択: <span className="line-through text-rose-500 font-bold">{connectedRight.rightText}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

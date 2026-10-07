@@ -7,6 +7,7 @@ import { TECH_HYDRAULICS_COURSE } from './tech_hydraulics';
 import { TECH_INTAKE_STORAGE_COURSE } from './tech_intake_storage';
 import { TECH_CONVEYANCE_DISTRIBUTION_COURSE } from './tech_conveyance_distribution';
 import { TECH_CIVIL_MATERIALS_COURSE } from './tech_civil_materials';
+import { TECH_PURIFICATION_COURSE } from './tech_purification';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -71,21 +72,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   // =========================================================================
   // Ⅲ. 浄水処理・機電・管資材 (5講義)
   // =========================================================================
-  {
-    id: 'tech_purification',
-    domainId: 'water_technical_manager',
-    title: '浄水施設',
-    subtitle: '凝集沈殿・急速ろ過・緩速ろ過・膜ろ過・高度浄水（オゾン活性炭）・紫外線・排水処理',
-    description: '凝集理論、薬品混和、フロック形成、沈殿池、急速砂ろ過・緩速ろ過から、膜ろ過（MF/UF）、オゾン生物活性炭、紫外線照射、クリプトスポリジウム対策、浄水スラッジ脱水処理まで、浄水技術の全体系を網羅します。',
-    iconName: 'Filter',
-    themeColor: 'from-indigo-600 to-blue-700',
-    category: 'purification_machinery',
-    fieldNumber: 9,
-    badge: '★浄水根幹',
-    estimatedQuestions: 180,
-    keywords: ['凝集沈殿', '急速ろ過', '緩速ろ過', '膜ろ過（MF/UF）', 'オゾン接触', '生物活性炭（BAC）', '紫外線処理', 'クリプト対策', '排泥脱水'],
-    units: [],
-  },
+  TECH_PURIFICATION_COURSE,
   {
     id: 'tech_machinery_electrical',
     domainId: 'water_technical_manager',
