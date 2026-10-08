@@ -44,6 +44,16 @@ const lesson_2_1: Lesson = {
       id: 'th_2_1_02',
       type: 'choice',
       question: '内径Dの円形管を満流で水が流れるとき、流水断面積Aを潤辺Sで除した「径深（水力半径R）」として、最も適切なものはどれですか？',
+      image: {
+        url: '/images/quiz/hydraulic_radius_circle.svg',
+        alt: '円形管（満流）における内径D・流水断面積A・潤辺Sの断面関係図',
+        caption: '【図】円形管（満流）における流水断面積 A と 潤辺 S の関係'
+      },
+      explanationImage: {
+        url: '/images/quiz/hydraulic_radius_circle_explanation.svg',
+        alt: '円形管（満流）における径深R=D/4の計算導出図',
+        caption: '【解説図】径深 R ＝ A / S ＝ (πD²/4) ÷ (πD) ＝ D/4 の計算導出'
+      },
       options: [
         '径深Rは内径Dの1/2（R＝D/2）である',
         '径深Rは内径Dの1/4（R＝D/4）である',

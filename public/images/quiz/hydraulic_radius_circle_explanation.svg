@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f8fafc" />
+    </linearGradient>
+    <radialGradient id="waterGrad" cx="40%" cy="40%" r="65%">
+      <stop offset="0%" stop-color="#bae6fd" />
+      <stop offset="65%" stop-color="#7dd3fc" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </radialGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#0f172a" />
+    </marker>
+  </defs>
+
+  <!-- 背景パネル -->
+  <rect width="800" height="450" rx="16" fill="url(#bgGrad)" stroke="#cbd5e1" stroke-width="2" />
+
+  <!-- タイトルバナー -->
+  <g transform="translate(30, 20)">
+    <rect x="0" y="0" width="740" height="42" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5" />
+    <text x="370" y="27" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="18" font-weight="bold" fill="#15803d" text-anchor="middle">
+      【解説】円形管（満流）の径深（水力半径）：R ＝ D / 4
+    </text>
+  </g>
+
+  <!-- 左側：円形管の断面図 -->
+  <g transform="translate(195, 255)">
+    <circle cx="0" cy="0" r="132" fill="#e2e8f0" stroke="#64748b" stroke-width="3" />
+    <circle cx="0" cy="0" r="118" fill="url(#waterGrad)" />
+    <circle cx="0" cy="0" r="118" fill="none" stroke="#2563eb" stroke-width="6.5" stroke-dasharray="9 4" />
+
+    <path d="M -45 -25 Q -20 -35 5 -25 Q 30 -15 55 -25" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.8" />
+    <path d="M -55 20 Q -30 10 -5 20 Q 20 30 45 20" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.7" />
+
+    <rect x="-85" y="42" width="170" height="34" rx="8" fill="#ffffff" fill-opacity="0.95" stroke="#0284c7" stroke-width="2" />
+    <text x="0" y="65" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="15" font-weight="bold" fill="#0369a1" text-anchor="middle">
+      流水断面積 A ＝ πD²/4
+    </text>
+
+    <!-- 内径 D 寸法線 -->
+    <line x1="-118" y1="-142" x2="-118" y2="0" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3" />
+    <line x1="118" y1="-142" x2="118" y2="0" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3 3" />
+    <line x1="-112" y1="-142" x2="112" y2="-142" stroke="#0f172a" stroke-width="2.5" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+    <rect x="-42" y="-157" width="84" height="28" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+    <text x="0" y="-138" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="16" font-weight="bold" fill="#0f172a" text-anchor="middle">
+      内径 D
+    </text>
+
+    <!-- 潤辺 S 指示線 -->
+    <path d="M -83 -83 L -125 -115 L -175 -115" fill="none" stroke="#2563eb" stroke-width="2.5" />
+    <circle cx="-83" cy="-83" r="4.5" fill="#2563eb" />
+    <text x="-180" y="-109" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="15" font-weight="bold" fill="#1d4ed8" text-anchor="end">
+      潤辺 S ＝ πD (全周長)
+    </text>
+  </g>
+
+  <!-- 右側：計算導出カード -->
+  <g transform="translate(425, 85)">
+    <rect x="0" y="0" width="345" height="335" rx="14" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+    
+    <rect x="0" y="0" width="345" height="44" rx="14" fill="#eff6ff" />
+    <rect x="0" y="28" width="345" height="16" fill="#eff6ff" />
+    <text x="172" y="28" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="16" font-weight="bold" fill="#1e40af" text-anchor="middle">
+      径深 R の計算導出
+    </text>
+
+    <!-- 式展開 -->
+    <g transform="translate(20, 58)">
+      <text x="5" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="14" font-weight="bold" fill="#334155">
+        ① 流水断面積 A ＝ πD² / 4
+      </text>
+      <text x="5" y="44" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="14" font-weight="bold" fill="#334155">
+        ② 潤辺 S ＝ πD
+      </text>
+      <text x="5" y="74" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="14" font-weight="bold" fill="#1e40af">
+        ③ 径深 R ＝ A / S より代入
+      </text>
+
+      <rect x="5" y="86" width="295" height="46" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5" />
+      <text x="152" y="115" font-family="Cambria, 'Times New Roman', serif" font-size="18" font-weight="bold" fill="#0f172a" text-anchor="middle">
+        R ＝ (πD² / 4) ÷ (πD)
+      </text>
+    </g>
+
+    <!-- 結論ボックス -->
+    <g transform="translate(20, 226)">
+      <rect x="0" y="0" width="305" height="88" rx="10" fill="#f0fdf4" stroke="#22c55e" stroke-width="2.5" />
+      <text x="152" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="14" font-weight="bold" fill="#166534" text-anchor="middle">
+        満流時の径深（正解）
+      </text>
+      <text x="152" y="56" font-family="Cambria, 'Times New Roman', serif" font-size="23" font-weight="bold" fill="#15803d" text-anchor="middle">
+        R ＝ D / 4  (内径の 1/4)
+      </text>
+      <text x="152" y="76" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hiragino Sans', 'Noto Sans JP', sans-serif" font-size="12" fill="#166534" text-anchor="middle">
+        ※ 半流（水深D/2）のときも R ＝ D/4 となります
+      </text>
+    </g>
+  </g>
+</svg>
