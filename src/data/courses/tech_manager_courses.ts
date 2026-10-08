@@ -8,6 +8,7 @@ import { TECH_INTAKE_STORAGE_COURSE } from './tech_intake_storage';
 import { TECH_CONVEYANCE_DISTRIBUTION_COURSE } from './tech_conveyance_distribution';
 import { TECH_CIVIL_MATERIALS_COURSE } from './tech_civil_materials';
 import { TECH_PURIFICATION_COURSE } from './tech_purification';
+import { TECH_MACHINERY_ELECTRICAL_COURSE } from './tech_machinery_electrical';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -73,21 +74,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   // Ⅲ. 浄水処理・機電・管資材 (5講義)
   // =========================================================================
   TECH_PURIFICATION_COURSE,
-  {
-    id: 'tech_machinery_electrical',
-    domainId: 'water_technical_manager',
-    title: '機械・電気設備',
-    subtitle: 'ポンプ設備・受変電設備・自家発電設備・電動機・動力計算・保安管理',
-    description: '遠心ポンプ・立軸斜流ポンプの選定と揚程・軸動力計算、キャビテーション防止、高圧・特高受変電設備、非常用自家発電機と燃料備蓄基準を押さえます。',
-    iconName: 'Zap',
-    themeColor: 'from-amber-600 to-blue-800',
-    category: 'purification_machinery',
-    fieldNumber: 10,
-    badge: '機電設備',
-    estimatedQuestions: 160,
-    keywords: ['渦巻ポンプ', '全揚程・軸動力', 'キャビテーション', '受変電設備', '自家用発電設備'],
-    units: [],
-  },
+  TECH_MACHINERY_ELECTRICAL_COURSE,
   {
     id: 'tech_instrumentation',
     domainId: 'water_technical_manager',
