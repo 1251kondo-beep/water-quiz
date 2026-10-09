@@ -9,6 +9,7 @@ import { TECH_CONVEYANCE_DISTRIBUTION_COURSE } from './tech_conveyance_distribut
 import { TECH_CIVIL_MATERIALS_COURSE } from './tech_civil_materials';
 import { TECH_PURIFICATION_COURSE } from './tech_purification';
 import { TECH_MACHINERY_ELECTRICAL_COURSE } from './tech_machinery_electrical';
+import { TECH_INSTRUMENTATION_COURSE } from './tech_instrumentation';
 
 export const TECH_CATEGORIES: TechCategoryMeta[] = [
   {
@@ -75,21 +76,7 @@ export const TECH_MANAGER_COURSES: Course[] = [
   // =========================================================================
   TECH_PURIFICATION_COURSE,
   TECH_MACHINERY_ELECTRICAL_COURSE,
-  {
-    id: 'tech_instrumentation',
-    domainId: 'water_technical_manager',
-    title: '計装設備',
-    subtitle: 'SCADA監視制御・テレメータ・流量計・水質計器・サイバーセキュリティ・経済安保',
-    description: '超音波流量計・電磁流量計、残留塩素計・濁度計などのオンライン水質計器、SCADA遠隔制御、計装通信回線、経済安全保障推進法に基づく基幹インフラ防護を学びます。',
-    iconName: 'MonitorCheck',
-    themeColor: 'from-indigo-700 to-slate-800',
-    category: 'purification_machinery',
-    fieldNumber: 11,
-    badge: '監視計装',
-    estimatedQuestions: 140,
-    keywords: ['SCADA', '電磁流量計', 'オンライン水質計', 'テレメータ', '経済安保事前審査'],
-    units: [],
-  },
+  TECH_INSTRUMENTATION_COURSE,
   {
     id: 'tech_ductile_iron_pipe',
     domainId: 'water_technical_manager',
