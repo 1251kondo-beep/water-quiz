@@ -1,5 +1,6 @@
 import { Course } from '@/types/quiz';
 import { TECH_INSTRUMENTATION_UNIT_1 } from './unit_1';
+import { TECH_INSTRUMENTATION_UNIT_2 } from './unit_2';
 
 export const TECH_INSTRUMENTATION_COURSE: Course = {
   id: 'tech_instrumentation',
@@ -16,5 +17,6 @@ export const TECH_INSTRUMENTATION_COURSE: Course = {
   keywords: ['SCADA', '電磁流量計', 'オンライン水質計', 'テレメータ', '経済安保事前審査'],
   units: [
     TECH_INSTRUMENTATION_UNIT_1,
+    TECH_INSTRUMENTATION_UNIT_2,
   ],
 };
